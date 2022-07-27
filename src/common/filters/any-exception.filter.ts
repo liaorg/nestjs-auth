@@ -39,6 +39,7 @@ export class AnyExceptionFilter implements ExceptionFilter {
             statusCode: status,
             date: new Date().toLocaleString(),
             path: request.url,
+            method: request.method,
             message: exception["message"],
         });
     }

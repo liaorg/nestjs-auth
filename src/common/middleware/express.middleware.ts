@@ -1,7 +1,7 @@
 /**
  * express 的中间件
  */
-import { INestApplication } from "@nestjs/common";
+import { INestApplication, HttpException } from "@nestjs/common";
 import compression from "compression";
 import { json, urlencoded } from "express";
 import rateLimit from "express-rate-limit";
@@ -56,6 +56,10 @@ export function expressMiddleware(app: INestApplication): INestApplication {
             standardHeaders: false,
             // Disable the `X-RateLimit-*` headers
             legacyHeaders: isProduction ? false : true,
+            // 响应处理
+            handler: (_request, _response, _next, options) => {
+                throw new HttpException(options.message, options.statusCode);
+            },
         }),
     );
 

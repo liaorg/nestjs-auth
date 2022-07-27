@@ -5,15 +5,15 @@ import { HTTPS_OPTIONS } from "./common/constants";
 import { expressMiddleware } from "./common/middleware";
 
 async function bootstrap(): Promise<string> {
+    const isProduction = process.env.NODE_ENV === "production";
     // 开启 https 服务
     const app = await NestFactory.create<INestApplication>(AppModule, {
         httpsOptions: HTTPS_OPTIONS,
         // 是否打印日志
-        // logger: false,
+        logger: isProduction ? false : ["log"],
         bufferLogs: true,
     });
 
-    // const isProduction = process.env.NODE_ENV === "production";
     // if (isProduction) {
     //     // see https://expressjs.com/en/guide/behind-proxies.html
     //     // 如果在服务器和以太网之间存在负载均衡或者反向代理，从而保证最终用户得到正确的IP地址
