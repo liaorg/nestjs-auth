@@ -1,12 +1,13 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
 import { Request, Response } from "express";
+import { ApiException } from "../exceptions";
 // import { Logger } from "src/utils/log4js";
 
 // 使用 @Catch(HttpException) 装饰器注解的类
 // 异常过滤器应该实现 ExceptionFilter 接口
-// 这边拦截 http 异常
+// 这边拦截 http 请求异常
 @Catch(HttpException)
-export class HttpExceptionFilters implements ExceptionFilter<HttpException> {
+export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
     // 每个异常过滤器必须实现一个 catch 函数
     catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
@@ -21,7 +22,6 @@ export class HttpExceptionFilters implements ExceptionFilter<HttpException> {
     Status code: ${status}
     Response: ${exception.toString()} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     `;
-
         console.log("http", logFormat);
         // 打印并记录日志
         // 根据状态码，进行日志类型区分
@@ -34,12 +34,20 @@ export class HttpExceptionFilters implements ExceptionFilter<HttpException> {
         //     Logger.log(logFormat);
         // }
 
+        let errorCode = 0;
+        let message: string | object = exception.message;
+        if (exception instanceof ApiException) {
+            // 如果是业务异常
+            errorCode = exception.getErrorCode();
+            message = exception.getErrorMessage();
+        }
         response.status(status).json({
             statusCode: status,
-            date: new Date().toLocaleString(),
-            path: request.url,
+            errorCode: errorCode,
             method: request.method,
-            message: exception.message,
+            path: request.url,
+            date: new Date().toLocaleString(),
+            message: message,
         });
     }
 }

@@ -1,4 +1,6 @@
 import { Controller, Get, /*  Post, Body, Patch,  */ Param, Delete } from "@nestjs/common";
+import { UsersErrorCode } from "./enums/users-error-code.enum";
+import { UsersException } from "./users.exception";
 import { UsersService } from "./users.service";
 // import { CreateUserDto } from "./dto/create-user.dto";
 // import { UpdateUserDto } from "./dto/update-user.dto";
@@ -19,7 +21,8 @@ export class UsersController {
 
     @Get(":id")
     findOne(@Param("id") id: string) {
-        return this.usersService.findOne(+id);
+        throw new UsersException(`error userid #${id}`, UsersErrorCode.ERROR_USERID);
+        // return this.usersService.findOne(+id);
     }
 
     // @Patch(":id")

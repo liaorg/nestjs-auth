@@ -20,7 +20,7 @@ export class AnyExceptionFilter implements ExceptionFilter {
     Method: ${request.method}
     IP: ${request.ip}
     Status code: ${status}
-    Response: ${exception.toString()} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    stack: ${exception.stack} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     `;
         console.log("any", logFormat);
         // 打印并记录日志
@@ -37,10 +37,10 @@ export class AnyExceptionFilter implements ExceptionFilter {
 
         response.status(status).json({
             statusCode: status,
-            date: new Date().toLocaleString(),
-            path: request.url,
             method: request.method,
-            message: exception["message"],
+            path: request.url,
+            date: new Date().toLocaleString(),
+            message: "Internal Server Error",
         });
     }
 }

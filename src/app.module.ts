@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { APP_FILTER } from "@nestjs/core";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { AnyExceptionFilter, HttpExceptionFilters } from "./common/filters";
+import { AnyExceptionFilter, HttpExceptionFilter } from "./common/filters";
 import { UsersModule } from "./users/users.module";
 
 @Module({
@@ -17,7 +17,7 @@ import { UsersModule } from "./users/users.module";
         // http 异常
         {
             provide: APP_FILTER,
-            useClass: HttpExceptionFilters,
+            useClass: HttpExceptionFilter,
         },
         AppService,
     ],
