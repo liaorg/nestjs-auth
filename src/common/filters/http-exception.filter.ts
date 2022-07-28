@@ -15,14 +15,9 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
         const request = ctx.getRequest<Request>();
         const status = exception.getStatus();
 
-        const logFormat = ` <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    Request original url: ${request.originalUrl}
-    Method: ${request.method}
-    IP: ${request.ip}
-    Status code: ${status}
-    Response: ${exception.toString()} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    `;
-        console.log("http", logFormat);
+        const date = new Date().toLocaleString();
+        const logFormat = ` <<< [${date}] ${status} ${exception.toString()}`;
+        console.log(logFormat);
         // 打印并记录日志
         // 根据状态码，进行日志类型区分
         // if (status >= 500) {
@@ -46,7 +41,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
             errorCode: errorCode,
             method: request.method,
             path: request.url,
-            date: new Date().toLocaleString(),
+            date: date,
             message: message,
         });
     }

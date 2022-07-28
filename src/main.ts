@@ -2,7 +2,7 @@ import { INestApplication, Logger as NestLogger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { HTTPS_OPTIONS } from "./common/constants";
-import { expressMiddleware } from "./common/middleware";
+import { expressMiddleware, logger } from "./common/middleware";
 
 async function bootstrap(): Promise<string> {
     const isProduction = process.env.NODE_ENV === "production";
@@ -23,6 +23,7 @@ async function bootstrap(): Promise<string> {
 
     // 引入全局中间件
     // 自定义中间件
+    app.use(logger);
     // express 中间件
     expressMiddleware(app);
     // 全局路由前缀

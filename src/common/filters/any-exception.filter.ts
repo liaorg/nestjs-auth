@@ -15,14 +15,8 @@ export class AnyExceptionFilter implements ExceptionFilter {
         const request = ctx.getRequest<Request>();
         const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-        const logFormat = ` <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    Request original url: ${request.originalUrl}
-    Method: ${request.method}
-    IP: ${request.ip}
-    Status code: ${status}
-    stack: ${exception.stack} \n  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    `;
-        console.log("any", logFormat);
+        const logFormat = ` <<< ${status} ${exception.stack()}`;
+        console.log(logFormat);
         // 打印并记录日志
         // Logger.error(logFormat);
         // // 根据状态码，进行日志类型区分
