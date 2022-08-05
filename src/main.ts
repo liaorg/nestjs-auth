@@ -29,12 +29,14 @@ async function bootstrap(): Promise<string> {
     // 全局路由前缀
     // app.setGlobalPrefix("api");
 
+    // listen EACCES: permission denied 0.0.0.0:443 时执行以下脚本
+    // sudo apt-get install libcap2-bin
+    // sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
     await app.listen(process.env.PORT || 443, "127.0.0.1");
 
     return app.getUrl();
 }
 (async (): Promise<void> => {
-    // 补获全部错误
     try {
         const url = await bootstrap();
         NestLogger.log(url, "Bootstrap");

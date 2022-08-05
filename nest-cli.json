@@ -3,6 +3,13 @@
     "collection": "@nestjs/schematics",
     "sourceRoot": "src",
     "compilerOptions": {
-        "assets": [{ "include": "i18n/**/*", "watchAssets": true }]
+        "tsConfigPath": "tsconfig.build.json",
+        "assets": [{ "include": "i18n/**/*", "watchAssets": true }],
+        "plugins": [
+            {
+                "name": "@nestjs/swagger",
+                "options": { "introspectComments": true }
+            }
+        ]
     }
 }

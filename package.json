@@ -10,7 +10,7 @@
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
-        "start:dev": "nest start --watch",
+        "start:dev": "rimraf dist && nest start --watch",
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -18,7 +18,8 @@
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-        "test:e2e": "jest --config ./test/jest-e2e.json"
+        "test:e2e": "jest --config ./test/jest-e2e.json",
+        "start:doc": "node dist/swagger"
     },
     "dependencies": {
         "@nestjs/common": "^9.0.0",
@@ -26,13 +27,15 @@
         "@nestjs/mapped-types": "*",
         "@nestjs/platform-express": "^9.0.0",
         "@nestjs/serve-static": "^3.0.0",
+        "@nestjs/swagger": "^6.0.5",
         "compression": "^1.7.4",
         "express-rate-limit": "^6.5.1",
         "helmet": "^5.1.1",
         "nestjs-i18n": "^9.1.5",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
-        "rxjs": "^7.2.0"
+        "rxjs": "^7.2.0",
+        "swagger-ui-express": "^4.5.0"
     },
     "devDependencies": {
         "@nestjs/cli": "^9.0.0",
