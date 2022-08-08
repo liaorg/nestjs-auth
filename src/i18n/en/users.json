@@ -1,3 +1,7 @@
 {
-    "allUser": "This action returns all users"
+    "allUser": "This action returns all users",
+    "errorCode": {
+        "NONE_REQUEST": "none request",
+        "ERROR_USERID": "error userid #{userid}"
+    }
 }

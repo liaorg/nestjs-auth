@@ -1,1 +1,1 @@
-export * from "./api-error-code.enum";
+export * from "./error-code.enum";

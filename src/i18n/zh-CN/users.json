@@ -1,3 +1,7 @@
 {
-    "allUser": "这个请求返回全部用户"
+    "allUser": "这个请求返回全部用户",
+    "errorCode": {
+        "NONE_REQUEST": "错误的请求",
+        "ERROR_USERID": "错误的用户id #{userid}"
+    }
 }

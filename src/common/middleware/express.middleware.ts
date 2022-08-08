@@ -33,7 +33,7 @@ export function expressMiddleware(app: INestApplication): INestApplication {
         credentials: true,
         // 允许方法
         // patch 部分更新 put 为完整更新
-        methods: "GET,PATCH,POST,DELETE",
+        methods: "HEAD,GET,PATCH,POST,DELETE",
         preflightContinue: false,
         optionsSuccessStatus: 204,
     });

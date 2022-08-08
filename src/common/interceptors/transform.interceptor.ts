@@ -21,8 +21,16 @@ export class TransformInterceptor implements NestInterceptor {
                     path: req.url,
                     date: date,
                     message: "success",
-                    data,
                 };
+                if (data.errorCode) {
+                    // 失败
+                    responseData.errorCode = data.errorCode;
+                    responseData.message = data.errorMessage;
+                } else {
+                    // 成功
+                    responseData["data"] = data;
+                }
+                // 记录日志
                 const logFormat = ` <<< [${date}] ${res.statusCode} ${JSON.stringify(data)}`;
                 console.log(logFormat);
                 // Logger.info(logFormat);

@@ -43,7 +43,7 @@ import { UsersModule } from "./modules/users/users.module";
     ],
     // controllers: [],
     providers: [
-        // 响应映射
+        // 全局响应映射
         {
             provide: APP_INTERCEPTOR,
             useClass: TransformInterceptor,
@@ -53,7 +53,7 @@ import { UsersModule } from "./modules/users/users.module";
             provide: APP_FILTER,
             useClass: AnyExceptionFilter,
         },
-        // http 异常
+        // 全局 http 异常
         {
             provide: APP_FILTER,
             useClass: HttpExceptionFilter,

@@ -1,7 +1,10 @@
+import { ServiceResponseData } from "@/common/interfaces";
 import { Injectable } from "@nestjs/common";
 import { I18nService } from "nestjs-i18n";
+import { UsersErrorCode } from "@/common/enums";
 // import { CreateUserDto } from "./dto/create-user.dto";
 // import { UpdateUserDto } from "./dto/update-user.dto";
+// 抛出 500类(服务器错误)异常
 
 @Injectable()
 export class UsersService {
@@ -11,13 +14,14 @@ export class UsersService {
     //     return "This action adds a new user";
     // }
 
-    async findAll() {
+    async findAll(): Promise<ServiceResponseData> {
         // return `This action returns all users`;
         return await this.i18nService.t("users.allUser");
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} user`;
+    async findOne(id: string) {
+        const errorMessage = await this.i18nService.t("users.errorCode.ERROR_USERID", { args: { userid: id } });
+        return { errorCode: UsersErrorCode.ERROR_USERID, errorMessage };
     }
 
     // update(id: number, updateUserDto: UpdateUserDto) {

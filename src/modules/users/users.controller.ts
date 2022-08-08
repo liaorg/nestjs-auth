@@ -1,9 +1,10 @@
 import { Controller, Get, /*  Post, Body, Patch,  */ Param, Delete } from "@nestjs/common";
-import { UsersErrorCode } from "./enums/users-error-code.enum";
 import { UsersException } from "./users.exception";
+// import { UsersErrorCode } from "@/common/enums";
 import { UsersService } from "./users.service";
 // import { CreateUserDto } from "./dto/create-user.dto";
 // import { UpdateUserDto } from "./dto/update-user.dto";
+// 抛出 400类(客户端错误)异常 500类(服务器错误)异常
 
 @Controller("users")
 export class UsersController {
@@ -15,14 +16,17 @@ export class UsersController {
     // }
 
     @Get()
-    findAll() {
-        return this.usersService.findAll();
+    async findAll() {
+        return await this.usersService.findAll();
     }
 
     @Get(":id")
-    findOne(@Param("id") id: string) {
-        throw new UsersException(`error userid #${id}`, UsersErrorCode.ERROR_USERID);
-        // return this.usersService.findOne(+id);
+    async findOne(@Param("id") id: string) {
+        const user = await this.usersService.findOne(id);
+        if (user.errorCode) {
+            throw new UsersException(user.errorMessage, user.errorCode);
+        }
+        return user;
     }
 
     // @Patch(":id")
