@@ -1,29 +1,29 @@
 import { NextFunction, Request, Response } from "express";
-// import { Logger } from "src/utils/log4js";
+import { Logger } from "../utils";
 
 // 函数式中间件
 // 没有成员，没有额外的方法，没有依赖关系
-export function logger(req: Request, _res: Response, next: NextFunction) {
+export function logger(req: Request, res: Response, next: NextFunction) {
+    const code = res.statusCode; // 响应状态码
     next();
     // 组装日志信息
-    const date = new Date().toLocaleString();
-    let requestContent = ` >>> [${date}] ${req.method} ${req.ip} ${req.originalUrl}`;
+    let requestContent = ` >>> ${req.method} ${req.ip} ${req.originalUrl}`;
     requestContent += req["user"] ? `user: ${JSON.stringify(req["user"])}` : "";
     // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
     requestContent += Object.keys(req.params).length ? `\nParmas: ${JSON.stringify(req.params)}` : "";
     requestContent += Object.keys(req.query).length ? `\nQuery: ${JSON.stringify(req.query)}` : "";
     requestContent += Object.keys(req.body).length ? `\nBody: ${JSON.stringify(req.body)}` : "";
 
-    console.log(requestContent);
+    // console.log(requestContent);
     // 根据状态码，进行日志类型区分
-    // if (code >= 500) {
-    //     Logger.error(logFormat);
-    // } else if (code >= 400) {
-    //     Logger.warn(logFormat);
-    // } else {
-    //     Logger.access(logFormat);
-    //     Logger.log(logFormat);
-    // }
+    if (code >= 500) {
+        Logger.error(requestContent);
+    } else if (code >= 400) {
+        Logger.warn(requestContent);
+    } else {
+        Logger.access(requestContent);
+        // Logger.log(requestContent);
+    }
 }
 
 // 使用 @Injectable() 装饰器注解的类

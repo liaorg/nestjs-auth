@@ -31,10 +31,12 @@
         "compression": "^1.7.4",
         "express-rate-limit": "^6.5.1",
         "helmet": "^5.1.1",
+        "log4js": "^6.6.1",
         "nestjs-i18n": "^9.1.5",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
         "rxjs": "^7.2.0",
+        "stacktrace-js": "^2.0.2",
         "swagger-ui-express": "^4.5.0"
     },
     "devDependencies": {

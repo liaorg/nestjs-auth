@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { map, Observable } from "rxjs";
-// import { Logger } from "src/utils/log4js";
+import { Logger } from "../utils";
 
 // 响应映射，规范响应输出
 
@@ -31,10 +31,9 @@ export class TransformInterceptor implements NestInterceptor {
                     responseData["data"] = data;
                 }
                 // 记录日志
-                const logFormat = ` <<< [${date}] ${res.statusCode} ${JSON.stringify(data)}`;
-                console.log(logFormat);
-                // Logger.info(logFormat);
-                // Logger.access(logFormat);
+                const logFormat = ` <<< ${res.statusCode} ${JSON.stringify(data)}`;
+                // console.log(logFormat);
+                Logger.access(logFormat);
                 return responseData;
             }),
         );
