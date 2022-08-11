@@ -9,16 +9,16 @@ export class TransformInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         // 获取请求体
         const ctx = context.switchToHttp();
-        const res = ctx.getResponse();
-        const req = ctx.getRequest();
+        const response = ctx.getResponse();
+        const request = ctx.getRequest();
         return next.handle().pipe(
             map((data) => {
                 const date = new Date().toLocaleString();
                 const responseData = {
-                    statusCode: res.statusCode,
+                    statusCode: response.statusCode,
                     errorCode: 0,
-                    method: req.method,
-                    path: req.url,
+                    method: request.method,
+                    path: request.url,
                     date: date,
                     message: "success",
                 };
@@ -30,8 +30,21 @@ export class TransformInterceptor implements NestInterceptor {
                     // 成功
                     responseData["data"] = data;
                 }
+                // 组装日志信息
+                let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${request.originalUrl}`;
+                requestContent += request["user"] ? `user: ${JSON.stringify(request["user"])}` : "";
+                // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
+                requestContent += Object.keys(request.params ?? {}).length
+                    ? `\nParmas: ${JSON.stringify(request.params)}`
+                    : "";
+                requestContent += Object.keys(request.query ?? {}).length
+                    ? `\nQuery: ${JSON.stringify(request.query)}`
+                    : "";
+                requestContent += Object.keys(request.body ?? {}).length
+                    ? `\nBody: ${JSON.stringify(request.body)}`
+                    : "";
                 // 记录日志
-                const logFormat = ` <<< ${res.statusCode} ${JSON.stringify(data)}`;
+                const logFormat = `${requestContent}\n <<< ${response.statusCode} ${JSON.stringify(data)}`;
                 // console.log(logFormat);
                 Logger.access(logFormat);
                 return responseData;

@@ -1,8 +1,9 @@
-import { INestApplication, Logger as NestLogger } from "@nestjs/common";
+import { INestApplication, Logger as NestLogger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { i18nValidationErrorFactory } from "nestjs-i18n";
+import { appMiddleware } from "./app.middleware";
 import { AppModule } from "./app.module";
 import { HTTPS_OPTIONS } from "./common/constants";
-import { expressMiddleware, logger } from "./common/middleware";
 
 async function bootstrap(): Promise<string> {
     const isProduction = process.env.NODE_ENV === "production";
@@ -22,10 +23,9 @@ async function bootstrap(): Promise<string> {
     // }
 
     // 引入全局中间件
-    // 自定义中间件
-    app.use(logger);
-    // express 中间件
-    expressMiddleware(app);
+    appMiddleware(app);
+    // 全局参数验证
+    app.useGlobalPipes(new ValidationPipe({ exceptionFactory: i18nValidationErrorFactory }));
     // 全局路由前缀
     // app.setGlobalPrefix("api");
 

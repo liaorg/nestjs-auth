@@ -19,10 +19,9 @@ async function bootstrap(): Promise<string> {
     const swaggeConfig = new DocumentBuilder()
         // 开启 BearerAuth 授权认证
         .addBearerAuth()
-        .setTitle("Nest 接口")
-        .setDescription("Nest 接口")
+        .setTitle("管理后台")
+        .setDescription("管理后台接口")
         .setVersion("v1.0")
-        .addTag("test")
         .build();
     const swaggeDocument = SwaggerModule.createDocument(app, swaggeConfig);
     // SwaggerModule.setup("doc", app, swaggeDocument);

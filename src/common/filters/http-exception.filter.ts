@@ -1,5 +1,12 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
 import { Request, Response } from "express";
+import {
+    getI18nContextFromArgumentsHost,
+    I18nContext,
+    I18nValidationError,
+    I18nValidationException,
+} from "nestjs-i18n";
+import { ApiErrorCode } from "../enums";
 import { ApiException } from "../exceptions";
 import { Logger } from "../utils";
 
@@ -15,9 +22,37 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
         const request = ctx.getRequest<Request>();
         const status = exception.getStatus();
 
-        const date = new Date().toLocaleString();
-        const logFormat = ` <<< ${status} ${exception.toString()}`;
-        // console.log(logFormat);
+        // 组装日志信息
+        let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${request.originalUrl}`;
+        requestContent += request["user"] ? `user: ${JSON.stringify(request["user"])}` : "";
+        // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
+        requestContent += Object.keys(request.params ?? {}).length ? `\nParmas: ${JSON.stringify(request.params)}` : "";
+        requestContent += Object.keys(request.query ?? {}).length ? `\nQuery: ${JSON.stringify(request.query)}` : "";
+        requestContent += Object.keys(request.body ?? {}).length ? `\nBody: ${JSON.stringify(request.body)}` : "";
+
+        let logFormat = `${requestContent}\n <<< ${status} ${exception.toString()}`;
+        let errorCode = ApiErrorCode.BAD_PARAMS;
+        let message: string | object = exception.message;
+        if (exception instanceof I18nValidationException) {
+            // i18n 参数校验异常
+            const errors = exception.errors ?? [];
+            if (errors.length > 0) {
+                // 获取到第一个没有通过验证的错误对象
+                const error = errors.shift();
+                const i18n = getI18nContextFromArgumentsHost(host);
+                // 翻译参数校验提示信息
+                this.translateErrors([error], i18n);
+                message = `${error.property}|${Object.values(error.constraints)}`;
+            }
+            logFormat = `${requestContent}\n <<< ${status} ${exception}`;
+        }
+        if (exception instanceof ApiException) {
+            // 如果是业务异常
+            errorCode = exception.getErrorCode();
+            message = exception.getErrorMessage();
+        }
+        logFormat += ` ${message}`;
+        // console.log("exception", exception);
         // 打印并记录日志
         // 根据状态码，进行日志类型区分
         if (status >= 500) {
@@ -28,14 +63,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
             Logger.access(logFormat);
             // Logger.log(logFormat);
         }
-
-        let errorCode = 0;
-        let message: string | object = exception.message;
-        if (exception instanceof ApiException) {
-            // 如果是业务异常
-            errorCode = exception.getErrorCode();
-            message = exception.getErrorMessage();
-        }
+        const date = new Date().toLocaleString();
         response.status(status).json({
             statusCode: status,
             errorCode: errorCode,
@@ -43,6 +71,22 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
             path: request.url,
             date: date,
             message: message,
+        });
+    }
+
+    // 翻译参数校验提示信息
+    private translateErrors(errors: I18nValidationError[], i18n: I18nContext): I18nValidationError[] {
+        return errors.map((error) => {
+            error.children = this.translateErrors(error.children ?? [], i18n);
+            error.constraints = Object.keys(error.constraints).reduce((result, key) => {
+                const [translationKey, argsString] = error.constraints[key].split("|");
+                const args = !!argsString ? JSON.parse(argsString) : {};
+                result[key] = i18n.t(translationKey, {
+                    args: { property: error.property, ...args },
+                });
+                return result;
+            }, {});
+            return error;
         });
     }
 }

@@ -4,17 +4,17 @@ import { Logger } from "../utils";
 // 函数式中间件
 // 没有成员，没有额外的方法，没有依赖关系
 export function logger(req: Request, res: Response, next: NextFunction) {
-    const code = res.statusCode; // 响应状态码
     next();
+    // 响应状态码
+    const code = res.statusCode;
     // 组装日志信息
-    let requestContent = ` >>> ${req.method} ${req.ip} ${req.originalUrl}`;
+    let requestContent = ` >>> ${code} ${req.method} ${req.ip} ${req.originalUrl}`;
     requestContent += req["user"] ? `user: ${JSON.stringify(req["user"])}` : "";
-    // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
-    requestContent += Object.keys(req.params).length ? `\nParmas: ${JSON.stringify(req.params)}` : "";
-    requestContent += Object.keys(req.query).length ? `\nQuery: ${JSON.stringify(req.query)}` : "";
-    requestContent += Object.keys(req.body).length ? `\nBody: ${JSON.stringify(req.body)}` : "";
+    // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
+    // requestContent += Object.keys(req.params).length ? `\nParmas: ${JSON.stringify(req.params)}` : "";
+    // requestContent += Object.keys(req.query).length ? `\nQuery: ${JSON.stringify(req.query)}` : "";
+    // requestContent += Object.keys(req.body).length ? `\nBody: ${JSON.stringify(req.body)}` : "";
 
-    // console.log(requestContent);
     // 根据状态码，进行日志类型区分
     if (code >= 500) {
         Logger.error(requestContent);

@@ -1,10 +1,12 @@
 import { Module } from "@nestjs/common";
 import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { ServeStaticModule } from "@nestjs/serve-static";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { I18nModule } from "nestjs-i18n";
 import { join } from "path";
 import { AnyExceptionFilter, HttpExceptionFilter } from "./common/filters";
 import { TransformInterceptor } from "./common/interceptors";
+import { databaseConfig } from "./config";
 import { UsersModule } from "./modules/users/users.module";
 
 @Module({
@@ -26,6 +28,9 @@ import { UsersModule } from "./modules/users/users.module";
                 watch: true,
             },
         }),
+        // 数据库配置
+        TypeOrmModule.forRootAsync({ useFactory: () => databaseConfig }),
+        // 其他模块
         UsersModule,
         // 路由模块 Module Router
         // https://docs.nestjs.com/recipes/router-module

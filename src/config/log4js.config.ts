@@ -42,6 +42,7 @@ export const log4jsConfig = {
             daysToKeep: 60,
             // maxLogSize: 10485760,
             numBackups: 3,
+            compress: true,
             keepFileExt: true,
         },
         // 异常日志

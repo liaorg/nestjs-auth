@@ -114,3 +114,11 @@ constructor(private readonly i18nService: I18nService) {}
 ```
 npm install --save @nestjs/serve-static
 ```
+
+## curd
+
+```
+npm install mongodb --save
+npm install @nestjsx/crud class-transformer class-validator
+npm install @nestjs/typeorm typeorm --save
+```
