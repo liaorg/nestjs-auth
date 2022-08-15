@@ -2,14 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { I18nService } from "nestjs-i18n";
 import { UsersErrorCode } from "@/common/enums";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./entities";
+import { UserEntity } from "./entities";
 import { Repository } from "typeorm";
 import { ServiceResponseData } from "@/common/interfaces";
 import { CreateUserDto, UpdateUserDto } from "./dto";
 // 抛出 500类(服务器错误)异常
 
 export interface UserList {
-    list: User[];
+    list: UserEntity[];
     count: number;
 }
 
@@ -17,7 +17,7 @@ export interface UserList {
 export class UsersService {
     constructor(
         // 引入存储库
-        @InjectRepository(User) private usersRepository: Repository<User>,
+        @InjectRepository(UserEntity) private usersRepository: Repository<UserEntity>,
         // 引入I18n服务解析多语言
         private readonly i18nService: I18nService,
     ) {}
@@ -27,7 +27,7 @@ export class UsersService {
      * @param createUser
      * @returns Promise<User | ServiceResponseData>
      */
-    async create(createUser: CreateUserDto): Promise<User | ServiceResponseData> {
+    async create(createUser: CreateUserDto): Promise<UserEntity | ServiceResponseData> {
         const { username } = createUser;
         // 必要参数验证
         // if (!account_name) {
@@ -42,13 +42,14 @@ export class UsersService {
             });
             return { errorCode: UsersErrorCode.EXISTED_USERNAME, errorMessage };
         }
+        // 把 dto 转换为 entity
         const newUser = this.usersRepository.create(createUser);
         // 写入数据库
         return await this.usersRepository.save(newUser);
     }
 
     // 获取用户列表
-    async findAll(): Promise<User[]> {
+    async findAll(): Promise<UserEntity[]> {
         return await this.usersRepository.find();
     }
 
@@ -68,12 +69,12 @@ export class UsersService {
     // }
 
     // 获取指定用户
-    async findById(id): Promise<User | ServiceResponseData> {
+    async findById(id): Promise<UserEntity | ServiceResponseData> {
         return await this.usersRepository.findOne(id);
     }
 
     // 更新用户
-    async updateById(id, updateUser: UpdateUserDto): Promise<User | ServiceResponseData> {
+    async updateById(id, updateUser: UpdateUserDto): Promise<UserEntity | ServiceResponseData> {
         const existUser = await this.usersRepository.findOne(id);
         if (!existUser) {
             const errorMessage = await this.i18nService.t("users.errorCode.NOT_EXISTED_USERID", {

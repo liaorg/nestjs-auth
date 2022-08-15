@@ -1,3 +1,4 @@
+import { Exclude, Transform } from "class-transformer";
 import { randomBytes, scryptSync } from "node:crypto";
 import {
     BeforeInsert,
@@ -21,7 +22,9 @@ import {
 
 // 标记为实体，指定表名
 @Entity("users")
-export class User {
+export class UserEntity {
+    // 输出到 dto 时变换数据格式
+    @Transform((id) => id.value.toString())
     @ObjectIdColumn()
     id: ObjectID;
 
@@ -31,9 +34,12 @@ export class User {
     @Column()
     realName: string;
 
+    // 输出到 dto 时排除属性
+    @Exclude()
     @Column()
     password: string;
 
+    @Exclude()
     @Column()
     passwordSalt: string;
 
@@ -54,6 +60,10 @@ export class User {
 
     @UpdateDateColumn()
     updateDate: Date;
+
+    constructor(partial: Partial<UserEntity>) {
+        Object.assign(this, partial);
+    }
 
     @BeforeInsert()
     @BeforeUpdate()

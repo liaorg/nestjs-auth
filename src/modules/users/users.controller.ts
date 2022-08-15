@@ -1,7 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import {
+    Body,
+    ClassSerializerInterceptor,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    UseInterceptors,
+} from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreateUserDto, UpdateUserDto } from "./dto";
-import { User } from "./entities";
+import { UserEntity } from "./entities";
 import { UsersException } from "./users.exception";
 // import { UsersErrorCode } from "@/common/enums";
 import { UsersService } from "./users.service";
@@ -9,7 +19,7 @@ import { UsersService } from "./users.service";
 // 抛出 400类(客户端错误)异常 500类(服务器错误)异常
 
 export interface UserList {
-    list: User[];
+    list: UserEntity[];
     count: number;
 }
 
@@ -19,6 +29,7 @@ export class UsersController {
     constructor(public userService: UsersService) {}
 
     @ApiOperation({ summary: "创建用户" })
+    @UseInterceptors(ClassSerializerInterceptor)
     @Post()
     async create(@Body() post: CreateUserDto) {
         const user = await this.userService.create(post);
@@ -29,8 +40,9 @@ export class UsersController {
     }
 
     @ApiOperation({ summary: "获取用户列表" })
+    @UseInterceptors(ClassSerializerInterceptor)
     @Get()
-    async findAll(): Promise<User[]> {
+    async findAll(): Promise<UserEntity[]> {
         return await this.userService.findAll();
     }
 
@@ -40,6 +52,7 @@ export class UsersController {
     // }
 
     @ApiOperation({ summary: "获取指定用户" })
+    @UseInterceptors(ClassSerializerInterceptor)
     @Get(":id")
     async findById(@Param("id") id) {
         return await this.userService.findById(id);
