@@ -42,6 +42,9 @@
 ## Installation
 
 ```bash
+vscode 扩展
+ashinzekene/NestJS Snippets
+Abhijoy Basak/NestJS Files
 $ npm install
 ```
 
@@ -121,4 +124,6 @@ npm install --save @nestjs/serve-static
 npm install mongodb --save
 npm install @nestjsx/crud class-transformer class-validator
 npm install @nestjs/typeorm typeorm --save
+or
+npm install --save @nestjs/mongoose mongoose
 ```

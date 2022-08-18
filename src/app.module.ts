@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
+import { MongooseModule } from "@nestjs/mongoose";
 import { ServeStaticModule } from "@nestjs/serve-static";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { I18nModule } from "nestjs-i18n";
 import { join } from "path";
 import { AnyExceptionFilter, HttpExceptionFilter } from "./common/filters";
@@ -29,7 +29,7 @@ import { UsersModule } from "./modules/users/users.module";
             },
         }),
         // 数据库配置
-        TypeOrmModule.forRootAsync({ useFactory: () => databaseConfig }),
+        MongooseModule.forRootAsync({ useFactory: () => databaseConfig }),
         // 其他模块
         UsersModule,
         // 路由模块 Module Router

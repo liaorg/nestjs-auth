@@ -1,3 +1,4 @@
+import { RequestValidationPipe } from "@/common/pipes";
 import {
     Body,
     ClassSerializerInterceptor,
@@ -8,20 +9,21 @@ import {
     Patch,
     Post,
     UseInterceptors,
+    UsePipes,
 } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { CreateUserDto, UpdateUserDto } from "./dto";
-import { UserEntity } from "./entities";
+import { CreateUserDto, UpdateUserDto, UserDto } from "./dto";
+import { createUserSchema, User } from "./schemas";
 import { UsersException } from "./users.exception";
 // import { UsersErrorCode } from "@/common/enums";
 import { UsersService } from "./users.service";
 
 // 抛出 400类(客户端错误)异常 500类(服务器错误)异常
 
-export interface UserList {
-    list: UserEntity[];
-    count: number;
-}
+// interface UserList {
+//     list: User[];
+//     count: number;
+// }
 
 @ApiTags("用户管理")
 @Controller("users")
@@ -29,7 +31,8 @@ export class UsersController {
     constructor(public userService: UsersService) {}
 
     @ApiOperation({ summary: "创建用户" })
-    @UseInterceptors(ClassSerializerInterceptor)
+    // @UseInterceptors(ClassSerializerInterceptor)
+    @UsePipes(new RequestValidationPipe(createUserSchema))
     @Post()
     async create(@Body() post: CreateUserDto) {
         const user = await this.userService.create(post);
@@ -40,9 +43,9 @@ export class UsersController {
     }
 
     @ApiOperation({ summary: "获取用户列表" })
-    @UseInterceptors(ClassSerializerInterceptor)
+    // @UseInterceptors(ClassSerializerInterceptor)
     @Get()
-    async findAll(): Promise<UserEntity[]> {
+    async findAll(): Promise<User[]> {
         return await this.userService.findAll();
     }
 
@@ -54,19 +57,22 @@ export class UsersController {
     @ApiOperation({ summary: "获取指定用户" })
     @UseInterceptors(ClassSerializerInterceptor)
     @Get(":id")
-    async findById(@Param("id") id) {
-        return await this.userService.findById(id);
+    async findById(@Param("id") id: string) {
+        const user = await this.userService.findById(id);
+
+        console.log("user", user);
+        return new UserDto(user);
     }
 
     @ApiOperation({ summary: "更新用户" })
     @Patch(":id")
-    async update(@Param("id") id, @Body() post: UpdateUserDto) {
+    async update(@Param("id") id: string, @Body() post: UpdateUserDto) {
         return await this.userService.updateById(id, post);
     }
 
     @ApiOperation({ summary: "删除用户" })
-    @Delete("id")
-    async remove(@Param("id") id) {
+    @Delete(":id")
+    async remove(@Param("id") id: string) {
         return await this.userService.remove(id);
     }
 }

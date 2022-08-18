@@ -15,7 +15,7 @@ export class TransformInterceptor implements NestInterceptor {
             map((data) => {
                 const date = new Date().toLocaleString();
                 const responseData = {
-                    statusCode: response.statusCode,
+                    statusCode: data.statusCode ?? response.statusCode,
                     errorCode: 0,
                     method: request.method,
                     path: request.url,
@@ -26,7 +26,7 @@ export class TransformInterceptor implements NestInterceptor {
                     // 失败
                     responseData.errorCode = data.errorCode;
                     responseData.message = data.errorMessage;
-                } else {
+                } else if (data && typeof data !== "boolean") {
                     // 成功
                     responseData["data"] = data;
                 }
@@ -44,9 +44,18 @@ export class TransformInterceptor implements NestInterceptor {
                     ? `\nBody: ${JSON.stringify(request.body)}`
                     : "";
                 // 记录日志
-                const logFormat = `${requestContent}\n <<< ${response.statusCode} ${JSON.stringify(data)}`;
+                const status = responseData.statusCode;
+                const logFormat = `${requestContent}\n <<< ${status} ${JSON.stringify(data)}`;
                 // console.log(logFormat);
-                Logger.access(logFormat);
+                // 根据状态码，进行日志类型区分
+                if (status >= 500) {
+                    Logger.error(logFormat);
+                } else if (status >= 400) {
+                    Logger.warn(logFormat);
+                } else {
+                    Logger.access(logFormat);
+                    // Logger.log(logFormat);
+                }
                 return responseData;
             }),
         );
