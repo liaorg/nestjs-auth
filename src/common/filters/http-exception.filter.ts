@@ -6,7 +6,7 @@ import {
     I18nValidationError,
     I18nValidationException,
 } from "nestjs-i18n";
-import { ApiErrorCode } from "../enums";
+import { ApiError } from "../constants";
 import { ApiException } from "../exceptions";
 import { Logger } from "../utils";
 
@@ -31,7 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
         requestContent += Object.keys(request.body ?? {}).length ? `\nBody: ${JSON.stringify(request.body)}` : "";
 
         let logFormat = `${requestContent}\n <<< ${status} ${exception.toString()}`;
-        let errorCode = ApiErrorCode.BAD_PARAMS;
+        let errorCode = ApiError.unknowError.errorCode;
         let message: string | object = exception.message;
         if (exception instanceof I18nValidationException) {
             // i18n 参数校验异常
@@ -48,8 +48,17 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
         }
         if (exception instanceof ApiException) {
             // 如果是业务异常
-            errorCode = exception.getErrorCode();
-            message = exception.getErrorMessage();
+            const i18n = getI18nContextFromArgumentsHost(host);
+            const errors = exception.getErrors();
+            if (errors !== null) {
+                errorCode = errors.errorCode;
+                // 翻译提示信息
+                message = i18n.t(errors.langKeyword, { args: errors.args });
+            } else {
+                errorCode = ApiError.unknowError.errorCode;
+                message = i18n.t(ApiError.unknowError.langKeyword);
+            }
+            logFormat += ` ${errorCode}`;
         }
         logFormat += ` ${message}`;
         // console.log("exception", exception);

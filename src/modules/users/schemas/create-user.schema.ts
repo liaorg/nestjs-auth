@@ -10,7 +10,7 @@ export const createUserSchema = {
             maxLength: 10,
             errorMessage: {
                 type: "must be a string",
-                minLength: "users.errorCode.LENGTH_USERNAME",
+                minLength: "users.error.length_username",
                 maxLength: "maxLength",
             },
         },
@@ -18,10 +18,10 @@ export const createUserSchema = {
         password: { type: "string" },
         repassword: {
             type: "string",
-            format: "email",
-            errorMessage: {
-                format: "must email",
-            },
+            // format: "email",
+            // errorMessage: {
+            //     format: "must email",
+            // },
         },
         mobile: { type: "number" },
         role: { type: "number" },
@@ -35,9 +35,9 @@ export const createUserSchema = {
             userStatus: "must be a number",
         },
         required: {
-            username: "users.errorCode.REQUIRED_USERNAME",
-            password: "users.errorCode.REQUIRED_PASSWORD",
-            repassword: "users.errorCode.EQUAL_PASSWORD",
+            username: "users.error.required_username",
+            password: "users.error.required_password",
+            repassword: "users.error.required_repassword",
         },
     },
 };

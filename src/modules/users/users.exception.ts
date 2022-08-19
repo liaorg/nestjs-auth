@@ -1,8 +1,8 @@
 import { ApiException } from "@/common/exceptions";
-import { ApiErrorCode } from "@/common/enums";
+import { ApiErrorObjectInterface } from "@/common/interfaces";
 
 export class UsersException extends ApiException {
-    constructor(objectOrError?: string | object | null, errorCode = ApiErrorCode.BAD_PARAMS) {
-        super(objectOrError, errorCode);
+    constructor(objectOrError?: ApiErrorObjectInterface) {
+        super(objectOrError);
     }
 }

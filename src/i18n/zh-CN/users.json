@@ -1,15 +1,14 @@
 {
-    "allUser": "这个请求返回全部用户",
-    "errorCode": {
-        "NONE_REQUEST": "错误的请求",
-        "REQUIRED_USERNAME": "用户名不能为空",
-        "EXISTED_USERNAME": "用户名 {username} 已经存在",
-        "ERROR_USERID": "错误的用户id #{userid}",
-        "NOT_EXISTED_USERID": "用户 {userid} 不存在",
-        "LENGTH_USERNAME": "用户名长度为 {constraints.0} - {constraints.1}",
-        "REQUIRED_PASSWORD": "密码不能为空",
-        "EQUAL_PASSWORD": "确认密码要等于密码",
-        "ISINT_ROLE": "用户角色必须为整数",
-        "ISINT_USERSTATE": "用户状态必须为整数"
+    "error": {
+        "required_username": "用户名不能为空",
+        "existed_username": "用户名 {username} 已经存在",
+        "error_userid": "错误的用户id #{userid}",
+        "not_existed_user": "用户 {user} 不存在",
+        "length_username": "用户名长度为 {constraints.0} - {constraints.1}",
+        "required_password": "密码不能为空",
+        "required_repassword": "确认密码不能为空",
+        "equal_to_password": "确认密码要等于密码",
+        "int_role": "用户角色必须为整数",
+        "int_user_state": "用户状态必须为整数"
     }
 }

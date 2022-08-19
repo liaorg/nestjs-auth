@@ -7,7 +7,7 @@ import { I18nValidationException } from "nestjs-i18n";
 // 验证请求参数管道
 // 使用 @Injectable() 装饰器注解的类
 // 管道应该实现 PipeTransform 接口
-// 每个管道必须实现一个 transform 函数
+// 每个管道必须实现一个 transform(value: any, metadata: ArgumentMetadata) 函数
 // value 是当前处理的参数，而 metadata 是其元数据，包含一些属性：
 // export interface ArgumentMetadata {
 //   type: 'body' | 'query' | 'param' | 'custom';
@@ -60,6 +60,13 @@ import { I18nValidationException } from "nestjs-i18n";
  * ```
  */
 
+/**
+ * 自定义管道，根据传递的 schema 结构验证请求参数
+ * 使用：
+ * 在类或方法使用装饰器
+ * @UsePipes(new RequestSchemaValidationPipe(schema))
+ */
+
 const ajv = new Ajv({ allErrors: true });
 // ajv 中间件，可自定义错误信息 errorMessage
 ajvErrors(ajv);
@@ -67,8 +74,8 @@ ajvErrors(ajv);
 addFormats(ajv);
 
 @Injectable()
-export class RequestValidationPipe implements PipeTransform {
-    constructor(private schema: SchemaObject) {}
+export class RequestSchemaValidationPipe implements PipeTransform {
+    constructor(protected readonly schema: SchemaObject) {}
     transform(value: any) {
         // 生成验证规则
         const validate = ajv.compile(this.schema);
@@ -85,7 +92,7 @@ export class RequestValidationPipe implements PipeTransform {
     }
 
     /**
-     * 遍历并转换消息
+     * 遍历并转换错误消息
      * 返回错误信息类似以下 errors：
      * [
      *   {
@@ -109,7 +116,7 @@ export class RequestValidationPipe implements PipeTransform {
      *      property: 'realName',
      *      constraints: { required: 'must required realName' }
      *   },
-     *   { property: 'username', constraints: { type: 'number' } }
+     *   { property: 'username', constraints: { type: 'must a number' } }
      * ]
      * @param errors
      * @returns

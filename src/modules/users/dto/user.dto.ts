@@ -1,19 +1,15 @@
-import { ServiceResponseData } from "@/common/interfaces";
+import { Exclude } from "class-transformer";
 
 export class UserDto {
     username: string;
     realName: string;
-    // password: string;
-    // passwordSalt: string;
+    @Exclude()
+    password: string;
+    @Exclude()
+    passwordSalt: string;
     mobile: string;
     role: string;
     userStatus: string;
     createdDate: Date;
     updateDate: Date;
-
-    constructor(partial: Partial<UserDto> | ServiceResponseData) {
-        console.log("partial", this, partial);
-        Object.assign(this, partial);
-        console.log("partial222", this, partial);
-    }
 }

@@ -1,12 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { I18nService } from "nestjs-i18n";
-import { UsersErrorCode } from "@/common/enums";
-import { ServiceResponseData } from "@/common/interfaces";
 import { CreateUserDto, UpdateUserDto } from "./dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from "./schemas/users.schema";
-import { Model } from "mongoose";
+import { Model, ObjectId } from "mongoose";
 import { UserDto } from "./dto/user.dto";
+import { UsersException } from "./users.exception";
+import { UsersError } from "@/common/constants";
 // 抛出 500类(服务器错误)异常
 
 // interface UserList {
@@ -19,8 +18,6 @@ export class UsersService {
     constructor(
         // 使用 @InjectModel() 装饰器注入 模型
         @InjectModel(User.name) private userModel: Model<UserDocument>,
-        // 引入I18n服务解析多语言
-        private readonly i18nService: I18nService,
     ) {}
 
     /**
@@ -28,15 +25,16 @@ export class UsersService {
      * @param createUser
      * @returns Promise<User | ServiceResponseData>
      */
-    async create(createUser: CreateUserDto): Promise<boolean | ServiceResponseData> {
+    async create(createUser: CreateUserDto): Promise<boolean> {
         const { username } = createUser;
         // 查看用户是否存在 exec()
         const user = await this.userModel.findOne({ username });
         if (user) {
-            const errorMessage = await this.i18nService.t("users.errorCode.EXISTED_USERNAME", {
+            const error = {
+                ...UsersError.existedName,
                 args: { username },
-            });
-            return { errorCode: UsersErrorCode.EXISTED_USERNAME, errorMessage };
+            };
+            throw new UsersException(error);
         }
         // 把 schema 转换为 entity
         const newUser = new this.userModel(createUser);
@@ -67,38 +65,32 @@ export class UsersService {
     // }
 
     // 获取指定用户
-    async findById(id: string): Promise<UserDto | ServiceResponseData> {
-        const user = await this.userModel.findById(id);
-        if (!user) {
-            const errorMessage = await this.i18nService.t("users.errorCode.NOT_EXISTED_USERID", {
-                args: { userid: id },
-            });
-            return { statusCode: 404, errorCode: UsersErrorCode.EXISTED_USERNAME, errorMessage };
-        }
-        return user;
+    async findById(id: ObjectId): Promise<UserDto> {
+        return await this.findUserById(id);
     }
 
     // 更新用户
-    async updateById(id: string, updateUser: UpdateUserDto): Promise<boolean | ServiceResponseData> {
-        const existUser = await this.userModel.findById(id);
-        if (!existUser) {
-            const errorMessage = await this.i18nService.t("users.errorCode.NOT_EXISTED_USERID", {
-                args: { userid: id },
-            });
-            return { statusCode: 404, errorCode: UsersErrorCode.EXISTED_USERNAME, errorMessage };
-        }
+    async updateById(id: ObjectId, updateUser: UpdateUserDto): Promise<boolean> {
+        await this.findUserById(id);
         return (await this.userModel.findByIdAndUpdate(id, updateUser)) ? true : false;
     }
 
     // 删除用户
-    async remove(id: string) {
+    async remove(id: ObjectId) {
+        await this.findUserById(id);
+        return await this.userModel.findByIdAndRemove(id);
+    }
+
+    // 根据 id 查找用户
+    private async findUserById(id: ObjectId) {
         const existUser = await this.userModel.findById(id);
         if (!existUser) {
-            const errorMessage = await this.i18nService.t("users.errorCode.NOT_EXISTED_USERID", {
-                args: { userid: id },
-            });
-            return { statusCode: 404, errorCode: UsersErrorCode.EXISTED_USERNAME, errorMessage };
+            const error = {
+                ...UsersError.notExistedUser,
+                args: { user: id },
+            };
+            throw new UsersException(error);
         }
-        return await this.userModel.findByIdAndRemove(id);
+        return existUser;
     }
 }

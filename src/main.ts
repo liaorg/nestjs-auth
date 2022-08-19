@@ -1,6 +1,5 @@
-import { INestApplication, Logger as NestLogger, ValidationPipe } from "@nestjs/common";
+import { INestApplication, Logger as NestLogger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { i18nValidationErrorFactory } from "nestjs-i18n";
 import { appMiddleware } from "./app.middleware";
 import { AppModule } from "./app.module";
 import { HTTPS_OPTIONS } from "./common/constants";
@@ -24,8 +23,6 @@ async function bootstrap(): Promise<string> {
 
     // 引入全局中间件
     appMiddleware(app);
-    // 全局参数验证
-    app.useGlobalPipes(new ValidationPipe({ exceptionFactory: i18nValidationErrorFactory }));
     // 全局路由前缀
     // app.setGlobalPrefix("api");
 

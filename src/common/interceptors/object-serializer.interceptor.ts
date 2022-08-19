@@ -1,0 +1,36 @@
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { plainToInstance } from "class-transformer";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { OBJECT_SERIALIZER_DTO } from "../constants";
+
+/**
+ * 自定义拦截器，根据传递的dto结构转换和净化要返回给客户的数据
+ * 用于排除敏感数据（如用户密码）
+ * dto结构 由装饰器设置 @ObjectSerializerDto(dto)
+ * 使用：
+ * 在 dto 类中的属性使用 @Exclude() `class-transformer` 装饰器排除
+ * 在类或方法使用装饰器传道转换结构
+ * @ObjectSerializerDto(dto)
+ * @UseInterceptors(ObjectSerializerInterceptor)
+ */
+
+@Injectable()
+export class ObjectSerializerInterceptor implements NestInterceptor {
+    constructor(protected readonly reflector: Reflector) {}
+    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+        const contextDto = this.getContextDto(context);
+        return next.handle().pipe(
+            map((data) => {
+                // 转换数据，并排除带有 __ 前缀的属性
+                return plainToInstance(contextDto, JSON.parse(JSON.stringify(data)), { excludePrefixes: ["__"] });
+            }),
+        );
+    }
+
+    // 获取类或方法中的参数： OBJECT_SERIALIZER_DTO
+    protected getContextDto(context: ExecutionContext) {
+        return this.reflector.getAllAndOverride(OBJECT_SERIALIZER_DTO, [context.getHandler(), context.getClass()]);
+    }
+}

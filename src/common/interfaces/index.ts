@@ -1,1 +1,1 @@
-export * from "./service-response.interface";
+export * from "./api-error-object.interface";

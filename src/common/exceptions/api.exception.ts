@@ -1,24 +1,16 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
-import { ApiErrorCode } from "../enums";
+import { ApiErrorObjectInterface } from "../interfaces";
 
-// 业务接口异常应该继承该类，并定义自己的枚举变量
+// 业务接口异常应该继承该类，并在 api-error-code.const.ts 中定义自己的 error
 export class ApiException extends HttpException {
-    private static readonly defaultDesctiption = "Bad Request";
-    // 业务错误码
-    private readonly errorCode: number;
-    // 业务错误信息
-    private readonly errorMessage: string | object;
-    constructor(objectOrError?: string | object | null, errorCode = 0, statusCode = HttpStatus.BAD_REQUEST) {
+    private readonly errors: ApiErrorObjectInterface | null;
+    constructor(objectOrError?: ApiErrorObjectInterface | null) {
+        const statusCode = objectOrError.statusCode ?? HttpStatus.BAD_REQUEST;
         super(objectOrError, statusCode);
-        this.errorCode = errorCode;
-        this.errorMessage = objectOrError || ApiException.defaultDesctiption;
+        this.errors = objectOrError;
     }
 
-    public getErrorCode(): ApiErrorCode {
-        return this.errorCode;
-    }
-
-    public getErrorMessage(): string | object {
-        return this.errorMessage;
+    public getErrors(): ApiErrorObjectInterface | null {
+        return this.errors;
     }
 }

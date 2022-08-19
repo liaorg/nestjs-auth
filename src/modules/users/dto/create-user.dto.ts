@@ -1,33 +1,44 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-
 // 请求输入输出规范
-// swagger 文档 ApiProperty ApiPropertyOptional
 export class CreateUserDto {
-    // swagger 映射
-    @ApiProperty({ description: "用户名", example: "xciovpmn" })
+    /**
+     * 用户名
+     * @example xciovpmn
+     */
     readonly username: string;
 
-    @ApiProperty({ description: "用户姓名", example: "侯桂英" })
+    /**
+     * 用户姓名
+     * @example 侯桂英
+     */
     readonly realName?: string;
 
-    @ApiProperty({ description: "密码", example: "kgwqzisvjrxm" })
+    /**
+     * 密码
+     * @example kgwqzisvjrxm
+     */
     password: string;
 
-    @ApiProperty({ description: "确认密码", example: "kgwqzisvjrxm" })
+    /**
+     * 确认密码
+     * @example kgwqzisvjrxm
+     */
     readonly repassword: string;
 
-    @ApiPropertyOptional({ description: "手机号", example: 18627467753 })
+    /**
+     * 手机号
+     * @example 18627467753
+     */
     readonly mobile?: number;
 
-    @ApiProperty({
-        required: false,
-        default: 3,
-        description: "用户角色 0-超级管理员|1-管理员|2-开发&测试&运营|3-普通用户",
-    })
+    /**
+     * 用户角色 0-超级管理员|1-管理员|2-开发&测试&运营|3-普通用户
+     * @example 3
+     */
     readonly role?: number;
 
-    // @ApiProperty()
-    // 可以使用@ApiPropertyOptional()速记装饰器来替代显式输入@ApiProperty({ required: false }) 装饰可选参数
-    @ApiPropertyOptional({ default: 0, description: "用户状态" })
+    /**
+     * 用户状态
+     * @example 1
+     */
     readonly userStatus?: number;
 }
