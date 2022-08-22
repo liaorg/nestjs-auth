@@ -1,14 +1,14 @@
-import { NextFunction, Request, Response } from "express";
 import { Logger } from "../utils";
 
 // 函数式中间件
 // 没有成员，没有额外的方法，没有依赖关系
-export function logger(req: Request, res: Response, next: NextFunction) {
+export function logger(req, res, next) {
     next();
     // 响应状态码
     const code = res.statusCode;
     // 组装日志信息
-    let requestContent = ` >>> ${code} ${req.method} ${req.ip} ${req.originalUrl}`;
+    const url = req.originalUrl ?? req.url;
+    let requestContent = ` >>> ${code} ${req.method} ${req.ip} ${url}`;
     requestContent += req["user"] ? `user: ${JSON.stringify(req["user"])}` : "";
     // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
     // requestContent += Object.keys(req.params).length ? `\nParmas: ${JSON.stringify(req.params)}` : "";

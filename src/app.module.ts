@@ -1,23 +1,17 @@
 import { Module } from "@nestjs/common";
-import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
 import { MongooseModule } from "@nestjs/mongoose";
-import { ServeStaticModule } from "@nestjs/serve-static";
+// import { ServeStaticModule } from "@nestjs/serve-static";
 import { I18nModule } from "nestjs-i18n";
 import { join } from "path";
 import { AnyExceptionFilter, HttpExceptionFilter } from "./common/filters";
 import { TransformInterceptor } from "./common/interceptors";
+import { RequestSchemaValidationPipe } from "./common/pipes";
 import { databaseConfig } from "./config";
 import { UsersModule } from "./modules/users/users.module";
 
 @Module({
     imports: [
-        // 静态服务
-        // npm install --save @nestjs/serve-static
-        // https://docs.nestjs.com/recipes/serve-static
-        ServeStaticModule.forRoot({
-            rootPath: join(__dirname, "..", "public"),
-            renderPath: "/",
-        }),
         // 国际化 i18n
         // npm install --save nestjs-i18n
         // https://github.com/toonvanstrijp/nestjs-i18n
@@ -62,6 +56,11 @@ import { UsersModule } from "./modules/users/users.module";
         {
             provide: APP_FILTER,
             useClass: HttpExceptionFilter,
+        },
+        // 全局 request 参数验证
+        {
+            provide: APP_PIPE,
+            useClass: RequestSchemaValidationPipe,
         },
     ],
 })

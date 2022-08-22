@@ -1,11 +1,11 @@
 import { ObjectSerializerDtoDecorator } from "@/common/decorators";
 import { ObjectSerializerInterceptor } from "@/common/interceptors/object-serializer.interceptor";
-import { ObjectIdValidationPipe, RequestSchemaValidationPipe } from "@/common/pipes";
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors, UsePipes } from "@nestjs/common";
+import { ObjectIdValidationPipe } from "@/common/pipes";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ObjectId } from "mongoose";
 import { CreateUserDto, UpdateUserDto, UserDto } from "./dto";
-import { createUserSchema, User } from "./schemas";
+import { User } from "./schemas";
 import { UsersService } from "./users.service";
 
 // 抛出 400类(客户端错误)异常 500类(服务器错误)异常
@@ -22,8 +22,6 @@ export class UsersController {
 
     @ApiOperation({ summary: "创建用户" })
     @Post()
-    // 数据参数校验
-    @UsePipes(new RequestSchemaValidationPipe(createUserSchema))
     async create(@Body() post: CreateUserDto) {
         return await this.userService.create(post);
     }

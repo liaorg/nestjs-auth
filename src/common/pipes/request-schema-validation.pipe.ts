@@ -1,8 +1,9 @@
-import { PipeTransform, Injectable, ValidationError } from "@nestjs/common";
+import { PipeTransform, Injectable, ValidationError, ArgumentMetadata } from "@nestjs/common";
 import Ajv, { SchemaObject } from "ajv";
 import ajvErrors from "ajv-errors";
 import addFormats from "ajv-formats";
 import { I18nValidationException } from "nestjs-i18n";
+import { REQUEST_SCHEMA_VALIDATION } from "../constants";
 
 // 验证请求参数管道
 // 使用 @Injectable() 装饰器注解的类
@@ -63,8 +64,17 @@ import { I18nValidationException } from "nestjs-i18n";
 /**
  * 自定义管道，根据传递的 schema 结构验证请求参数
  * 使用：
+ * 在 dto 中使用装饰器
+ * @RequestSchemaValidation(schema)
+ *
  * 在类或方法使用装饰器
- * @UsePipes(new RequestSchemaValidationPipe(schema))
+ * @UsePipes(RequestSchemaValidationPipe)
+ * 在全局使用
+ * // 全局 request 参数验证
+ *        {
+ *            provide: APP_PIPE,
+ *            useClass: RequestSchemaValidationPipe,
+ *        }
  */
 
 const ajv = new Ajv({ allErrors: true });
@@ -75,18 +85,27 @@ addFormats(ajv);
 
 @Injectable()
 export class RequestSchemaValidationPipe implements PipeTransform {
-    constructor(protected readonly schema: SchemaObject) {}
-    transform(value: any) {
+    transform(value: any, metadata: ArgumentMetadata) {
+        const { metatype } = metadata;
+
+        // 获取要验证的dto类
+        const dto = metatype as any;
+        // 获取 dto 类的装饰器元数据中的自定义验证选项
+        const schema: SchemaObject = Reflect.getMetadata(REQUEST_SCHEMA_VALIDATION, dto) || {};
+        // console.log("schema", dto, schema);
+
         // 生成验证规则
-        const validate = ajv.compile(this.schema);
-        // 验证
-        if (validate && !validate(value)) {
-            // 验证不通过，转换错误
-            // 遍历并转换消息
-            const errors = this.mapErrors(validate.errors);
-            // console.log("validate.errors", validate.errors, errors);
-            // 抛出错误
-            throw new I18nValidationException(errors);
+        if (schema) {
+            const validate = ajv.compile(schema);
+            // 验证
+            if (validate && !validate(value)) {
+                // 验证不通过，转换错误
+                // 遍历并转换消息
+                const errors = this.mapErrors(validate.errors);
+                // console.log("validate.errors", validate.errors, errors);
+                // 抛出错误
+                throw new I18nValidationException(errors);
+            }
         }
         return value;
     }

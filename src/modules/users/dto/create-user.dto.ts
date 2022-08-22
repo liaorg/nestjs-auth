@@ -1,4 +1,10 @@
 // 请求输入输出规范
+
+import { RequestSchemaValidation } from "@/common/decorators";
+import { createUserSchema } from "../schemas";
+
+// 注入验证 schema 对象
+@RequestSchemaValidation(createUserSchema)
 export class CreateUserDto {
     /**
      * 用户名

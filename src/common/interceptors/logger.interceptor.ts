@@ -13,7 +13,8 @@ export class LoggerInterceptor implements NestInterceptor {
         // const res = ctx.getResponse();
         const req = ctx.getRequest();
         const date = new Date().toLocaleString();
-        const requestContent = ` >>> [${date}] ${req.method} ${req.ip} ${req.originalUrl} user:${JSON.stringify(
+        const url = req.originalUrl ?? req.url;
+        const requestContent = ` >>> [${date}] ${req.method} ${req.ip} ${url} user:${JSON.stringify(
             req.user,
         )}
 Headers: ${JSON.stringify(req.headers)}

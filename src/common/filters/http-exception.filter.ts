@@ -1,5 +1,4 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
-import { Request, Response } from "express";
 import {
     getI18nContextFromArgumentsHost,
     I18nContext,
@@ -18,12 +17,13 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
     // 每个异常过滤器必须实现一个 catch 函数
     catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
-        const response = ctx.getResponse<Response>();
-        const request = ctx.getRequest<Request>();
+        const response = ctx.getResponse();
+        const request = ctx.getRequest();
         const status = exception.getStatus();
 
         // 组装日志信息
-        let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${request.originalUrl}`;
+        const url = request.originalUrl ?? request.url;
+        let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${url}`;
         requestContent += request["user"] ? `user: ${JSON.stringify(request["user"])}` : "";
         // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
         requestContent += Object.keys(request.params ?? {}).length ? `\nParmas: ${JSON.stringify(request.params)}` : "";
@@ -73,7 +73,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
             // Logger.log(logFormat);
         }
         const date = new Date().toLocaleString();
-        response.status(status).json({
+        response.status(status).send({
             statusCode: status,
             errorCode: errorCode,
             method: request.method,

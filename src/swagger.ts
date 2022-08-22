@@ -1,7 +1,7 @@
 /**
  * 配置 Swagge
  * https://docs.nestjs.com/recipes/swagger
- * npm install --save @nestjs/swagger swagger-ui-express
+ * npm install --save @nestjs/swagger @fastify/swagger
  *
  * 开发中运行 npm run start:doc
  */

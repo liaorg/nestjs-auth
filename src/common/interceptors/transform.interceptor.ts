@@ -31,7 +31,8 @@ export class TransformInterceptor implements NestInterceptor {
                     responseData["data"] = data;
                 }
                 // 组装日志信息
-                let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${request.originalUrl}`;
+                const url = request.originalUrl ?? request.url;
+                let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${url}`;
                 requestContent += request["user"] ? `user: ${JSON.stringify(request["user"])}` : "";
                 // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
                 requestContent += Object.keys(request.params ?? {}).length
