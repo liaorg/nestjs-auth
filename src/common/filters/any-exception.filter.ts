@@ -17,7 +17,7 @@ export class AnyExceptionFilter implements ExceptionFilter {
         // 组装日志信息
         const url = request.originalUrl ?? request.url;
         let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${url}`;
-        requestContent += request["user"] ? `user: ${JSON.stringify(request["user"])}` : "";
+        requestContent += request["user"] ? `\nuser: ${JSON.stringify(request["user"])}` : "";
         // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
         requestContent += Object.keys(request.params ?? {}).length ? `\nParmas: ${JSON.stringify(request.params)}` : "";
         requestContent += Object.keys(request.query ?? {}).length ? `\nQuery: ${JSON.stringify(request.query)}` : "";

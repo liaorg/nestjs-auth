@@ -6,6 +6,7 @@ import { Model, ObjectId } from "mongoose";
 import { UserDto } from "./dto/user.dto";
 import { UsersException } from "./users.exception";
 import { UsersError } from "@/common/constants";
+
 // 抛出 500类(服务器错误)异常
 
 // interface UserList {
@@ -36,7 +37,7 @@ export class UsersService {
             };
             throw new UsersException(error);
         }
-        // 把 schema 转换为 entity
+        // 把 dto 转换为 schema
         const newUser = new this.userModel(createUser);
         // 写入数据库
         return (await newUser.save()) ? true : false;
@@ -46,7 +47,9 @@ export class UsersService {
 
     // 获取用户列表
     async findAll(): Promise<User[]> {
-        return await this.userModel.find();
+        // .select(["-x"]) 排除 x 字段
+        // return await this.userModel.find().select(["-password", "-passwordSalt"]);
+        return await this.userModel.find().lean();
     }
 
     // async findAll(query): Promise<UserList> {
@@ -65,7 +68,7 @@ export class UsersService {
     // }
 
     // 获取指定用户
-    async findById(id: ObjectId): Promise<UserDto> {
+    async findById(id: ObjectId | string): Promise<UserDto> {
         return await this.findUserById(id);
     }
 
@@ -78,12 +81,18 @@ export class UsersService {
     // 删除用户
     async remove(id: ObjectId) {
         await this.findUserById(id);
-        return await this.userModel.findByIdAndRemove(id);
+        // return (await this.userModel.findByIdAndRemove(id)) ? true : false;
+        return await this.userModel.findByIdAndDelete(id);
+    }
+
+    // 获取指定用户
+    async findOneByName(username: string): Promise<UserDto> {
+        return await this.userModel.findOne({ username }).lean();
     }
 
     // 根据 id 查找用户
-    private async findUserById(id: ObjectId) {
-        const existUser = await this.userModel.findById(id);
+    private async findUserById(id: ObjectId | string) {
+        const existUser = await this.userModel.findById(id).lean();
         if (!existUser) {
             const error = {
                 ...UsersError.notExistedUser,
@@ -91,6 +100,9 @@ export class UsersService {
             };
             throw new UsersException(error);
         }
+        // existUser["createdAt"] = getUTCTime({ date: existUser.createdDate * 1000 }).format("YYYY-MM-DD HH:mm:ss");
+        // existUser["updateAt"] = getTime({ date: existUser.updateDate * 1000 }).format("YYYY-MM-DD HH:mm:ss");
+
         return existUser;
     }
 }

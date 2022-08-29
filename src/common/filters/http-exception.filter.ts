@@ -24,7 +24,7 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
         // 组装日志信息
         const url = request.originalUrl ?? request.url;
         let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${url}`;
-        requestContent += request["user"] ? `user: ${JSON.stringify(request["user"])}` : "";
+        requestContent += request["user"] ? `\nuser: ${JSON.stringify(request["user"])}` : "";
         // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
         requestContent += Object.keys(request.params ?? {}).length ? `\nParmas: ${JSON.stringify(request.params)}` : "";
         requestContent += Object.keys(request.query ?? {}).length ? `\nQuery: ${JSON.stringify(request.query)}` : "";
@@ -50,14 +50,11 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
             // 如果是业务异常
             const i18n = getI18nContextFromArgumentsHost(host);
             const errors = exception.getErrors();
-            if (errors !== null) {
-                errorCode = errors.errorCode;
-                // 翻译提示信息
-                message = i18n.t(errors.langKeyword, { args: errors.args });
-            } else {
-                errorCode = ApiError.unknowError.errorCode;
-                message = i18n.t(ApiError.unknowError.langKeyword);
-            }
+            errorCode = errors?.errorCode ?? ApiError.unknowError.errorCode;
+            // 翻译提示信息
+            const langKeyword = errors?.langKeyword ?? ApiError.unknowError.langKeyword;
+            const args = errors?.args ?? {};
+            message = i18n.t(langKeyword, { args });
             logFormat += ` ${errorCode}`;
         }
         logFormat += ` ${message}`;

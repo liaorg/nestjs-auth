@@ -5,7 +5,7 @@ import { ApiErrorObjectInterface } from "../interfaces";
 export class ApiException extends HttpException {
     private readonly errors: ApiErrorObjectInterface | null;
     constructor(objectOrError?: ApiErrorObjectInterface | null) {
-        const statusCode = objectOrError.statusCode ?? HttpStatus.BAD_REQUEST;
+        const statusCode = objectOrError?.statusCode ?? HttpStatus.BAD_REQUEST;
         super(objectOrError, statusCode);
         this.errors = objectOrError;
     }

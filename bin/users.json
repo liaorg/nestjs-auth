@@ -1,0 +1,13 @@
+[{
+  "_id": {
+    "$oid": "6305a38bde183f6b9eeb8596"
+  },
+  "username": "admin",
+  "password": "ba6e592ac5f5990e1714c80cf5c9ca7b97c56738d4d200c861fff85f388ac7d64b808357292c865ccf8acfc6e88a0365c4e1ab797489f3d2304a9df22e5df290",
+  "role": 0,
+  "userStatus": 1,
+  "createdDate": 1661392341015,
+  "updateDate": 1661392341015,
+  "passwordSalt": "d5f0d35a5112853c2780d57575532023",
+  "__v": 0
+}]

@@ -1,3 +1,4 @@
+import { getUTCTime } from "@/common/utils";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { randomBytes, scryptSync } from "crypto";
 import { Document } from "mongoose";
@@ -20,31 +21,31 @@ class User extends Document {
     @Prop({ required: true, trim: true, unique: true })
     username: string;
 
-    @Prop({ trim: true })
-    realName: string;
-
     @Prop({ required: true, trim: true })
     password: string;
 
     @Prop({ required: true, trim: true })
     passwordSalt: string;
 
-    @Prop({ required: true, trim: true })
-    mobile: string;
+    @Prop({ trim: true })
+    realName: string;
+
+    @Prop({ trim: true })
+    mobile: number;
 
     // 用户角色：0-超级管理员|1-管理员|2-开发&测试&运营|3-普通用户（只能查看）
-    @Prop({ required: true, trim: true, default: 3 })
-    role: string;
+    @Prop({ trim: true, default: 3 })
+    role: number;
 
     // 状态：0-失效|1-有效|2-删除
     @Prop({ trim: true, default: 0 })
-    userStatus: string;
+    userStatus: number;
 
-    @Prop({ default: Date.now })
-    createdDate: Date;
+    @Prop({ default: () => getUTCTime().unix() })
+    createdDate: number;
 
-    @Prop({ default: Date.now })
-    updateDate: Date;
+    @Prop({ default: () => getUTCTime().unix() })
+    updateDate: number;
 }
 
 type UserDocument = User & Document;

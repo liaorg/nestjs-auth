@@ -1,14 +1,14 @@
 import { Module } from "@nestjs/common";
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
 import { MongooseModule } from "@nestjs/mongoose";
-// import { ServeStaticModule } from "@nestjs/serve-static";
 import { I18nModule } from "nestjs-i18n";
 import { join } from "path";
 import { AnyExceptionFilter, HttpExceptionFilter } from "./common/filters";
 import { TransformInterceptor } from "./common/interceptors";
 import { RequestSchemaValidationPipe } from "./common/pipes";
 import { databaseConfig } from "./config";
-import { UsersModule } from "./modules/users/users.module";
+// import { UsersModule } from "./modules/users/users.module";
+import { AuthModule } from "./modules/auth/auth.module";
 
 @Module({
     imports: [
@@ -25,7 +25,8 @@ import { UsersModule } from "./modules/users/users.module";
         // 数据库配置
         MongooseModule.forRootAsync({ useFactory: () => databaseConfig }),
         // 其他模块
-        UsersModule,
+        // UsersModule,
+        AuthModule,
         // 路由模块 Module Router
         // https://docs.nestjs.com/recipes/router-module
         // RouterModule.register([

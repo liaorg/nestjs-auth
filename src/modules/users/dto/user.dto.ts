@@ -1,15 +1,21 @@
 import { Exclude } from "class-transformer";
+import { ObjectId } from "mongoose";
 
 export class UserDto {
+    _id: ObjectId;
     username: string;
     realName: string;
     @Exclude()
     password: string;
     @Exclude()
     passwordSalt: string;
-    mobile: string;
-    role: string;
-    userStatus: string;
-    createdDate: Date;
-    updateDate: Date;
+    mobile: number;
+    role: number;
+    userStatus: number;
+
+    createdAt?: string;
+    updateAt?: string;
+
+    createdDate?: number;
+    updateDate?: number;
 }
