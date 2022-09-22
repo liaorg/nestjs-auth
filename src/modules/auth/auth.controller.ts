@@ -5,7 +5,7 @@ import { RequestUserDecorator } from "./decorators/request-user.decorator";
 import { RequestUserDto } from "./dto";
 import { LocalAuthGuard } from "./guards";
 
-@Controller("auth")
+@Controller()
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 

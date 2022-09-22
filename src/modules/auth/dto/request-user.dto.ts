@@ -1,3 +1,4 @@
+import { RoleType } from "@/modules/role-types/enums";
 import { ObjectId } from "mongoose";
 
 /**
@@ -9,5 +10,7 @@ import { ObjectId } from "mongoose";
 export class RequestUserDto {
     _id: ObjectId;
     username: string;
-    role: number;
+    role: string;
+    roleType: RoleType;
+    routePath: string[];
 }

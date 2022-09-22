@@ -45,7 +45,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
         if (allowGuest) return true;
         // 从请求头中获取token
         // 如果请求头不含有authorization字段则认证失败
-        const request = this.getRequest(context);
+        const request = context.switchToHttp().getRequest();
         const requestToken = ExtractJwt.fromAuthHeaderAsBearerToken()(request);
         if (!requestToken) return false;
         // 判断token是否存在,如果不存在则认证失败
@@ -64,7 +64,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
             // 尝试通过refreshToken刷新token
             // 刷新成功则给请求头更换新的token
             // 并给响应头添加新的token和refreshtoken
-            const response = this.getResponse(context);
+            const response = context.switchToHttp().getResponse();
             const refreshToken = await this.tokenService.refreshToken(accessToken, response);
             if (!refreshToken) return false;
             if (refreshToken.accessToken) {
@@ -73,13 +73,5 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
             // 刷新失败则再次抛出认证失败的异常
             return super.canActivate(context) as boolean;
         }
-    }
-
-    protected getRequest(context: ExecutionContext) {
-        return context.switchToHttp().getRequest();
-    }
-
-    protected getResponse(context: ExecutionContext) {
-        return context.switchToHttp().getResponse();
     }
 }

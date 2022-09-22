@@ -33,12 +33,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
      * 通过用户ID查询出用户是否存在,并把id放入request方便后续操作
      */
     async validate(payload: JwtPayload): Promise<RequestUserDto> {
-        const user = await this.userService.findById(payload.sub);
+        const user = await this.userService.findOne(payload.sub);
         // 这边的返回将写入 request.user
         return {
             _id: user["_id"],
             username: user.username,
             role: user.role,
+            roleType: user.roleType,
+            routePath: user.routePath,
         };
     }
 }

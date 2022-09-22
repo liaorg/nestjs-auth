@@ -45,7 +45,30 @@
 vscode 扩展
 ashinzekene/NestJS Snippets
 Abhijoy Basak/NestJS Files
+
+Chinese:中文语言包
+Bracket Pair Colorizer:代码对着色器
+Beautify:格式化代码-html ,js,css
+Prettier:格式化代码-JavaScript / TypeScript / CSS
+JavaScript (ES6) snippets:支持 JavaScript ES6 语法
+Bookmarks
+
+JavaScript (ES6) code snippets in StandardJS style:Javascript (ES6)代码片段
+Auto Close Tag:自动闭合 HTML 标签
+Auto Rename Tag:自动重命名 HTML 标签
+node-snippets
+One Dark Pro
+Babel JavaScript：支持ES201X、React、FlowType以及GraphQL的语法高亮。
+Remote - WSL
+Path Intellisense 路径补全
+
 $ npm install
+```
+
+## 配置 lanunch.json 进行应用调试
+
+```
+
 ```
 
 ## Running the app
@@ -126,4 +149,36 @@ npm install @nestjsx/crud class-transformer class-validator
 npm install @nestjs/typeorm typeorm --save
 or
 npm install --save @nestjs/mongoose mongoose
+```
+
+## 模块开发流程
+
+1. 生成一个 REST API 类 `nest g res modules/roles`
+2. 定义表结构，创建文件夹 schemas 和 schema (Roles RolesSchema createRoleValidationSchema)
+3. 创建 dto 类
+4. 如果有 controller 操作接口，要在对应的 dto 类注入验证 schema 对象 @RequestValidationSchema(createRoleValidationSchema)
+5. 增加 i18n 文件 i18n/zh-CN/roles.json
+6. 增加错误异常文件类 roles.exception.ts
+
+```ts
+import { ApiException } from "@/common/exceptions";
+import { ApiErrorObjectInterface } from "@/common/interfaces";
+
+export class RolesException extends ApiException {
+    constructor(objectOrError?: ApiErrorObjectInterface) {
+        super(objectOrError);
+    }
+}
+```
+
+7. 在文件 api-error-code.constant.ts 中增加错误对象`RolesErros`
+
+8. 在 module 中导入对应的数据库连接服务及其他必要服务
+
+```ts
+imports: [
+    MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
+    AuthModule,
+    // MenuModule
+];
 ```

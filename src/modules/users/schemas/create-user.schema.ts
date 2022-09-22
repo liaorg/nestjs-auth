@@ -3,14 +3,17 @@
 
 export const createUserSchema = {
     type: "object",
+    required: ["username", "password", "repassword"],
     properties: {
         username: {
             type: "string",
+            title: "users.title",
+            default: "Liu.Jun",
             minLength: 3,
             maxLength: 10,
             errorMessage: {
                 type: "must be a string",
-                minLength: "users.error.length_username",
+                minLength: "users.error.lengthName",
                 maxLength: "maxLength",
             },
         },
@@ -27,7 +30,6 @@ export const createUserSchema = {
         role: { type: "number" },
         userStatus: { type: "number" },
     },
-    required: ["username", "password", "repassword"],
     errorMessage: {
         properties: {
             mobile: "must be a number",
@@ -35,9 +37,9 @@ export const createUserSchema = {
             userStatus: "must be a number",
         },
         required: {
-            username: "users.error.required_username",
-            password: "users.error.required_password",
-            repassword: "users.error.required_repassword",
+            username: "users.error.requiredName",
+            password: "users.error.requiredPassword",
+            repassword: "users.error.requiredRepassword",
         },
     },
 };

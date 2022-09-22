@@ -13,13 +13,32 @@ export const log4jsConfig = {
             type: "stdout",
             // 是否直接跳过头部生成
             // layout: { type: "messagePassThrough" },
+            layout: { type: "DAS" },
+        },
+        // 初始化日志
+        init: {
+            type: "dateFile", // 会写入文件，并按照日期分类
+            filename: `${baseLogPath}/init/init.log`, // 日志文件名，会命名为：init.20200320.log
+            alwaysIncludePattern: true, // 为true, 则每个文件都会按pattern命名，否则最新的文件不会按照pattern命名
+            // pattern: "yyyyMMdd",
+            layout: { type: "DAS" },
+            daysToKeep: 60, // 文件保存日期60天
+            numBackups: 3, //  配置日志文件最多存在个数
+            compress: true, // 配置日志文件是否压缩
+            category: "http", // category 类型
+            keepFileExt: true, // 是否保留文件后缀
         },
         // 统计日志
         access: {
             type: "dateFile", // 会写入文件，并按照日期分类
             filename: `${baseLogPath}/access/access.log`, // 日志文件名，会命名为：access.20200320.log
             alwaysIncludePattern: true, // 为true, 则每个文件都会按pattern命名，否则最新的文件不会按照pattern命名
-            pattern: "yyyyMMdd",
+            // pattern: "yyyyMMdd",
+            layout: {
+                type: "pattern",
+                // pattern: '{"date":"%d","level":"%p","category":"%c","host":"%h","pid":"%z","data":\'%m\'}',
+                pattern: "[%d{yyyy-MM-dd hh:mm:ss}] [%p] %c %m ",
+            },
             daysToKeep: 60, // 文件保存日期60天
             numBackups: 3, //  配置日志文件最多存在个数
             compress: true, // 配置日志文件是否压缩
@@ -35,7 +54,7 @@ export const log4jsConfig = {
             layout: {
                 type: "pattern",
                 // pattern: '{"date":"%d","level":"%p","category":"%c","host":"%h","pid":"%z","data":\'%m\'}',
-                pattern: "[%d{yyyy-MM-dd hh:mm:ss SSS}] [%p] -h: %h -pid: %z msg: '%m' ",
+                pattern: "[%d{yyyy-MM-dd hh:mm:ss}] [%p] -h: %h -pid: %z msg: '%m' ",
             },
             // 日志文件按日期（天）切割
             pattern: "yyyyMMdd",
@@ -52,7 +71,7 @@ export const log4jsConfig = {
             alwaysIncludePattern: true,
             layout: {
                 type: "pattern",
-                pattern: "[%d{yyyy-MM-dd hh:mm:ss SSS}] [%p] -h: %h -pid: %z msg: '%m' ",
+                pattern: "[%d{yyyy-MM-dd hh:mm:ss}] [%p] -h: %h -pid: %z msg: '%m' ",
             },
             // 日志文件按日期（天）切割
             pattern: "yyyyMMdd",

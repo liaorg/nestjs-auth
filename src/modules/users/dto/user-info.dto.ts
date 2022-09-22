@@ -15,13 +15,13 @@ export class UserInfoDto {
 
     @ApiProperty({
         required: false,
-        default: 3,
-        description: "用户角色 0-超级管理员|1-管理员|2-开发&测试&运营|3-普通用户",
+        default: "systemAdmin",
+        description: "用户角色",
     })
-    readonly role?: number;
+    readonly role?: string;
 
     // @ApiProperty()
     // 可以使用@ApiPropertyOptional()速记装饰器来替代显式输入@ApiProperty({ required: false }) 装饰可选参数
     @ApiPropertyOptional({ default: 0, description: "用户状态" })
-    readonly userStatus?: number;
+    readonly status?: number;
 }

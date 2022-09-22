@@ -37,7 +37,7 @@ export class TokenService {
             // 如果没过期则生成新的 accessToken 和 refreshToken
             const token = await this.generateAccessToken(user, now);
             // 删除旧的 token
-            await this.accessTokenModel.findByIdAndDelete(_id);
+            await this.accessTokenModel.findByIdAndDelete(_id).lean();
             response.header("accessToken", token.accessToken.value);
             return token;
         }
@@ -96,7 +96,7 @@ export class TokenService {
      * @memberof TokenService
      */
     async checkAccessToken(value: string) {
-        const accessToken = await this.accessTokenModel.findOne({ value }).exec();
+        const accessToken = await this.accessTokenModel.findOne({ value }).lean();
         // console.log("checkAccessToken", accessToken);
         return accessToken;
     }
@@ -108,7 +108,7 @@ export class TokenService {
      * @memberof TokenService
      */
     async removeAccessToken(value: string) {
-        if (!(await this.accessTokenModel.findOneAndDelete({ value }))) {
+        if (!(await this.accessTokenModel.findOneAndDelete({ value }).lean())) {
             // 失败要重新登录
             const error = {
                 statusCode: 500,

@@ -1,0 +1,8 @@
+{
+    "begainInit": "初始化开始",
+    "finishedInit": "初始化结束",
+    "dbConnected": "数据库连接成功",
+    "begainInitCollection": "初始化 {collection} 表",
+    "deletedCollection": "删除 {collection} 表",
+    "finishedInitCollection": "{collection} 表初始化完成"
+}

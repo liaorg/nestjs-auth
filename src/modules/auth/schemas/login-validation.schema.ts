@@ -1,7 +1,7 @@
 // 请求输入输出规范
 // 请求参数验证基于 ajv [https://github.com/ajv-validator/ajv]
 
-export const loginSchema = {
+export const loginValidationSchema = {
     type: "object",
     properties: {
         username: {

@@ -6,7 +6,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ObjectId } from "mongoose";
 import { GuestDecorator } from "../auth/decorators";
 import { CreateUserDto, UpdateUserDto, UserDto } from "./dto";
-import { User } from "./schemas";
+import { Users } from "./schemas";
 import { UsersService } from "./users.service";
 
 // 抛出 400类(客户端错误)异常 500类(服务器错误)异常
@@ -33,7 +33,7 @@ export class UsersController {
 
     @ApiOperation({ summary: "获取用户列表" })
     @Get()
-    async findAll(): Promise<User[]> {
+    async findAll(): Promise<Users[]> {
         return await this.userService.findAll();
     }
 
@@ -45,7 +45,7 @@ export class UsersController {
     @ApiOperation({ summary: "获取指定用户" })
     @Get(":id")
     async findById(@Param("id", ObjectIdValidationPipe) id: ObjectId): Promise<UserDto> {
-        return await this.userService.findById(id);
+        return await this.userService.findOne(id);
     }
 
     @ApiOperation({ summary: "更新用户" })

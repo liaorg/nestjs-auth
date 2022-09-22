@@ -1,7 +1,8 @@
-import { getUTCTime } from "@/common/utils";
+import { BaseDocument } from "@/common/schemas";
+import { RoleType } from "@/modules/role-types/enums";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { randomBytes, scryptSync } from "crypto";
-import { Document } from "mongoose";
+import { UserProfile } from "../interfaces/user-profile.interface";
 
 // required: 布尔值或函数 如果值为真，为此属性添加 required 验证器
 // default: 任何值或函数 设置此路径默认值。如果是函数，函数返回值为默认值
@@ -17,43 +18,63 @@ import { Document } from "mongoose";
 
 // 连接表名
 @Schema({ collection: "users" })
-class User extends Document {
-    @Prop({ required: true, trim: true, unique: true })
+class Users extends BaseDocument {
+    // 用户名
+    @Prop({ type: String, required: true, trim: true, unique: true })
     username: string;
 
-    @Prop({ required: true, trim: true })
+    // 用户密码
+    @Prop({ type: String, required: true, trim: true })
     password: string;
 
-    @Prop({ required: true, trim: true })
+    // 密码盐值
+    @Prop({ type: String, required: true, trim: true })
     passwordSalt: string;
 
-    @Prop({ trim: true })
-    realName: string;
+    // 用户所属角色 systemAdmin|securityAdmin|auditAdmin 对应的 ObjectId
+    @Prop({ type: String, required: true, trim: true })
+    role: string;
 
-    @Prop({ trim: true })
-    mobile: number;
+    // 角色名
+    @Prop({ type: String, required: true, trim: true })
+    rolename: string;
 
-    // 用户角色：0-超级管理员|1-管理员|2-开发&测试&运营|3-普通用户（只能查看）
-    @Prop({ trim: true, default: 3 })
-    role: number;
+    // 角色类型 enum:RoleType {systemAdmin = 1,securityAdmin = 2,auditAdmin = 3,}
+    @Prop({ type: Number, trim: true })
+    roleType: RoleType;
 
-    // 状态：0-失效|1-有效|2-删除
-    @Prop({ trim: true, default: 0 })
-    userStatus: number;
+    // 用户所属路由, 对应 Controller 中定义的请求方法
+    // 不能超过所性角色的路由范围
+    @Prop({ type: [String], required: true })
+    routePath: string[];
 
-    @Prop({ default: () => getUTCTime().unix() })
-    createdDate: number;
+    // 用户状态：0-失效|1-有效
+    @Prop({ type: Number, trim: true, default: 0 })
+    status: number;
 
-    @Prop({ default: () => getUTCTime().unix() })
-    updateDate: number;
+    // 锁定状态：0-未锁定|1-锁定
+    @Prop({ type: Number, trim: true, default: 0 })
+    lockStatus: number;
+
+    // 是否默认管理员：0-否|1-是
+    @Prop({ type: Number, trim: true, default: 0 })
+    isDefaultAdminer: number;
+
+    // 锁定时间
+    @Prop({ type: Number })
+    lockedDate: number;
+
+    // 用户元数据
+    @Prop({ type: UserProfile })
+    meta: UserProfile;
 }
 
-type UserDocument = User & Document;
+type UsersDocument = Users & BaseDocument;
 
-const UserSchema = SchemaFactory.createForClass(User);
+const UsersSchema = SchemaFactory.createForClass(Users);
 
 // 前置操作
-UserSchema.pre("validate", function (next) {
+UsersSchema.pre("validate", function (next) {
     // 盐值
     const salt = randomBytes(16).toString("hex");
     // 加密密码
@@ -63,4 +84,4 @@ UserSchema.pre("validate", function (next) {
     next();
 });
 
-export { UserDocument, User, UserSchema };
+export { UsersDocument, Users, UsersSchema };

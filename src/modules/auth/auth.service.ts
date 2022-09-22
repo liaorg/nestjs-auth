@@ -76,12 +76,14 @@ export class AuthService {
      */
     async createToken(user: RequestUserDto) {
         const now = getUTCTime();
-        const userInfo = await this.userService.findById(user._id);
+        const userInfo = await this.userService.findOne(user._id);
         // userInfo => RequestUserDto
         const newUser: RequestUserDto = {
             _id: userInfo._id,
             username: userInfo.username,
             role: userInfo.role,
+            roleType: userInfo.roleType,
+            routePath: userInfo.routePath,
         };
         const { accessToken } = await this.tokenService.generateAccessToken(newUser, now);
         // TODO 记录登录日志

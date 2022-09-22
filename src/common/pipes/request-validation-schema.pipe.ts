@@ -19,20 +19,20 @@ import { validate } from "@/common/utils";
  * 自定义管道，根据传递的 schema 结构验证请求参数
  * 使用：
  * 在 dto 中使用装饰器
- * @RequestSchemaValidation(schema)
+ * @RequestValidationSchema(schema)
  *
  * 在类或方法使用装饰器
- * @UsePipes(RequestSchemaValidationPipe)
+ * @UsePipes(RequestValidationSchemaPipe)
  * 在全局使用
  * // 全局 request 参数验证
  *        {
  *            provide: APP_PIPE,
- *            useClass: RequestSchemaValidationPipe,
+ *            useClass: RequestValidationSchemaPipe,
  *        }
  */
 
 @Injectable()
-export class RequestSchemaValidationPipe implements PipeTransform {
+export class RequestValidationSchemaPipe implements PipeTransform {
     transform(value: any, metadata: ArgumentMetadata) {
         const { metatype } = metadata;
 

@@ -6,6 +6,7 @@ import { green, cyan, yellow, red, hex, grey } from "chalk";
 import * as StackTrace from "stacktrace-js";
 import { basename } from "path";
 import { log4jsConfig } from "@/config";
+import { dayjs } from "./datetime";
 // 应用 log4js
 // npm install --save log4js stacktrace-js
 
@@ -32,7 +33,8 @@ export class ContextTrace {
     ) {}
 }
 
-Log4js.addLayout("Awesome-nest", (logConfig: any) => {
+// layout: { type: "DAS", ...logConfig },
+Log4js.addLayout("DAS", (logConfig: any) => {
     return (logEvent: Log4js.LoggingEvent): string => {
         let moduleName = "";
         let position = "";
@@ -44,7 +46,7 @@ Log4js.addLayout("Awesome-nest", (logConfig: any) => {
                 moduleName = value.context;
                 // 显示触发日志的坐标（行，列）
                 if (value.lineNumber && value.columnNumber) {
-                    position = `${value.lineNumber}, ${value.columnNumber}`;
+                    position = `line: ${value.lineNumber}, column: ${value.columnNumber}`;
                 }
                 return;
             }
@@ -60,9 +62,12 @@ Log4js.addLayout("Awesome-nest", (logConfig: any) => {
         const messageOutput: string = messageList.join(" ");
         const positionOutput: string = position ? ` [${position}]` : "";
         const typeOutput = `[${logConfig.type}] ${logEvent.pid.toString()} - `;
-        // const dateOutput = `${moment(logEvent.startTime).format("YYYY-MM-DD HH:mm:ss")}`;
-        const dateOutput = `${logEvent.startTime}`;
-        const moduleOutput: string = moduleName ? `[${moduleName}] ` : "[LoggerService] ";
+        const now = dayjs();
+        const startTime = dayjs(logEvent.startTime);
+        const diffTime = now.valueOf() - startTime.valueOf();
+        const diffTimeOutput = yellow(` +${diffTime}ms`);
+        const dateOutput = `${startTime.format("YYYY-MM-DD HH:mm:ss")}`;
+        const moduleOutput: string = moduleName ? `[${moduleName}] ` : "";
         let levelOutput = `[${logEvent.level}] ${messageOutput}`;
 
         // 根据日志级别，用不同颜色区分
@@ -87,7 +92,9 @@ Log4js.addLayout("Awesome-nest", (logConfig: any) => {
                 break;
         }
 
-        return `${green(typeOutput)}${dateOutput}  ${yellow(moduleOutput)}${levelOutput}${positionOutput}`;
+        return `${green(typeOutput)}${dateOutput} ${yellow(
+            moduleOutput,
+        )}${levelOutput}${positionOutput}${diffTimeOutput}`;
     };
 });
 
@@ -95,7 +102,7 @@ Log4js.addLayout("Awesome-nest", (logConfig: any) => {
 Log4js.configure(log4jsConfig);
 
 // 实例化
-const logger = Log4js.getLogger("das");
+const logger = Log4js.getLogger();
 logger.level = LoggerLevel.TRACE;
 
 // @Injectable()
@@ -149,5 +156,6 @@ export class Logger {
         return `${baseName}(line: ${lineNumber}, column: ${columnNumber}): \n`;
     }
 }
+export { Log4js };
 
 // 自定义typeorm 日志器,https://blog.csdn.net/fwzzzzz/article/details/116160816

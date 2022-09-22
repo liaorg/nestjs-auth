@@ -1,0 +1,47 @@
+{
+    "routes.login": "登录",
+    "routes.logout": "退出",
+    "routes.routeMenus": "菜单",
+
+    "routes.systemAdmin": "系统管理",
+    "routes.users": "用户管理",
+    "routes.roles": "角色管理",
+    "routes.operatedLogs": "操作日志",
+
+    "routes.configures": "系统配置",
+    "routes.networks": "网卡配置",
+    "routes.staticRoutes": "静态路由",
+    "routes.backupAndRestore": "配置备份和还原",
+    "routes.securityConfigures": "系统安全配置",
+    "routes.services": "系统服务",
+    "routes.auditOperatedLog": "操作日志",
+    "routes.runTimeLogs": "运行日志",
+    "routes.systemProfile": "系统信息",
+    "routes.authorizations": "系统授权",
+
+    "routes.monitorCenter": "监控中心",
+    "routes.runningState": "运行状态",
+    "routes.vocationalState": "运行状态",
+    "routes.situations": "安全态势",
+
+    "routes.auditCenter": "审计中心",
+    "routes.sql": "语句查询",
+    "routes.events": "事件查询",
+    "routes.sqlTempates": "SQL模板",
+    "routes.factorAutoDiscover": "因子监测",
+
+    "routes.analysisCenter": "数据分析中心",
+    "routes.reports": "报表查看",
+    "routes.reportTasks": "报表任务",
+    "routes.compareAnalysis": "对比分析",
+    "routes.eventReports": "事件报表",
+
+    "routes.strategyCenter": "策略中心",
+    "routes.strategys": "策略定义",
+    "routes.objects": "对象管理",
+
+    "routes.deployAdmin": "部署管理",
+    "routes.flowProbes": "流量探针管理",
+    "routes.vocationalConfigures": "监听配置",
+    "routes.dataArchives": "数据归档"
+}

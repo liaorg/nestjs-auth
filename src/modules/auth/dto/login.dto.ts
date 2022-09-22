@@ -1,8 +1,8 @@
-import { RequestSchemaValidation } from "@/common/decorators";
-import { loginSchema } from "../schemas";
+import { RequestValidationSchema } from "@/common/decorators";
+import { loginValidationSchema } from "../schemas";
 
 // 注入验证 schema 对象
-@RequestSchemaValidation(loginSchema)
+@RequestValidationSchema(loginValidationSchema)
 export class LoginDto {
     /**
      * 用户名

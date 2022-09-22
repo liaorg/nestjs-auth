@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CreateUserDto, UpdateUserDto } from "./dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { User, UserDocument } from "./schemas/users.schema";
+import { Users, UsersDocument } from "./schemas/users.schema";
 import { Model, ObjectId } from "mongoose";
 import { UserDto } from "./dto/user.dto";
 import { UsersException } from "./users.exception";
@@ -18,7 +18,7 @@ import { UsersError } from "@/common/constants";
 export class UsersService {
     constructor(
         // 使用 @InjectModel() 装饰器注入 模型
-        @InjectModel(User.name) private userModel: Model<UserDocument>,
+        @InjectModel(Users.name) private model: Model<UsersDocument>,
     ) {}
 
     /**
@@ -29,27 +29,27 @@ export class UsersService {
     async create(createUser: CreateUserDto): Promise<boolean> {
         const { username } = createUser;
         // 查看用户是否存在 exec()
-        const user = await this.userModel.findOne({ username });
+        const user = await this.model.findOne({ username }).lean();
         if (user) {
             const error = {
                 ...UsersError.existedName,
-                args: { username },
+                args: { name: username },
             };
             throw new UsersException(error);
         }
         // 把 dto 转换为 schema
-        const newUser = new this.userModel(createUser);
+        const newUser = new this.model(createUser);
         // 写入数据库
         return (await newUser.save()) ? true : false;
         // 写入数据库
-        // return await this.userModel.create(createUser);
+        // return await this.model.create(createUser);
     }
 
     // 获取用户列表
-    async findAll(): Promise<User[]> {
+    async findAll(): Promise<Users[]> {
         // .select(["-x"]) 排除 x 字段
-        // return await this.userModel.find().select(["-password", "-passwordSalt"]);
-        return await this.userModel.find().lean();
+        // return await this.model.find().select(["-password", "-passwordSalt"]);
+        return await this.model.find().lean();
     }
 
     // async findAll(query): Promise<UserList> {
@@ -68,35 +68,34 @@ export class UsersService {
     // }
 
     // 获取指定用户
-    async findById(id: ObjectId | string): Promise<UserDto> {
-        return await this.findUserById(id);
+    async findOne(id: ObjectId | string): Promise<UserDto> {
+        return await this.findById(id);
     }
 
     // 更新用户
     async updateById(id: ObjectId, updateUser: UpdateUserDto): Promise<boolean> {
-        await this.findUserById(id);
-        return (await this.userModel.findByIdAndUpdate(id, updateUser)) ? true : false;
+        await this.findById(id);
+        return (await this.model.findByIdAndUpdate(id, updateUser).lean()) ? true : false;
     }
 
     // 删除用户
     async remove(id: ObjectId) {
-        await this.findUserById(id);
-        // return (await this.userModel.findByIdAndRemove(id)) ? true : false;
-        return await this.userModel.findByIdAndDelete(id);
+        await this.findById(id);
+        return (await this.model.findByIdAndDelete(id).lean()) ? true : false;
     }
 
     // 获取指定用户
     async findOneByName(username: string): Promise<UserDto> {
-        return await this.userModel.findOne({ username }).lean();
+        return await this.model.findOne({ username }).lean();
     }
 
     // 根据 id 查找用户
-    private async findUserById(id: ObjectId | string) {
-        const existUser = await this.userModel.findById(id).lean();
+    private async findById(id: ObjectId | string) {
+        const existUser = await this.model.findById(id).lean();
         if (!existUser) {
             const error = {
-                ...UsersError.notExistedUser,
-                args: { user: id },
+                ...UsersError.notExisted,
+                args: { id },
             };
             throw new UsersException(error);
         }

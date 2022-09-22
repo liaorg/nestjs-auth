@@ -44,3 +44,5 @@ export const getTime = (options?: TimeOptions) => {
 export const getUTCTime = (options?: TimeOptions) => {
     return getTime(options).utc();
 };
+
+export { dayjs };

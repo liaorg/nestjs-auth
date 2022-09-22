@@ -31,6 +31,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
             _id: user["_id"],
             username: user.username,
             role: user.role,
+            roleType: user.roleType,
+            routePath: user.routePath,
         };
     }
 }

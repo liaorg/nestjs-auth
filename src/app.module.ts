@@ -5,10 +5,11 @@ import { I18nModule } from "nestjs-i18n";
 import { join } from "path";
 import { AnyExceptionFilter, HttpExceptionFilter } from "./common/filters";
 import { TransformInterceptor } from "./common/interceptors";
-import { RequestSchemaValidationPipe } from "./common/pipes";
+import { RequestValidationSchemaPipe } from "./common/pipes";
 import { databaseConfig } from "./config";
-// import { UsersModule } from "./modules/users/users.module";
 import { AuthModule } from "./modules/auth/auth.module";
+import { RolesModule } from "./modules/roles/roles.module";
+import { RouteMenusModule } from "./modules/route-menus/route-menus.module";
 
 @Module({
     imports: [
@@ -25,8 +26,9 @@ import { AuthModule } from "./modules/auth/auth.module";
         // 数据库配置
         MongooseModule.forRootAsync({ useFactory: () => databaseConfig }),
         // 其他模块
-        // UsersModule,
         AuthModule,
+        RolesModule,
+        RouteMenusModule,
         // 路由模块 Module Router
         // https://docs.nestjs.com/recipes/router-module
         // RouterModule.register([
@@ -61,7 +63,7 @@ import { AuthModule } from "./modules/auth/auth.module";
         // 全局 request 参数验证
         {
             provide: APP_PIPE,
-            useClass: RequestSchemaValidationPipe,
+            useClass: RequestValidationSchemaPipe,
         },
     ],
 })

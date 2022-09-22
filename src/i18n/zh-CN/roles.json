@@ -1,0 +1,10 @@
+{
+    "error": {
+        "required_name": "角色名不能为空",
+        "existedName": "角色名 {name} 已经存在",
+        "errorid": "错误的角色id #{id}",
+        "notExisted": "用户 {id} 不存在",
+        "lengthName": "角色名长度为 {constraints.0} - {constraints.1}",
+        "requiredMenu": "角色菜单不能为空"
+    }
+}
