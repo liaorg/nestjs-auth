@@ -1,5 +1,4 @@
 import { RoleType } from "@/modules/role-types/enums";
-import { ObjectId } from "mongoose";
 
 /**
  * 由JWT策略解析荷载后存入Rquest.user的对象
@@ -8,7 +7,7 @@ import { ObjectId } from "mongoose";
  * @class RequestUserDto
  */
 export class RequestUserDto {
-    _id: ObjectId;
+    id: number;
     username: string;
     role: string;
     roleType: RoleType;

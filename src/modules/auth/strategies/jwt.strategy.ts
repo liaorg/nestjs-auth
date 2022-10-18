@@ -14,7 +14,7 @@ import { RequestUserDto } from "../dto";
  * @interface JwtPayload
  */
 export interface JwtPayload {
-    sub: string;
+    sub: number;
     iat: number;
 }
 
@@ -36,11 +36,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const user = await this.userService.findOne(payload.sub);
         // 这边的返回将写入 request.user
         return {
-            _id: user["_id"],
+            id: user.id,
             username: user.username,
             role: user.role,
-            roleType: user.roleType,
-            routePath: user.routePath,
+            roleType: user.roleId,
+            routePath: [],
         };
     }
 }

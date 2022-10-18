@@ -3,7 +3,6 @@ import { RolesService } from "./roles.service";
 import { CreateRoleDto } from "./dto/create-role.dto";
 import { UpdateRoleDto } from "./dto/update-role.dto";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
-import { ObjectId } from "mongoose";
 import { PublicDecorator } from "../auth/decorators";
 
 @ApiTags("角色管理")
@@ -24,17 +23,17 @@ export class RolesController {
     }
 
     @Get(":id")
-    findOne(@Param("id") id: ObjectId) {
+    findOne(@Param("id") id: number) {
         return this.rolesService.findOne(id);
     }
 
     @Patch(":id")
-    update(@Param("id") id: ObjectId, @Body() updateRole: UpdateRoleDto) {
+    update(@Param("id") id: number, @Body() updateRole: UpdateRoleDto) {
         return this.rolesService.update(id, updateRole);
     }
 
     @Delete(":id")
-    remove(@Param("id") id: ObjectId) {
+    remove(@Param("id") id: number) {
         return this.rolesService.remove(id);
     }
 }

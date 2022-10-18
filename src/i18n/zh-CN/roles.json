@@ -1,5 +1,11 @@
 {
     "error": {
+        "roles.systemAdmin": "系统管理员",
+        "roles.securityAdmin": "业务安全员",
+        "roles.auditAdmin": "系统审计员",
+        "roles.defaultSystemAdmin": "默认系统管理员",
+        "roles.defaultSecurityAdmin": "默认业务安全员",
+        "roles.defaultAuditAdmin": "默认系统审计员",
         "required_name": "角色名不能为空",
         "existedName": "角色名 {name} 已经存在",
         "errorid": "错误的角色id #{id}",

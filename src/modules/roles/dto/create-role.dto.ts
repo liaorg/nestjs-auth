@@ -10,13 +10,13 @@ export class CreateRoleDto {
     readonly rolename: string;
 
     /**
-     * 父角色
+     * 角色类型id
      * @example systemAdmin
      */
-    parentRole: string;
+    roleTypeId: number;
 
     /**
-     * 角色路由菜单权限
+     * 角色菜单路由权限
      * @example []
      */
     route?: string[];

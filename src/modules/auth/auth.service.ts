@@ -2,13 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { scryptSync } from "crypto";
 import { UsersService } from "../users/users.service";
 import { ExtractJwt } from "passport-jwt";
-import { UserDto } from "../users/dto";
 import { getUTCTime } from "@/common/utils";
-import { TokenService } from "./services/token.service";
-import { RequestUserDto } from "./dto";
 import { AuthException } from "./auth.exception";
 import { AuthError } from "@/common/constants";
-// // import { RedisInstance } from "src/database/redis";
+import { UserInfoDto } from "../users/dto/user-info.dto";
+import { RequestUserDto } from "./dto";
+import { TokensService } from "./services";
 
 /**
  * 自定义中间件
@@ -16,15 +15,15 @@ import { AuthError } from "@/common/constants";
  */
 @Injectable()
 export class AuthService {
-    constructor(private readonly userService: UsersService, private readonly tokenService: TokenService) {}
+    constructor(private readonly usersService: UsersService, private readonly tokensService: TokensService) {}
     /**
      * 用户登录，查询用户是否存在
      * @param name
      * @param passwd
      * @returns
      */
-    async validateUser(name: string, passwd: string): Promise<UserDto | null | undefined> {
-        const user = await this.userService.findOneByName(name);
+    async validateUser(name: string, passwd: string): Promise<UserInfoDto | null | undefined> {
+        const user = await this.usersService.findOneByName(name);
         if (!user) {
             // 用户不存在
             return null;
@@ -37,18 +36,6 @@ export class AuthService {
         // 密码错误
         return undefined;
     }
-    // /**
-    //  * 登录用户,并生成新的token和refreshToken
-    //  *
-    //  * @param {UserEntity} user
-    //  * @returns
-    //  * @memberof AuthService
-    //  */
-    // async login(user: LoginDto) {
-    //     const now = getUTCTime();
-    //     const { accessToken } = await this.tokenService.generateAccessToken(user, now);
-    //     return accessToken.value;
-    // }
 
     /**
      * 注销登录
@@ -60,7 +47,7 @@ export class AuthService {
     async logout(req: Request) {
         const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req as any);
         if (accessToken) {
-            return await this.tokenService.removeAccessToken(accessToken);
+            return await this.tokensService.removeAccessToken(accessToken);
         }
         const error = {
             statusCode: 403,
@@ -71,21 +58,13 @@ export class AuthService {
     /**
      * 登录用户后生成新的token和refreshToken
      *
-     * @param {UserEntity} user
+     * @param {UserEntity} reqUser
      * @memberof AuthService
      */
-    async createToken(user: RequestUserDto) {
+    async createToken(reqUser: RequestUserDto) {
         const now = getUTCTime();
-        const userInfo = await this.userService.findOne(user._id);
-        // userInfo => RequestUserDto
-        const newUser: RequestUserDto = {
-            _id: userInfo._id,
-            username: userInfo.username,
-            role: userInfo.role,
-            roleType: userInfo.roleType,
-            routePath: userInfo.routePath,
-        };
-        const { accessToken } = await this.tokenService.generateAccessToken(newUser, now);
+        const user = await this.usersService.findById(reqUser.id);
+        const { accessToken } = await this.tokensService.generateAccessToken(user, now);
         // TODO 记录登录日志
         return accessToken.value;
     }

@@ -1,7 +1,5 @@
-import { ObjectId } from "mongoose";
-
 export abstract class BaseTokenDto {
-    _id?: ObjectId;
+    id?: number;
     /**
      * 令牌字符串
      */

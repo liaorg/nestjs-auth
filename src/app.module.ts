@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
-import { MongooseModule } from "@nestjs/mongoose";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { I18nModule } from "nestjs-i18n";
 import { join } from "path";
 import { AnyExceptionFilter, HttpExceptionFilter } from "./common/filters";
@@ -8,8 +8,8 @@ import { TransformInterceptor } from "./common/interceptors";
 import { RequestValidationSchemaPipe } from "./common/pipes";
 import { databaseConfig } from "./config";
 import { AuthModule } from "./modules/auth/auth.module";
-import { RolesModule } from "./modules/roles/roles.module";
-import { RouteMenusModule } from "./modules/route-menus/route-menus.module";
+// import { RolesModule } from "./modules/roles/roles.module";
+// import { RouteMenusModule } from "./modules/route-menus/route-menus.module";
 
 @Module({
     imports: [
@@ -24,11 +24,11 @@ import { RouteMenusModule } from "./modules/route-menus/route-menus.module";
             },
         }),
         // 数据库配置
-        MongooseModule.forRootAsync({ useFactory: () => databaseConfig }),
+        TypeOrmModule.forRootAsync({ useFactory: () => databaseConfig }),
         // 其他模块
         AuthModule,
-        RolesModule,
-        RouteMenusModule,
+        // RolesModule,
+        // RouteMenusModule,
         // 路由模块 Module Router
         // https://docs.nestjs.com/recipes/router-module
         // RouterModule.register([

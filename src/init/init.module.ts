@@ -14,6 +14,7 @@ import { join } from "path";
                 watch: true,
             },
         }),
+        // TypeOrmModule.forRootAsync({ name: "auth", useFactory: () => databaseConfig }),
     ],
     // controllers: [],
     providers: [],

@@ -26,10 +26,10 @@
         "@nestjs/core": "^9.0.11",
         "@nestjs/jwt": "^9.0.0",
         "@nestjs/mapped-types": "*",
-        "@nestjs/mongoose": "^9.2.0",
         "@nestjs/passport": "^9.0.0",
         "@nestjs/platform-express": "^9.0.11",
         "@nestjs/swagger": "^6.0.5",
+        "@nestjs/typeorm": "^9.0.1",
         "@types/compression": "^1.7.2",
         "ajv": "^8.11.0",
         "ajv-errors": "^3.0.0",
@@ -41,8 +41,6 @@
         "helmet": "^5.1.1",
         "jsonwebtoken": "^8.5.1",
         "log4js": "^6.6.1",
-        "mongodb": "^4.9.0",
-        "mongoose": "^6.5.2",
         "nanoid": "^3.3.0",
         "nestjs-i18n": "^9.1.6",
         "passport-jwt": "^4.0.0",
@@ -50,7 +48,9 @@
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
         "rxjs": "^7.5.6",
-        "stacktrace-js": "^2.0.2"
+        "sqlite3": "^5.1.2",
+        "stacktrace-js": "^2.0.2",
+        "typeorm": "^0.3.10"
     },
     "devDependencies": {
         "@nestjs/cli": "^9.0.0",

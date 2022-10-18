@@ -64,7 +64,7 @@ const systemAdmin = [
                 },
                 {
                     // 角色管理-设置默认管理员
-                    path: "/roles/adminers",
+                    path: "/roles/defaultAdmin",
                     permission: [RoutePermission.PATCH],
                 },
             ],

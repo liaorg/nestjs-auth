@@ -1,30 +1,15 @@
 import { Module } from "@nestjs/common";
 import { UsersService } from "./users.service";
-import { MongooseModule } from "@nestjs/mongoose";
-// import { JwtModule } from "@nestjs/jwt";
-import { Users, UsersSchema } from "./schemas/users.schema";
 import { UsersController } from "./users.controller";
-// import { TokenService } from "../auth/services";
-// import { jwtConstants } from "../auth/constants";
-// import { AccessToken, AccessTokenSchema } from "../auth/schemas";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { UsersEntity } from "./entities";
+import { AccessTokensEntity, RefreshTokensEntity } from "../auth/entities";
 
 @Module({
     // 注册存储库
-    imports: [
-        MongooseModule.forFeature([
-            { name: Users.name, schema: UsersSchema },
-            // { name: AccessToken.name, schema: AccessTokenSchema },
-        ]),
-        // JwtModule.register({
-        //     secret: jwtConstants.secret,
-        //     signOptions: {
-        //         expiresIn: `${jwtConstants.tokenExpired}s`, // 有效时长
-        //     },
-        // }),
-    ],
+    imports: [TypeOrmModule.forFeature([AccessTokensEntity, RefreshTokensEntity, UsersEntity])],
     controllers: [UsersController],
-    // providers: [UsersService, TokenService],
     providers: [UsersService],
-    exports: [UsersService],
+    exports: [UsersService, TypeOrmModule],
 })
 export class UsersModule {}

@@ -16,7 +16,8 @@ export class RouteMenusController {
         const { roleType, routePath } = user;
         // 根据角色类型获取角色菜单
         const roleRoutes = await this.service.findRoutesByType(roleType);
-        return await this.filterUserRoutes(roleRoutes.routes, routePath);
+        // return await this.filterUserRoutes(roleRoutes.routes, routePath);
+        return await this.filterUserRoutes(roleRoutes, routePath);
     }
 
     // 根据用户权限获取路由菜单

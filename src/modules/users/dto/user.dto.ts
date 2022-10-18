@@ -1,9 +1,8 @@
 import { Exclude } from "class-transformer";
-import { ObjectId } from "mongoose";
 
 class UserProfile {
     // 真实姓名
-    realName?: string;
+    full_name?: string;
     // 电子邮件
     email?: string;
     // 性别
@@ -13,15 +12,15 @@ class UserProfile {
     // 职务
     duty?: string;
     // 身份证号
-    IDNumber?: string;
+    id_number?: string;
     // 手机号
-    mobile?: number;
+    phone_number?: number;
     // QQ
     qq?: number;
 }
 
 export class UserDto {
-    _id: ObjectId;
+    id: number;
     username: string;
     @Exclude()
     password: string;

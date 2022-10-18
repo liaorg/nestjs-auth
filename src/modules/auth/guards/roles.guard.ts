@@ -9,13 +9,13 @@ import { AuthException } from "../auth.exception";
 import { Request } from "express";
 
 /**
- * 用户菜单权限守卫
+ * RBAC 角色菜单权限守卫
  * 验证请求参数
  * @export
- * @class MenuAuthGuard
+ * @class RolesGuard
  */
 @Injectable()
-export class MenuAuthGuard extends AuthGuard() {
+export class RolesGuard extends AuthGuard() {
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
         // 检查请求中是否有登录字段
@@ -23,6 +23,7 @@ export class MenuAuthGuard extends AuthGuard() {
     }
 
     // 验证请求
+    // https://gitee.com/nestplus/nestplus/blob/main/src/modules/user/guards/owner-resource.guard.ts
     validateRequest(request: Request): boolean {
         // 验证请求用户的角色
         const role = request.user ?? "";
