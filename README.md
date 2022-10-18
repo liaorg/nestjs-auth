@@ -62,7 +62,15 @@ Babel JavaScript：支持ES201X、React、FlowType以及GraphQL的语法高亮�
 Remote - WSL
 Path Intellisense 路径补全
 
-$ npm install
+```
+
+## 程序初始化
+
+```
+npm i -g @nestjs/cli
+
+
+npm install
 ```
 
 ## 配置 lanunch.json 进行应用调试
@@ -100,6 +108,31 @@ $ npm run test:cov
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## 配置 git
+
+```
+git config --global user.name "username"
+git config --global user.email useremail@163.com
+```
+
+## 提交规范
+
+git commit -m "type: subject"
+
+1、type (必须)
+用于说明 git commit 的类别，只允许使用下面的标识
+feat: 新功能（feature）
+fix: 修复 bug
+docs: 文档（documentation）
+style: 格式（不影响代码运行的变动）
+refactor: 重构（既不是新增功能，也不是修改 bug 的代码变动）
+test: 增加测试
+chore: 构建过程或辅助工具的变动
+revert: 回滚到上一个版本
+merge: 代码合并
+
+build, ci, perf
 
 ## i18n
 
