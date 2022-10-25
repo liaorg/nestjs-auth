@@ -43,22 +43,18 @@
 
 ```bash
 vscode 扩展
-ashinzekene/NestJS Snippets
-Abhijoy Basak/NestJS Files
+在安装扩展输入框输入 @recommended 安装工作区推荐的扩展
 
 Chinese:中文语言包
-Bracket Pair Colorizer:代码对着色器
-Beautify:格式化代码-html ,js,css
+ashinzekene/NestJS Snippets
+Abhijoy Basak/NestJS Files
 Prettier:格式化代码-JavaScript / TypeScript / CSS
 JavaScript (ES6) snippets:支持 JavaScript ES6 语法
 Bookmarks
 
-JavaScript (ES6) code snippets in StandardJS style:Javascript (ES6)代码片段
-Auto Close Tag:自动闭合 HTML 标签
-Auto Rename Tag:自动重命名 HTML 标签
 node-snippets
 One Dark Pro
-Babel JavaScript：支持ES201X、React、FlowType以及GraphQL的语法高亮。
+ESLint
 Remote - WSL
 Path Intellisense 路径补全
 
