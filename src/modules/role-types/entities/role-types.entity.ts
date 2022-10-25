@@ -1,5 +1,6 @@
 import { CommonEntity } from "@/common/entities";
-import { Column, Entity } from "typeorm";
+import { RolesEntity } from "@/modules/roles/entities";
+import { Column, Entity, OneToMany } from "typeorm";
 
 // 出厂固定为：三种角色 enum:RoleType {systemAdmin = 1,securityAdmin = 2,auditAdmin = 3,}
 // 定义角色类型表 role_types
@@ -22,4 +23,14 @@ export class RoleTypesEntity extends CommonEntity {
      */
     @Column({ unique: true })
     name: string;
+
+    /**
+     * 角色类型下的角色
+     *
+     * @type {RolesEntity[]}
+     */
+    @OneToMany(() => RolesEntity, (role) => role.roleType, {
+        cascade: true,
+    })
+    roles: RolesEntity[];
 }

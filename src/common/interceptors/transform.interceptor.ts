@@ -15,14 +15,14 @@ export class TransformInterceptor implements NestInterceptor {
             map((data) => {
                 const date = new Date().toLocaleString();
                 const responseData = {
-                    statusCode: data.statusCode ?? response.statusCode,
+                    statusCode: data?.statusCode ?? response.statusCode,
                     errorCode: 0,
                     method: request.method,
                     path: request.url,
                     date: date,
                     message: "success",
                 };
-                if (data.errorCode) {
+                if (data?.errorCode) {
                     // 失败
                     responseData.errorCode = data.errorCode;
                     responseData.message = data.errorMessage;
@@ -45,6 +45,9 @@ export class TransformInterceptor implements NestInterceptor {
                     ? `\nBody: ${JSON.stringify(request.body)}`
                     : "";
                 // 记录日志
+                if ([201, 202, 203].includes(responseData.statusCode)) {
+                    responseData.statusCode = 200;
+                }
                 const status = responseData.statusCode;
                 const logFormat = `${requestContent}\n <<< ${status} ${JSON.stringify(data)}`;
                 // console.log(logFormat);

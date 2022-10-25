@@ -1,5 +1,7 @@
 import { CommonEntity } from "@/common/entities";
-import { Column, Entity } from "typeorm";
+import { RoleTypesEntity } from "@/modules/role-types/entities";
+import { UsersEntity } from "@/modules/users/entities";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 /**
  * @class Roles 角色
@@ -11,8 +13,15 @@ import { Column, Entity } from "typeorm";
 @Entity("roles")
 export class RolesEntity extends CommonEntity {
     // 角色类型id
-    @Column({ type: "integer", name: "role_type_id", unique: true })
-    roleTypeId: number;
+    // @Column({ type: "integer", name: "role_type_id", unique: true })
+    // roleTypeId: number;
+
+    // 角色所属角色类型
+    @ManyToOne(() => RoleTypesEntity, (roleType) => roleType.roles, {
+        onDelete: "CASCADE",
+    })
+    @JoinColumn({ name: "role_type_id" })
+    roleType!: RoleTypesEntity;
 
     // 角色名
     @Column({ type: "varchar", unique: true })
@@ -25,4 +34,14 @@ export class RolesEntity extends CommonEntity {
     // 状态：0-失效|1-有效|2-不可编辑
     @Column({ type: "tinyint", default: 0 })
     status: number;
+
+    /**
+     * 角色的用户
+     *
+     * @type {UsersEntity[]}
+     */
+    @OneToMany(() => UsersEntity, (user) => user.role, {
+        cascade: true,
+    })
+    users: UsersEntity[];
 }

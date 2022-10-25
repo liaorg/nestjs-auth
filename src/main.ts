@@ -27,7 +27,7 @@ async function bootstrap(): Promise<string> {
     // 引入全局中间件
     appMiddleware(app);
     // 全局路由前缀
-    // app.setGlobalPrefix("api");
+    app.setGlobalPrefix("admin");
 
     // listen EACCES: permission denied 0.0.0.0:443 时执行以下脚本
     // sudo apt-get install libcap2-bin

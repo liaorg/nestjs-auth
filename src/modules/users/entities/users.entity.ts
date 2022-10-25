@@ -1,6 +1,7 @@
 import { CommonEntity } from "@/common/entities";
 import { AccessTokensEntity } from "@/modules/auth/entities";
-import { Column, Entity, OneToMany } from "typeorm";
+import { RolesEntity } from "@/modules/roles/entities";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 /**
  * @class UsersEntity 用户
@@ -10,8 +11,15 @@ import { Column, Entity, OneToMany } from "typeorm";
 @Entity("users")
 export class UsersEntity extends CommonEntity {
     // 所属角色id：用逗号分隔
-    @Column({ type: "integer", name: "role_id" })
-    roleId: number;
+    // @Column({ type: "integer", name: "role_id" })
+    // roleId: number;
+
+    // 用户所属角色
+    @ManyToOne(() => RolesEntity, (role) => role.users, {
+        onDelete: "CASCADE",
+    })
+    @JoinColumn({ name: "role_id" })
+    role!: RolesEntity;
 
     // 用户名称
     @Column({ type: "varchar", unique: true })
@@ -71,7 +79,7 @@ export class UsersEntity extends CommonEntity {
      * @type {AccessTokensEntity[]}
      * @memberof UserEntity
      */
-    @OneToMany((_type) => AccessTokensEntity, (accessToken) => accessToken.user, {
+    @OneToMany(() => AccessTokensEntity, (accessToken) => accessToken.user, {
         cascade: true,
     })
     accessTokens: AccessTokensEntity[];

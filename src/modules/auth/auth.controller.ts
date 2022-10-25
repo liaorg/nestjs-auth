@@ -17,8 +17,8 @@ export class AuthController {
     @Post("login")
     @GuestDecorator()
     @UseGuards(LocalAuthGuard)
-    login(@RequestUserDecorator() user: RequestUserDto) {
-        return this.authService.createToken(user);
+    async login(@RequestUserDecorator() user: RequestUserDto) {
+        return await this.authService.createToken(user);
     }
 
     /**
@@ -27,7 +27,7 @@ export class AuthController {
      * @returns
      */
     @Post("logout")
-    logout(@Req() req: any) {
-        return this.authService.logout(req);
+    async logout(@Req() req: any) {
+        return await this.authService.logout(req);
     }
 }

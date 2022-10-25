@@ -68,7 +68,7 @@ export const createRoleSql = `CREATE TABLE IF NOT EXISTS "roles" (
   "description" TEXT,
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "role_type_id" FOREIGN KEY ("role_type_id") REFERENCES "role_types" ("id"), -- 外键
+  CONSTRAINT "role_type_id" FOREIGN KEY ("role_type_id") REFERENCES "role_types" ("id") ON DELETE CASCADE ON UPDATE CASCADE, -- 外键
   CONSTRAINT "rolename" UNIQUE ("rolename" ASC)
 );
 
@@ -142,7 +142,7 @@ export const createUserSql = `CREATE TABLE IF NOT EXISTS "users" (
   "qq" INTEGER,
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "role_id" FOREIGN KEY ("role_id") REFERENCES "roles" ("id"),
+  CONSTRAINT "role_id" FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT "username" UNIQUE ("username" ASC)
 );
 
@@ -248,7 +248,7 @@ export const createAccessTokenSql = `CREATE TABLE "access_tokens" (
   "expired_at" INTEGER NOT NULL, -- token过期时间
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "userid" FOREIGN KEY ("userid") REFERENCES "users" ("id")
+  CONSTRAINT "userid" FOREIGN KEY ("userid") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE UNIQUE INDEX "access_tokens_value"
 ON "access_tokens" (
@@ -261,7 +261,7 @@ export const createRefresTokenSql = `CREATE TABLE "refresh_tokens" (
   "expired_at" INTEGER NOT NULL, -- token过期时间
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "access_token_id" FOREIGN KEY ("access_token_id") REFERENCES "access_tokens" ("id")
+  CONSTRAINT "access_token_id" FOREIGN KEY ("access_token_id") REFERENCES "access_tokens" ("id") ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX "refresh_tokens_value"
 ON "refresh_tokens" (

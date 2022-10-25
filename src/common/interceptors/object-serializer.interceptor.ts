@@ -23,7 +23,7 @@ export class ObjectSerializerInterceptor implements NestInterceptor {
         const contextDto = this.getContextDto(context);
         return next.handle().pipe(
             map((data) => {
-                if (typeof data === "object") {
+                if (data && typeof data === "object") {
                     // 转换数据，并排除带有 __ 前缀的属性
                     return plainToInstance(contextDto, data, { excludePrefixes: ["__"] });
                 }
