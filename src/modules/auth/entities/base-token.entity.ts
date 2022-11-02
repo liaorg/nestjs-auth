@@ -1,7 +1,7 @@
 import { getUTCTime } from "@/common/utils";
-import { BaseEntity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Column, PrimaryGeneratedColumn } from "typeorm";
 
-export abstract class BaseTokenEntity extends BaseEntity {
+export abstract class BaseTokenEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
     /**

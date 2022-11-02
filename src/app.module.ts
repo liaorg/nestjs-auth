@@ -10,6 +10,7 @@ import { databaseConfig } from "./config";
 import { AuthModule } from "./modules/auth/auth.module";
 // import { RolesModule } from "./modules/roles/roles.module";
 // import { RouteMenusModule } from "./modules/route-menus/route-menus.module";
+import { AdminModule } from "./modules/admin/admin.module";
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { AuthModule } from "./modules/auth/auth.module";
         TypeOrmModule.forRootAsync({ useFactory: () => databaseConfig }),
         // 其他模块
         AuthModule,
+        AdminModule,
         // RolesModule,
         // RouteMenusModule,
         // 路由模块 Module Router

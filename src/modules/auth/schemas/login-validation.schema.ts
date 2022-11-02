@@ -10,7 +10,7 @@ export const loginValidationSchema = {
             maxLength: 10,
             errorMessage: {
                 type: "must be a string",
-                minLength: "users.error.length_username",
+                minLength: "user.error.length_username",
                 maxLength: "maxLength",
             },
         },
@@ -19,8 +19,8 @@ export const loginValidationSchema = {
     required: ["username", "password"],
     errorMessage: {
         required: {
-            username: "users.error.required_username",
-            password: "users.error.required_password",
+            username: "user.error.required_username",
+            password: "user.error.required_password",
         },
     },
 };

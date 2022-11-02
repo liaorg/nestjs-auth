@@ -1,0 +1,16 @@
+{
+    "systemAdmin": "系统管理员组",
+    "securityAdmin": "业务安全员组",
+    "auditAdmin": "系统审计员组",
+    "defaultSystemAdmin": "默认系统管理员",
+    "defaultSecurityAdmin": "默认业务安全员",
+    "defaultAuditAdmin": "默认系统审计员",
+    "error": {
+        "required_name": "角色名不能为空",
+        "existedName": "角色名 {name} 已经存在",
+        "errorid": "错误的角色id #{id}",
+        "notExisted": "用户 {id} 不存在",
+        "lengthName": "角色名长度为 {constraints.0} - {constraints.1}",
+        "requiredMenu": "角色菜单不能为空"
+    }
+}

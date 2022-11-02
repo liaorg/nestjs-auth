@@ -1,6 +1,5 @@
 // 用户认证 JWT 策略
-
-import { UsersService } from "@/modules/users/users.service";
+import { UserService } from "@/modules/user/user.service";
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
@@ -20,7 +19,7 @@ export interface JwtPayload {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(private readonly userService: UsersService) {
+    constructor(private readonly userService: UserService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -38,8 +37,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return {
             id: user.id,
             username: user.username,
-            role: user.role,
-            roleType: user.roleId,
+            role: user.roleId,
+            roleGroup: user.roleId,
             routePath: [],
         };
     }

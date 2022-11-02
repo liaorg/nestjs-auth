@@ -1,3 +1,3 @@
-export * from "./access-tokens.entity";
+export * from "./access-token.entity";
 export * from "./base-token.entity";
-export * from "./refresh-tokens.entity";
+export * from "./refresh-token.entity";

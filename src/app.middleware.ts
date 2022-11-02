@@ -38,7 +38,7 @@ export function appMiddleware(app: INestApplication): INestApplication {
         credentials: true,
         // 允许方法
         // patch 部分更新 put 为完整更新
-        methods: "GET,HEAD,PUT,PATCH,POST",
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         preflightContinue: false,
         optionsSuccessStatus: 204,
     });

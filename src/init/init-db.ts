@@ -1,26 +1,49 @@
-import { RoleTypesEntity } from "@/modules/role-types/entities";
-import { RolesEntity } from "@/modules/roles/entities";
-import { RoutesEntity } from "@/modules/routes/entities";
-import { UsersEntity } from "@/modules/users/entities";
+import { OperateEntity } from "@/modules/permission/entities";
+import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/role-group/entities";
+import { RoleEntity } from "@/modules/role/entities";
+import { UserEntity, UserRoleRelationEntity } from "@/modules/user/entities";
 import { Logger } from "@nestjs/common";
 import { I18nService } from "nestjs-i18n";
 import { basename } from "path";
 import { EntityTarget } from "typeorm";
 import {
     createAccessTokenSql,
+    createAdminApiPermissionRelationSql,
+    createAdminApiSql,
+    createElementPermissionRelationSql,
+    createElementSql,
+    createMenuPermissionRelationSql,
+    createMenuSql,
+    createOperatePermissionRelationSql,
+    createOperateSql,
+    createPermissionSql,
     createRefresTokenSql,
+    createRoleGroupPermissionRelationSql,
+    createRoleGroupRoleRelationSql,
+    createRoleGroupSql,
+    createRolePermissionRelationSql,
     createRoleSql,
-    createRoleTypeSql,
-    createRouteSql,
+    createUserGroupRoleRelationSql,
+    createUserGroupSql,
+    createUserGroupUserRelationSql,
+    createUserRoleRelationSql,
     createUserSql,
+    defaultAdminApi,
+    defaultMenu,
+    defaultOperate,
     defaultRole,
-    defaultRoleType,
-    defaultRoute,
+    defaultRoleGroup,
+    defaultRoleGroupRoleRelation,
     defaultUser,
+    defaultUserRoleRelation,
 } from "./consts";
+import { defaultElement } from "./consts/default-element";
 import { dbConfig, sqlite3db } from "./db";
+import { addAdminApiData } from "./init-admin-api";
+import { addElementData } from "./init-element";
+import { addMenuData } from "./init-menu";
 
-const initLogger = new Logger("db", { timestamp: true });
+export const initLogger = new Logger("db", { timestamp: true });
 
 // 增加或更新自增加ID
 const setSequence = (tablename: string, isInsert?: boolean) => {
@@ -36,11 +59,11 @@ const setSequence = (tablename: string, isInsert?: boolean) => {
 };
 
 // 创建表并增加数据
-const createAndInsert = async (
+export const createAndInsert = async (
     opt: { tablename: string; createSql: string; entity?: EntityTarget<object>; defaultData?: object[] },
     i18n: I18nService,
 ) => {
-    // 创建角色类型表
+    // 创建表
     const { tablename, createSql, entity, defaultData } = opt;
     initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
     await sqlite3db.query(createSql);
@@ -54,14 +77,34 @@ const createAndInsert = async (
     initLogger.log(i18n.t("init.finishedInitTable", { args: { tablename } }));
 };
 
-// 创建token表
-const createToken = async (tablename: string, createSql: string, i18n: I18nService) => {
+// 创建访问令牌表 token表
+export const createToken = async (tablename: string, createSql: string, i18n: I18nService) => {
     initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
     await sqlite3db.query(createSql);
     initLogger.log(i18n.t("init.finishedInitTable", { args: { tablename } }));
 };
 
-// 初始化默认用户，路由菜单，角色类型，角色等
+// 创建表
+export const createTable = async (tablename: string, createSql: string, i18n: I18nService) => {
+    initLogger.log(i18n.t("init.createTable", { args: { tablename } }));
+    await sqlite3db.query(createSql);
+};
+// 添加默认数据
+export const addDefaultData = async (
+    opt: { tablename: string; entity?: EntityTarget<object>; defaultData?: object[] },
+    i18n: I18nService,
+) => {
+    const { tablename, entity, defaultData } = opt;
+    initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
+    const respository = sqlite3db.getRepository(entity);
+    const data = await respository.insert(defaultData);
+    // 更新自增加ID
+    setSequence(tablename);
+    initLogger.log(i18n.t("init.finishedInitTable", { args: { tablename } }));
+    return data;
+};
+
+// 初始化默认用户，菜单，角色组，角色等
 export async function initDefaultData(i18n: I18nService) {
     initLogger.log(i18n.t("init.begainInitDb"));
     // 数据库初始化
@@ -70,50 +113,119 @@ export async function initDefaultData(i18n: I18nService) {
         initLogger.log(i18n.t("init.dbConnected") + ` ${basename(dbConfig.database as string)}`);
         // 删除数据库及其所有数据
         await sqlite3db.dropDatabase();
+        // 新建没有默认数据的表
         await Promise.all([
-            // 创建角色类型表
-            createAndInsert(
+            // 令牌token
+            createTable("access_token", createAccessTokenSql, i18n),
+            createTable("refresh_token", createRefresTokenSql, i18n),
+            // 创建权限表
+            createTable("permission", createPermissionSql, i18n),
+            // 页面api接口表
+            createTable("admin_api", createAdminApiSql, i18n),
+            // 页面元素表
+            createTable("element", createElementSql, i18n),
+            // 菜单表
+            createTable("menu", createMenuSql, i18n),
+            // 操作表
+            createTable("operate", createOperateSql, i18n),
+            // 角色表
+            createTable("role", createRoleSql, i18n),
+            // 角色组表-角色类型
+            createTable("role_group", createRoleGroupSql, i18n),
+            // 创建用户表
+            createTable("user", createUserSql, i18n),
+            // 用户组表
+            createTable("user_group", createUserGroupSql, i18n),
+        ]);
+        // 创建关联关系表
+        await Promise.all([
+            // 页面api接口表与权限表关联表
+            createTable("admin_api_permission_relation", createAdminApiPermissionRelationSql, i18n),
+            // 页面元素表与权限表关联表
+            createTable("element_permission_relation", createElementPermissionRelationSql, i18n),
+            // 菜单表与权限表关联表
+            createTable("menu_permission_relation", createMenuPermissionRelationSql, i18n),
+            // 操作表与权限表关联表
+            createTable("operate_permission_relation", createOperatePermissionRelationSql, i18n),
+            // 角色表与权限表关联表
+            createTable("role_permission_relation", createRolePermissionRelationSql, i18n),
+            // 角色组表和权限表关联表
+            createTable("role_group_permission_relation", createRoleGroupPermissionRelationSql, i18n),
+            // 角色组表和角色表关联表
+            createTable("role_group_role_relation", createRoleGroupRoleRelationSql, i18n),
+            // 用户表和角色表关联表
+            createTable("user_role_relation", createUserRoleRelationSql, i18n),
+            // 用户组表和用户表关联表
+            createTable("user_group_user_relation", createUserGroupUserRelationSql, i18n),
+            // 用户组表和角色表关联表
+            createTable("user_group_role_relation", createUserGroupRoleRelationSql, i18n),
+        ]);
+
+        // 添加默认数据
+        await Promise.all([
+            // 角色组
+            addDefaultData(
                 {
-                    tablename: "role_types",
-                    createSql: createRoleTypeSql,
-                    entity: RoleTypesEntity,
-                    defaultData: defaultRoleType,
+                    tablename: "role_group",
+                    entity: RoleGroupEntity,
+                    defaultData: defaultRoleGroup,
                 },
                 i18n,
             ),
-            // 创建角色表
-            createAndInsert(
+            // 角色
+            addDefaultData(
                 {
-                    tablename: "roles",
-                    createSql: createRoleSql,
-                    entity: RolesEntity,
+                    tablename: "role",
+                    entity: RoleEntity,
                     defaultData: defaultRole,
                 },
                 i18n,
             ),
-            // 用户表
-            createAndInsert(
+            // 用户
+            addDefaultData(
                 {
-                    tablename: "users",
-                    createSql: createUserSql,
-                    entity: UsersEntity,
+                    tablename: "user",
+                    entity: UserEntity,
                     defaultData: defaultUser,
                 },
                 i18n,
             ),
-            // 路由菜单表
-            createAndInsert(
+            // 操作表
+            addDefaultData(
                 {
-                    tablename: "routes",
-                    createSql: createRouteSql,
-                    entity: RoutesEntity,
-                    defaultData: defaultRoute,
+                    tablename: "operate",
+                    entity: OperateEntity,
+                    defaultData: defaultOperate,
                 },
                 i18n,
             ),
-            // 令牌token
-            createToken("access_tokens", createAccessTokenSql, i18n),
-            createToken("refresh_tokens", createRefresTokenSql, i18n),
+        ]);
+        await Promise.all([
+            // 添加默认关联关系表数据
+            // 角色组表和角色表关联关系
+            addDefaultData(
+                {
+                    tablename: "role_group_role_relation",
+                    entity: RoleGroupRoleRelationEntity,
+                    defaultData: defaultRoleGroupRoleRelation,
+                },
+                i18n,
+            ),
+            // 用户表和角色表关联表
+            addDefaultData(
+                {
+                    tablename: "user_role_relation",
+                    entity: UserRoleRelationEntity,
+                    defaultData: defaultUserRoleRelation,
+                },
+                i18n,
+            ),
+            // 添加页面api权限
+            addAdminApiData(defaultAdminApi, i18n),
+            // 添加要隐藏的页面元素权限
+            addElementData(defaultElement, i18n),
+            // 添加菜单权限
+            addMenuData(defaultMenu, i18n),
         ]);
 
         // 数据库初始化结束

@@ -24,7 +24,6 @@ async function bootstrap() {
     } else {
         initLogger.log(i18n.t("init.requiredParam"));
     }
-
     initLogger.log(i18n.t("init.finishedInit"));
     await app.close();
 }

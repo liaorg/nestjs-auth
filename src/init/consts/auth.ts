@@ -1,5 +1,6 @@
 import { getUTCTime } from "@/common/utils";
-import { RoleType } from "@/modules/role-types/enums";
+import { OperateEnum } from "@/modules/permission/enums/operate.enum";
+import { RoleGroupEnum } from "@/modules/role-group/enums";
 import { randomBytes, scryptSync } from "crypto";
 
 // 当前时间戳
@@ -9,124 +10,265 @@ const timestamp = now.unix();
 // 所有表：SELECT name FROM sqlite_master WHERE type="table"
 // 所有表的自增id：SELECT * FROM sqlite_sequence
 
-// 角色类型表
-export const createRoleTypeSql = `CREATE TABLE IF NOT EXISTS "role_types" (
-  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "type" TINYINT(2) NOT NULL, -- 角色类型：1 systemAdmin 系统管理员 2 securityAdmin 业务安全员 3 auditAdmin 系统审计员
-  "name" VARCHAR(30) NOT NULL,
-  "description" TEXT,
+// 访问令牌表 token表
+export const createAccessTokenSql = `CREATE TABLE "main"."access_token" (
+  "id" VARCHAR(36) NOT NULL PRIMARY KEY,
+  "value" VARCHAR(500), -- token值
+  "user_id" INTEGER, -- 用户id
+  "expired_at" INTEGER NOT NULL, -- token过期时间
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "type" UNIQUE ("type" ASC), -- 唯一值
-  CONSTRAINT "name" UNIQUE ("name" ASC)
+  CONSTRAINT "value" UNIQUE ("value" ASC),
+  CONSTRAINT "fk_access_token_user_1" FOREIGN KEY ("user_id") REFERENCES "user" ("id")
 );
-
-CREATE UNIQUE INDEX "role_types_type"
-ON "role_types" (
-  "type" ASC
+CREATE UNIQUE INDEX "access_token_value"
+ON "access_token" (
+  "value" ASC
+);`;
+// 刷新令牌表 token表
+export const createRefresTokenSql = `CREATE TABLE "main"."refresh_token" (
+  "id" VARCHAR(36) NOT NULL PRIMARY KEY,
+  "value" VARCHAR(500),
+  "access_token_id" VARCHAR(36) NOT NULL,
+  "expired_at" INTEGER NOT NULL,
+  "create_date" INTEGER NOT NULL,
+  "update_date" INTEGER NOT NULL,
+  CONSTRAINT "value" UNIQUE ("value" ASC),
+  CONSTRAINT "fk_refresh_token_access_token_1" FOREIGN KEY ("access_token_id") REFERENCES "access_token" ("id")
 );
-CREATE UNIQUE INDEX "role_types_name"
-ON "role_types" (
-  "name" ASC
+CREATE UNIQUE INDEX "refresh_token_value"
+ON "refresh_token" (
+  "value" ASC
 );`;
 
-// 默认角色类型
-export const insertRoleTypeSql = `INSERT INTO "role_types"
-(id, type, name, create_date, update_date)
-values(?, ?, ?, ?, ?);`;
-export const defaultRoleType = [
-    {
-        id: RoleType.systemAdmin,
-        type: RoleType.systemAdmin,
-        name: "roles.systemAdmin",
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-    {
-        id: RoleType.securityAdmin,
-        type: RoleType.securityAdmin,
-        name: "roles.securityAdmin",
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-    {
-        id: RoleType.auditAdmin,
-        type: RoleType.auditAdmin,
-        name: "roles.auditAdmin",
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-];
-
-// 创建角色表
-export const createRoleSql = `CREATE TABLE IF NOT EXISTS "roles" (
+// 权限表 与权限类型表一对一关系
+export const createPermissionSql = `CREATE TABLE "main"."permission" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "role_type_id" INTEGER NOT NULL, -- 角色类型id
-  "rolename" VARCHAR(30) NOT NULL,
+  "type" VARCHAR(30) NOT NULL -- 权限类型 menu admin_api element operate
+);
+CREATE INDEX "permission_type"
+ON "permission" (
+  "type" ASC
+);`;
+
+// 页面api接口表
+export const createAdminApiSql = `CREATE TABLE "main"."admin_api" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "path" VARCHAR(100) NOT NULL, -- 接口URL路径
+  "method" VARCHAR(20) NOT NULL, -- 操作方法 *,GET,HEAD,PUT,PATCH,POST,DELETE
+  CONSTRAINT "path" UNIQUE ("path" ASC)
+);
+CREATE UNIQUE INDEX "admin_api_path"
+ON "admin_api" (
+  "path" ASC
+);`;
+// 页面api接口表与权限表关联表
+export const createAdminApiPermissionRelationSql = `CREATE TABLE "main"."admin_api_permission_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "admin_api_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_admin_api_permission_relation_admin_api_1" FOREIGN KEY ("admin_api_id") REFERENCES "admin_api" ("id"),
+  CONSTRAINT "fk_admin_api_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+);`;
+
+// 业务系统表与权限表关联表
+export const createBusinessPermissionRelationSql = `CREATE TABLE "main"."business_permission_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "business_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_business_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+);`;
+
+// 页面元素表，控制页面元素是否隐藏
+export const createElementSql = `CREATE TABLE "main"."element" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "node" VARCHAR(32) NOT NULL -- 元素id名
+);`;
+// 页面元素表与权限表关联表
+export const createElementPermissionRelationSql = `CREATE TABLE "main"."element_permission_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "element_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_element_permission_relation_element_1" FOREIGN KEY ("element_id") REFERENCES "element" ("id"),
+  CONSTRAINT "fk_element_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+);`;
+
+// 菜单表
+export const createMenuSql = `CREATE TABLE "main"."menu" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "parent_id" INTEGER, -- 父菜单id
+  "path" VARCHAR(150) NOT NULL, -- 菜单路由路径
+  "name" VARCHAR(30) NULL, -- 菜单名称，可以做为前端组件名要大写开头
+  "locale" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 menu.json 中的字段
+  "requires_auth" TINYINT(2) NOT NULL DEFAULT 1, -- 是否需要登录鉴权requiresAuth 0-否|1-是
+  "hide_in_menu" TINYINT(2) NOT NULL DEFAULT 0, -- 是否在菜单中隐藏该项hideInMenu 0-否|1-是
+  "icon" VARCHAR(30), -- 图标
+  "order" INTEGER, -- 排序值
+  "status" TINYINT(2) NOT NULL DEFAULT 0 -- 状态：0-失效|1-有效|2-不可编辑
+);`;
+// 菜单表与权限表关联表
+export const createMenuPermissionRelationSql = `CREATE TABLE "main"."menu_permission_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "menu_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_menu_permission__relation_menu_1" FOREIGN KEY ("menu_id") REFERENCES "menu" ("id"),
+  CONSTRAINT "fk_menu_permission__relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+);`;
+
+// 操作表
+export const createOperateSql = `CREATE TABLE "main"."operate" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "method" VARCHAR(20) NOT NULL -- 操作方法 *,GET,HEAD,PUT,PATCH,POST,DELETE
+);`;
+export const defaultOperate = [
+    { id: OperateEnum.ALL, method: "*" },
+    { id: OperateEnum.GET, method: "GET" },
+    { id: OperateEnum.POST, method: "POST" },
+    { id: OperateEnum.DELETE, method: "DELETE" },
+    { id: OperateEnum.PATCH, method: "PATCH" },
+    { id: OperateEnum.PUT, method: "PUT" },
+    { id: OperateEnum.HEAD, method: "HEAD" },
+];
+// 操作表与权限表关联表
+export const createOperatePermissionRelationSql = `CREATE TABLE "main"."operate_permission_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "operate_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_operate_permission_relation_operate_1" FOREIGN KEY ("operate_id") REFERENCES "operate" ("id"),
+  CONSTRAINT "fk_operate_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+);`;
+
+// 角色表
+export const createRoleSql = `CREATE TABLE "main"."role" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "name" VARCHAR(30) NOT NULL,
   "is_default" TINYINT(2) NOT NULL DEFAULT 0, -- 是否默认角色：0-否|1-是
   "status" TINYINT(2) NOT NULL DEFAULT 0, -- 状态：0-失效|1-有效|2-不可编辑
+  "locale" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 role.json 中的字段
   "description" TEXT,
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "role_type_id" FOREIGN KEY ("role_type_id") REFERENCES "role_types" ("id") ON DELETE CASCADE ON UPDATE CASCADE, -- 外键
-  CONSTRAINT "rolename" UNIQUE ("rolename" ASC)
+  CONSTRAINT "name" UNIQUE ("name" ASC)
 );
-
-CREATE UNIQUE INDEX "roles_rolename"
-ON "roles" (
-  "rolename" ASC
-);
-CREATE INDEX "roles_role_type_id"
-ON "roles" (
-  "role_type_id" ASC
-);
-CREATE INDEX "roles_status"
-ON "roles" (
-  "status" ASC
+CREATE UNIQUE INDEX "role_name"
+ON "role" (
+  "name" ASC
 );`;
-
+// 角色表与权限表关联表
+export const createRolePermissionRelationSql = `CREATE TABLE "main"."role_permission_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "role_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_role_permission_relation_role_1" FOREIGN KEY ("role_id") REFERENCES "role" ("id"),
+  CONSTRAINT "fk_role_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+);`;
 // 默认角色
-export const insertRoleSql = `INSERT INTO "roles"
-(id, role_type_id, rolename, is_default, status, create_date, update_date)
+export const insertRoleSql = `INSERT INTO "main"."role"
+(id, name, is_default, status, locale, create_date, update_date)
 values(?, ?, ?, ?, ?, ?, ?);`;
 export const defaultRole = [
     // 默认系统管理员
     {
-        id: RoleType.systemAdmin,
-        roleTypeId: RoleType.systemAdmin,
-        rolename: "roles.defaultSystemAdmin",
+        id: RoleGroupEnum.systemAdmin,
+        name: "defaultSystemAdmin",
         isDefault: true,
         status: 1,
+        locale: "role.defaultSystemAdmin",
         createDate: timestamp,
         updateDate: timestamp,
     },
     // 默认业务安全员
     {
-        id: RoleType.securityAdmin,
-        roleTypeId: RoleType.securityAdmin,
-        rolename: "roles.defaultSecurityAdmin",
+        id: RoleGroupEnum.securityAdmin,
+        name: "defaultSecurityAdmin",
         isDefault: true,
         status: 1,
+        locale: "defaultSecurityAdmin",
         createDate: timestamp,
         updateDate: timestamp,
     },
     // 默认系统审计员
     {
-        id: RoleType.auditAdmin,
-        roleTypeId: RoleType.auditAdmin,
-        rolename: "roles.defaultAuditAdmin",
+        id: RoleGroupEnum.auditAdmin,
+        name: "roles.defaultAuditAdmin",
         isDefault: true,
         status: 1,
+        locale: "role.defaultAuditAdmin",
         createDate: timestamp,
         updateDate: timestamp,
     },
 ];
 
-// 创建用户表
-export const createUserSql = `CREATE TABLE IF NOT EXISTS "users" (
+// 角色组表-角色类型
+export const createRoleGroupSql = `CREATE TABLE "main"."role_group" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "type" TINYINT(2) NOT NULL, -- 角色组：1 systemAdmin 系统管理员 2 securityAdmin 业务安全员 3 auditAdmin 系统审计员
+  "name" VARCHAR(30) NOT NULL,
+  "locale" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 role-group.json 中的字段
+  CONSTRAINT "type" UNIQUE ("type" ASC), -- 唯一值
+  CONSTRAINT "name" UNIQUE ("name" ASC)
+);
+CREATE UNIQUE INDEX "role_group_type"
+ON "role_group" (
+  "type" ASC
+);
+CREATE UNIQUE INDEX "role_group_name"
+ON "role_group" (
+  "name" ASC
+);`;
+// 默认角色组
+export const insertRoleGroupSql = `INSERT INTO "main"."role_group"
+(id, type, name, locale)
+values(?, ?, ?, ?);`;
+export const defaultRoleGroup = [
+    {
+        id: RoleGroupEnum.systemAdmin,
+        type: RoleGroupEnum.systemAdmin,
+        name: "systemAdmin",
+        locale: "roleGroup.systemAdmin",
+    },
+    {
+        id: RoleGroupEnum.securityAdmin,
+        type: RoleGroupEnum.securityAdmin,
+        name: "securityAdmin",
+        locale: "roleGroup.securityAdmin",
+    },
+    {
+        id: RoleGroupEnum.auditAdmin,
+        type: RoleGroupEnum.auditAdmin,
+        name: "auditAdmin",
+        locale: "roleGroup.auditAdmin",
+    },
+];
+
+// 角色组表和权限表关联表
+// 一个角色只能属于一个角色组
+export const createRoleGroupPermissionRelationSql = `CREATE TABLE "main"."role_group_permission_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "role_group_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_role_group_permission_relation_role_group_1" FOREIGN KEY ("role_group_id") REFERENCES "role_group" ("id"),
+  CONSTRAINT "fk_role_group_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+);`;
+
+// 角色组表和角色表关联表
+export const createRoleGroupRoleRelationSql = `CREATE TABLE "main"."role_group_role_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "role_group_id" INTEGER NOT NULL,
   "role_id" INTEGER NOT NULL,
-  "username" VARCHAR(30) NOT NULL,
+  CONSTRAINT "fk_role_group_role_relation_role_group_1" FOREIGN KEY ("role_group_id") REFERENCES "role_group" ("id"),
+  CONSTRAINT "fk_role_group_role_relation_role_1" FOREIGN KEY ("role_id") REFERENCES "role" ("id")
+);`;
+export const defaultRoleGroupRoleRelation = [
+    { id: 1, roleGroupId: RoleGroupEnum.systemAdmin, roleId: RoleGroupEnum.systemAdmin },
+    { id: 2, roleGroupId: RoleGroupEnum.securityAdmin, roleId: RoleGroupEnum.securityAdmin },
+    { id: 3, roleGroupId: RoleGroupEnum.auditAdmin, roleId: RoleGroupEnum.auditAdmin },
+];
+
+// 创建用户表
+export const createUserSql = `CREATE TABLE "main"."user" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "name" VARCHAR(30) NOT NULL,
   "password" VARCHAR(255) NOT NULL,
   "password_salt" VARCHAR(255) NOT NULL,
   "is_default" TINYINT(2) NOT NULL DEFAULT 0, -- 是否默认管理员：0-否|1-是
@@ -142,27 +284,16 @@ export const createUserSql = `CREATE TABLE IF NOT EXISTS "users" (
   "qq" INTEGER,
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "role_id" FOREIGN KEY ("role_id") REFERENCES "roles" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT "username" UNIQUE ("username" ASC)
+  CONSTRAINT "name" UNIQUE ("name" ASC)
 );
-
-CREATE UNIQUE INDEX "username"
-ON "users" (
-  "username" ASC
-);
-CREATE INDEX "users_role_id"
-ON "users" (
-  "role_id" ASC
-);
-CREATE INDEX "users_status"
-ON "users" (
-  "status" ASC
+CREATE UNIQUE INDEX "user_name"
+ON "user" (
+  "name" ASC
 );`;
-
 // 默认用户
-export const insertUserSql = `INSERT INTO "users"
-(id, role_id, username, password, password_salt, is_default, status, create_date, update_date)
-values(?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+export const insertUserSql = `INSERT INTO "main"."user"
+(id, name, password, password_salt, is_default, status, create_date, update_date)
+values(?, ?, ?, ?, ?, ?, ?, ?);`;
 
 // 生成盐值
 const createSalt = (size: number) => randomBytes(size).toString("hex");
@@ -179,17 +310,17 @@ const year = now.year();
 const size = 16;
 const defaultAdmin = {
     systemAdmin: {
-        username: "admin",
+        name: "admin",
         password: `Admin@${year}`,
         passwordSalt: createSalt(size),
     },
     securityAdmin: {
-        username: "sec",
+        name: "sec",
         password: `Sec@${year}`,
         passwordSalt: createSalt(size),
     },
     auditAdmin: {
-        username: "audit",
+        name: "audit",
         password: `Audit@${year}`,
         passwordSalt: createSalt(size),
     },
@@ -210,8 +341,7 @@ defaultAdmin.auditAdmin.password = createPassword(
 export const defaultUser = [
     // 默认系统管理员
     {
-        id: 1,
-        roleId: RoleType.systemAdmin,
+        id: RoleGroupEnum.systemAdmin,
         ...defaultAdmin.systemAdmin,
         isDefault: true,
         status: 1,
@@ -220,8 +350,7 @@ export const defaultUser = [
     },
     // 默认业务安全员
     {
-        id: 2,
-        roleId: RoleType.securityAdmin,
+        id: RoleGroupEnum.securityAdmin,
         ...defaultAdmin.securityAdmin,
         isDefault: true,
         status: 1,
@@ -230,8 +359,7 @@ export const defaultUser = [
     },
     // 默认系统审计员
     {
-        id: 3,
-        roleId: RoleType.auditAdmin,
+        id: RoleGroupEnum.auditAdmin,
         ...defaultAdmin.auditAdmin,
         isDefault: true,
         status: 1,
@@ -240,130 +368,43 @@ export const defaultUser = [
     },
 ];
 
-// 登录 token
-export const createAccessTokenSql = `CREATE TABLE "access_tokens" (
-  "id" VARCHAR(36) NOT NULL PRIMARY KEY,
-  "value" VARCHAR(500), -- token值
-  "userid" INTEGER, -- 用户id
-  "expired_at" INTEGER NOT NULL, -- token过期时间
-  "create_date" INTEGER NOT NULL,
-  "update_date" INTEGER NOT NULL,
-  CONSTRAINT "userid" FOREIGN KEY ("userid") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-CREATE UNIQUE INDEX "access_tokens_value"
-ON "access_tokens" (
-  "value" ASC
-);`;
-export const createRefresTokenSql = `CREATE TABLE "refresh_tokens" (
-  "id" VARCHAR(36) NOT NULL PRIMARY KEY,
-  "value" VARCHAR(500), -- token值
-  "access_token_id" INTEGER,
-  "expired_at" INTEGER NOT NULL, -- token过期时间
-  "create_date" INTEGER NOT NULL,
-  "update_date" INTEGER NOT NULL,
-  CONSTRAINT "access_token_id" FOREIGN KEY ("access_token_id") REFERENCES "access_tokens" ("id") ON DELETE CASCADE
-);
-CREATE UNIQUE INDEX "refresh_tokens_value"
-ON "refresh_tokens" (
-  "value" ASC
-);
-CREATE UNIQUE INDEX "refresh_tokens_access_token_id"
-ON "refresh_tokens" (
-  "access_token_id" ASC
-);`;
-
-// 创建路由菜单表
-export const createRouteSql = `CREATE TABLE IF NOT EXISTS "routes" (
+// 用户表和角色表关联表
+// 一个用户只能属于一个角色
+export const createUserRoleRelationSql = `CREATE TABLE "main"."user_role_relation" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "role_id" VARCHAR(255), -- 所属角色id：用逗号分隔
-  "parent_id" INTEGER, -- 父路由
-  "path" VARCHAR(255) NOT NULL, -- 路由路径
-  "name" VARCHAR(30) NULL, -- 路由名称，可以做为前端组件名要大写开头
-  "locale" VARCHAR(255), -- 本地化/国际化名称，对应 i18n 文件 routes.json 中的字段
-  "requires_auth" TINYINT(2), -- 是否需要登录鉴权requiresAuth 0-否|1-是
-  "hide_in_menu" TINYINT(2), -- 是否在菜单中隐藏该项hideInMenu 0-否|1-是
-  "icon" VARCHAR(30), -- 图标
-  "order" INTEGER, -- 排序值
-  "is_sub_action" TINYINT(2) NOT NULL DEFAULT 0, -- 是否页面操作：0-否|1-是
-  "sub_action_permission" VARCHAR(255), -- 操作权限就是对应的http操作方法：*或者post|patch|delete|get，用逗号分隔
-  "status" TINYINT(2) NOT NULL DEFAULT 0, -- 状态：0-失效|1-有效|2-不可编辑
-  "description" TEXT,
-  "create_date" INTEGER NOT NULL,
-  "update_date" INTEGER NOT NULL,
-  CONSTRAINT "name" UNIQUE ("name" ASC)
-);
-
-CREATE INDEX "routes_path"
-ON "routes" (
-  "path" ASC
-);
-CREATE INDEX "routes_role_id"
-ON "routes" (
-  "role_id" ASC
-);
-CREATE INDEX "routes_parent_id"
-ON "routes" (
-  "parent_id" ASC
-);
-CREATE INDEX "routes_status"
-ON "routes" (
-  "status" ASC
+  "user_id" INTEGER NOT NULL,
+  "role_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_user_role_relation_user_1" FOREIGN KEY ("user_id") REFERENCES "user" ("id"),
+  CONSTRAINT "fk_user_role_relation_role_1" FOREIGN KEY ("role_id") REFERENCES "role" ("id")
 );`;
-// 默认路由
-export const insertRouteSql = `INSERT INTO "routes"
-(id, role_id, parent_id, path, name, locale, requires_auth, hide_in_menu, icon, order, permission, status, is_subactions, create_date, update_date)
-values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
-
-// 一级路由
-const topRoute = [
-    {
-        // 登录
-        id: 1,
-        // 所属角色id
-        roleId: null,
-        // 父路由
-        parentId: null,
-        // 路径
-        path: "/login",
-        // 名称，可以做为前端组件名要大写开头
-        name: "Login",
-        // 对应 i18n 文件 routes.json 中的字段
-        locale: "routes.login",
-        // 是否需要登录鉴权
-        requiresAuth: false,
-        // 是否在左侧菜单中隐藏该项
-        hideInMenu: true,
-        // 图标
-        icon: null,
-        // 排序值
-        order: 0,
-        // 操作权限就是对应的http操作方法：*或者post|patch|delete|get，用逗号分隔
-        permission: null,
-        // 状态：0-失效|1-有效|2-不可编辑
-        status: 1,
-        // 是否页面操作：0-否|1-是
-        isSubactions: 0,
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-    {
-        // 退出登录
-        id: 2,
-        roleId: null,
-        parentId: null,
-        path: "/logout",
-        name: "Logout",
-        locale: "routes.logout",
-        requiresAuth: false,
-        hideInMenu: true,
-        icon: null,
-        order: 0,
-        permission: null,
-        status: 1,
-        isSubactions: 0,
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
+export const defaultUserRoleRelation = [
+    { id: 1, userId: RoleGroupEnum.systemAdmin, roleId: RoleGroupEnum.systemAdmin },
+    { id: 2, userId: RoleGroupEnum.securityAdmin, roleId: RoleGroupEnum.securityAdmin },
+    { id: 3, userId: RoleGroupEnum.auditAdmin, roleId: RoleGroupEnum.auditAdmin },
 ];
 
-export const defaultRoute = [...topRoute];
+// 用户组表
+export const createUserGroupSql = `CREATE TABLE "main"."user_group" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "name" TEXT
+);`;
+
+// 用户组表和用户表关联表
+// 一个用户只能属于一个用户组
+export const createUserGroupUserRelationSql = `CREATE TABLE "main"."user_group_user_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "user_id" INTEGER NOT NULL,
+  "group_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_user_group_user_users_1" FOREIGN KEY ("user_id") REFERENCES "user" ("id"),
+  CONSTRAINT "fk_user_group_user_user_groups_1" FOREIGN KEY ("group_id") REFERENCES "user_group" ("id")
+);`;
+
+// 用户组表和角色表关联表
+// 一个用户组只能属于一个角色
+export const createUserGroupRoleRelationSql = `CREATE TABLE "main"."user_group_role_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "group_id" INTEGER NOT NULL,
+  "role_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_user_group_role_relation_user_group_1" FOREIGN KEY ("group_id") REFERENCES "user_group" ("id"),
+  CONSTRAINT "fk_user_group_role_relation_role_1" FOREIGN KEY ("role_id") REFERENCES "role" ("id")
+);`;

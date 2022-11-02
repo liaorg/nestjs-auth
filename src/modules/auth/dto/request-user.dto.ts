@@ -1,4 +1,4 @@
-import { RoleType } from "@/modules/role-types/enums";
+import { RoleGroupEnum } from "@/modules/role-group/enums";
 
 /**
  * 由JWT策略解析荷载后存入Rquest.user的对象
@@ -9,7 +9,7 @@ import { RoleType } from "@/modules/role-types/enums";
 export class RequestUserDto {
     id: number;
     username: string;
-    role: string;
-    roleType: RoleType;
+    role: number;
+    roleGroup: RoleGroupEnum;
     routePath: string[];
 }

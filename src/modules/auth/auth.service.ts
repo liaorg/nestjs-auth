@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { scryptSync } from "crypto";
-import { UsersService } from "../users/users.service";
+import { UserService } from "../user/user.service";
 import { ExtractJwt } from "passport-jwt";
 import { getUTCTime } from "@/common/utils";
 import { AuthException } from "./auth.exception";
 import { AuthError } from "@/common/constants";
-import { UserInfoDto } from "../users/dto/user-info.dto";
+import { UserInfoDto } from "../user/dto/user-info.dto";
 import { RequestUserDto } from "./dto";
-import { TokensService } from "./services";
+import { TokenService } from "./services";
 
 /**
  * 自定义中间件
@@ -15,7 +15,7 @@ import { TokensService } from "./services";
  */
 @Injectable()
 export class AuthService {
-    constructor(private readonly usersService: UsersService, private readonly tokensService: TokensService) {}
+    constructor(private readonly userService: UserService, private readonly tokenService: TokenService) {}
     /**
      * 用户登录，查询用户是否存在
      * @param name
@@ -23,7 +23,7 @@ export class AuthService {
      * @returns
      */
     async validateUser(name: string, passwd: string): Promise<UserInfoDto | null | undefined> {
-        const user = await this.usersService.findOneByName(name);
+        const user = await this.userService.findOneByName(name);
         if (!user) {
             // 用户不存在
             return null;
@@ -47,7 +47,7 @@ export class AuthService {
     async logout(req: Request) {
         const accessToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req as any);
         if (accessToken) {
-            return await this.tokensService.removeAccessToken(accessToken);
+            return await this.tokenService.removeAccessToken(accessToken);
         }
         const error = {
             statusCode: 403,
@@ -63,8 +63,8 @@ export class AuthService {
      */
     async createToken(reqUser: RequestUserDto) {
         const now = getUTCTime();
-        const user = await this.usersService.findById(reqUser.id);
-        const { accessToken } = await this.tokensService.generateAccessToken(user, now);
+        const user = await this.userService.findById(reqUser.id);
+        const { accessToken } = await this.tokenService.generateAccessToken(user.id, now);
         // TODO 记录登录日志
         return accessToken.value;
     }

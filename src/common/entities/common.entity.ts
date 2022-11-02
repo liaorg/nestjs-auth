@@ -1,5 +1,5 @@
 import { getUTCTime } from "@/common/utils";
-import { BaseEntity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Column, PrimaryGeneratedColumn } from "typeorm";
 
 // https://typeorm.io/entities
 // sqlite
@@ -11,7 +11,7 @@ import { BaseEntity, Column, PrimaryGeneratedColumn } from "typeorm";
 // float, double, real, double precision, datetime, varying character, character, native character,
 // varchar, nchar, nvarchar2, unsigned big int, boolean, blob, text, clob, date
 
-export abstract class CommonEntity extends BaseEntity {
+export abstract class CommonEntity {
     @PrimaryGeneratedColumn()
     id: number;
 

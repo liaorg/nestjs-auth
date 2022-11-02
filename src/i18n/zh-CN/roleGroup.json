@@ -1,0 +1,6 @@
+{
+    "systemAdmin": "系统管理员组",
+    "securityAdmin": "业务安全员组",
+    "auditAdmin": "系统审计员组",
+    "error": {}
+}

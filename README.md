@@ -182,12 +182,12 @@ npm install --save @nestjs/mongoose mongoose
 
 ## 模块开发流程
 
-1. 生成一个 REST API 类 `nest g res modules/roles`
+1. 生成一个 REST API 类 `nest g res modules/role`
 2. 定义表结构，创建文件夹 schemas 和 schema (Roles RolesSchema createRoleValidationSchema)
 3. 创建 dto 类
 4. 如果有 controller 操作接口，要在对应的 dto 类注入验证 schema 对象 @RequestValidationSchema(createRoleValidationSchema)
-5. 增加 i18n 文件 i18n/zh-CN/roles.json
-6. 增加错误异常文件类 roles.exception.ts
+5. 增加 i18n 文件 i18n/zh-CN/role.json
+6. 增加错误异常文件类 role.exception.ts
 
 ```ts
 import { ApiException } from "@/common/exceptions";
@@ -200,7 +200,7 @@ export class RolesException extends ApiException {
 }
 ```
 
-7. 在文件 api-error-code.constant.ts 中增加错误对象`RolesErros`
+7. 在文件 api-error-code.constant.ts 中增加错误对象`RoleErros`
 
 8. 在 module 中导入对应的数据库连接服务及其他必要服务
 

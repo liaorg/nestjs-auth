@@ -9,7 +9,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { ExtractJwt } from "passport-jwt";
 import { AuthException } from "../auth.exception";
 import { ALLOW_GUEST, IS_PUBLIC_KEY } from "../constants";
-import { TokensService } from "../services";
+import { TokenService } from "../services";
 
 /**
  * 用户JWT认证守卫
@@ -21,7 +21,7 @@ import { TokensService } from "../services";
  */
 @Injectable()
 export class JwtAuthGuard extends AuthGuard("jwt") {
-    constructor(private reflector: Reflector, private readonly tokenService: TokensService) {
+    constructor(private reflector: Reflector, private readonly tokenService: TokenService) {
         super();
     }
 
