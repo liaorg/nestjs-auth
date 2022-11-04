@@ -24,7 +24,7 @@ export class RoleGroupEntity {
     @Column({ unique: true })
     name: string;
     /**
-     * 本地化/国际化名称，对应 i18n 文件 role-group.json 中的字段
+     * 本地化/国际化名称，对应 i18n 文件 roleGroup.json 中的字段
      */
     @Column()
     locale: string;

@@ -1,12 +1,4 @@
-import { getUTCTime } from "@/common/utils";
-import { OperateEnum } from "@/modules/permission/enums/operate.enum";
-import { RoleGroupEnum } from "@/modules/role-group/enums";
-import { randomBytes, scryptSync } from "crypto";
-
-// 当前时间戳
-const now = getUTCTime();
-const timestamp = now.unix();
-
+// 表创建语句
 // 所有表：SELECT name FROM sqlite_master WHERE type="table"
 // 所有表的自增id：SELECT * FROM sqlite_sequence
 
@@ -120,15 +112,7 @@ export const createOperateSql = `CREATE TABLE "main"."operate" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "method" VARCHAR(20) NOT NULL -- 操作方法 *,GET,HEAD,PUT,PATCH,POST,DELETE
 );`;
-export const defaultOperate = [
-    { id: OperateEnum.ALL, method: "*" },
-    { id: OperateEnum.GET, method: "GET" },
-    { id: OperateEnum.POST, method: "POST" },
-    { id: OperateEnum.DELETE, method: "DELETE" },
-    { id: OperateEnum.PATCH, method: "PATCH" },
-    { id: OperateEnum.PUT, method: "PUT" },
-    { id: OperateEnum.HEAD, method: "HEAD" },
-];
+
 // 操作表与权限表关联表
 export const createOperatePermissionRelationSql = `CREATE TABLE "main"."operate_permission_relation" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -166,38 +150,6 @@ export const createRolePermissionRelationSql = `CREATE TABLE "main"."role_permis
 export const insertRoleSql = `INSERT INTO "main"."role"
 (id, name, is_default, status, locale, create_date, update_date)
 values(?, ?, ?, ?, ?, ?, ?);`;
-export const defaultRole = [
-    // 默认系统管理员
-    {
-        id: RoleGroupEnum.systemAdmin,
-        name: "defaultSystemAdmin",
-        isDefault: true,
-        status: 1,
-        locale: "role.defaultSystemAdmin",
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-    // 默认业务安全员
-    {
-        id: RoleGroupEnum.securityAdmin,
-        name: "defaultSecurityAdmin",
-        isDefault: true,
-        status: 1,
-        locale: "defaultSecurityAdmin",
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-    // 默认系统审计员
-    {
-        id: RoleGroupEnum.auditAdmin,
-        name: "roles.defaultAuditAdmin",
-        isDefault: true,
-        status: 1,
-        locale: "role.defaultAuditAdmin",
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-];
 
 // 角色组表-角色类型
 export const createRoleGroupSql = `CREATE TABLE "main"."role_group" (
@@ -220,26 +172,6 @@ ON "role_group" (
 export const insertRoleGroupSql = `INSERT INTO "main"."role_group"
 (id, type, name, locale)
 values(?, ?, ?, ?);`;
-export const defaultRoleGroup = [
-    {
-        id: RoleGroupEnum.systemAdmin,
-        type: RoleGroupEnum.systemAdmin,
-        name: "systemAdmin",
-        locale: "roleGroup.systemAdmin",
-    },
-    {
-        id: RoleGroupEnum.securityAdmin,
-        type: RoleGroupEnum.securityAdmin,
-        name: "securityAdmin",
-        locale: "roleGroup.securityAdmin",
-    },
-    {
-        id: RoleGroupEnum.auditAdmin,
-        type: RoleGroupEnum.auditAdmin,
-        name: "auditAdmin",
-        locale: "roleGroup.auditAdmin",
-    },
-];
 
 // 角色组表和权限表关联表
 // 一个角色只能属于一个角色组
@@ -259,11 +191,6 @@ export const createRoleGroupRoleRelationSql = `CREATE TABLE "main"."role_group_r
   CONSTRAINT "fk_role_group_role_relation_role_group_1" FOREIGN KEY ("role_group_id") REFERENCES "role_group" ("id"),
   CONSTRAINT "fk_role_group_role_relation_role_1" FOREIGN KEY ("role_id") REFERENCES "role" ("id")
 );`;
-export const defaultRoleGroupRoleRelation = [
-    { id: 1, roleGroupId: RoleGroupEnum.systemAdmin, roleId: RoleGroupEnum.systemAdmin },
-    { id: 2, roleGroupId: RoleGroupEnum.securityAdmin, roleId: RoleGroupEnum.securityAdmin },
-    { id: 3, roleGroupId: RoleGroupEnum.auditAdmin, roleId: RoleGroupEnum.auditAdmin },
-];
 
 // 创建用户表
 export const createUserSql = `CREATE TABLE "main"."user" (
@@ -295,79 +222,6 @@ export const insertUserSql = `INSERT INTO "main"."user"
 (id, name, password, password_salt, is_default, status, create_date, update_date)
 values(?, ?, ?, ?, ?, ?, ?, ?);`;
 
-// 生成盐值
-const createSalt = (size: number) => randomBytes(size).toString("hex");
-// 生成密码
-const createPassword = (password: string, salt: string) => {
-    // 加密密码
-    return scryptSync(password, salt, 64).toString("hex");
-};
-
-// 默认密码
-// 当前年份
-const year = now.year();
-// 盐值长度
-const size = 16;
-const defaultAdmin = {
-    systemAdmin: {
-        name: "admin",
-        password: `Admin@${year}`,
-        passwordSalt: createSalt(size),
-    },
-    securityAdmin: {
-        name: "sec",
-        password: `Sec@${year}`,
-        passwordSalt: createSalt(size),
-    },
-    auditAdmin: {
-        name: "audit",
-        password: `Audit@${year}`,
-        passwordSalt: createSalt(size),
-    },
-};
-defaultAdmin.systemAdmin.password = createPassword(
-    defaultAdmin.systemAdmin.password,
-    defaultAdmin.systemAdmin.passwordSalt,
-);
-defaultAdmin.securityAdmin.password = createPassword(
-    defaultAdmin.securityAdmin.password,
-    defaultAdmin.securityAdmin.passwordSalt,
-);
-defaultAdmin.auditAdmin.password = createPassword(
-    defaultAdmin.auditAdmin.password,
-    defaultAdmin.auditAdmin.passwordSalt,
-);
-
-export const defaultUser = [
-    // 默认系统管理员
-    {
-        id: RoleGroupEnum.systemAdmin,
-        ...defaultAdmin.systemAdmin,
-        isDefault: true,
-        status: 1,
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-    // 默认业务安全员
-    {
-        id: RoleGroupEnum.securityAdmin,
-        ...defaultAdmin.securityAdmin,
-        isDefault: true,
-        status: 1,
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-    // 默认系统审计员
-    {
-        id: RoleGroupEnum.auditAdmin,
-        ...defaultAdmin.auditAdmin,
-        isDefault: true,
-        status: 1,
-        createDate: timestamp,
-        updateDate: timestamp,
-    },
-];
-
 // 用户表和角色表关联表
 // 一个用户只能属于一个角色
 export const createUserRoleRelationSql = `CREATE TABLE "main"."user_role_relation" (
@@ -377,11 +231,6 @@ export const createUserRoleRelationSql = `CREATE TABLE "main"."user_role_relatio
   CONSTRAINT "fk_user_role_relation_user_1" FOREIGN KEY ("user_id") REFERENCES "user" ("id"),
   CONSTRAINT "fk_user_role_relation_role_1" FOREIGN KEY ("role_id") REFERENCES "role" ("id")
 );`;
-export const defaultUserRoleRelation = [
-    { id: 1, userId: RoleGroupEnum.systemAdmin, roleId: RoleGroupEnum.systemAdmin },
-    { id: 2, userId: RoleGroupEnum.securityAdmin, roleId: RoleGroupEnum.securityAdmin },
-    { id: 3, userId: RoleGroupEnum.auditAdmin, roleId: RoleGroupEnum.auditAdmin },
-];
 
 // 用户组表
 export const createUserGroupSql = `CREATE TABLE "main"."user_group" (

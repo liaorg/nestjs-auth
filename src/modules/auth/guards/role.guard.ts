@@ -15,7 +15,7 @@ import { Request } from "express";
  * @class RolesGuard
  */
 @Injectable()
-export class RolesGuard extends AuthGuard() {
+export class RoleGuard extends AuthGuard() {
     async canActivate(context: ExecutionContext) {
         const request = context.switchToHttp().getRequest();
         // 检查请求中是否有登录字段

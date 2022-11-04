@@ -6,3 +6,5 @@ export * from "./menu-permission-relation.entity";
 export * from "./operate";
 export * from "./operate-permission-relation.entity";
 export * from "./permission.entity";
+export * from "./role-group-permission-relation";
+export * from "./role-permission-relation";

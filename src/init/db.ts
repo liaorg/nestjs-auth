@@ -8,6 +8,8 @@ import {
     OperateEntity,
     OperatePermissionRelationEntity,
     PermissionEntity,
+    RoleGroupPermissionRelationEntity,
+    RolePermissionRelationEntity,
 } from "@/modules/permission/entities";
 import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/role-group/entities";
 import { RoleEntity } from "@/modules/role/entities";
@@ -34,6 +36,8 @@ export const dbConfig: DataSourceOptions = {
         OperatePermissionRelationEntity,
         ElementEntity,
         ElementPermissionRelationEntity,
+        RoleGroupPermissionRelationEntity,
+        RolePermissionRelationEntity,
     ],
 };
 

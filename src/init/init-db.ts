@@ -23,9 +23,6 @@ import {
     createRoleGroupSql,
     createRolePermissionRelationSql,
     createRoleSql,
-    createUserGroupRoleRelationSql,
-    createUserGroupSql,
-    createUserGroupUserRelationSql,
     createUserRoleRelationSql,
     createUserSql,
     defaultAdminApi,
@@ -37,11 +34,9 @@ import {
     defaultUser,
     defaultUserRoleRelation,
 } from "./consts";
-import { defaultElement } from "./consts/default-element";
 import { dbConfig, sqlite3db } from "./db";
-import { addAdminApiData } from "./init-admin-api";
-import { addElementData } from "./init-element";
-import { addMenuData } from "./init-menu";
+import { initAdminApiData } from "./init-admin-api";
+import { initMenuData } from "./init-menu";
 
 export const initLogger = new Logger("db", { timestamp: true });
 
@@ -56,32 +51,6 @@ const setSequence = (tablename: string, isInsert?: boolean) => {
         const sqlSequence = `INSERT INTO SQLITE_SEQUENCE (name, seq) VALUES ("${tablename}", 99);`;
         sqlite3db.query(sqlSequence);
     }
-};
-
-// 创建表并增加数据
-export const createAndInsert = async (
-    opt: { tablename: string; createSql: string; entity?: EntityTarget<object>; defaultData?: object[] },
-    i18n: I18nService,
-) => {
-    // 创建表
-    const { tablename, createSql, entity, defaultData } = opt;
-    initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
-    await sqlite3db.query(createSql);
-    // 添加数据
-    const roleType = sqlite3db.getRepository(entity);
-    await roleType.insert(defaultData);
-    // const data = await repository.find();
-    // initLogger.log(data);
-    // 更新自增加ID
-    setSequence(tablename);
-    initLogger.log(i18n.t("init.finishedInitTable", { args: { tablename } }));
-};
-
-// 创建访问令牌表 token表
-export const createToken = async (tablename: string, createSql: string, i18n: I18nService) => {
-    initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
-    await sqlite3db.query(createSql);
-    initLogger.log(i18n.t("init.finishedInitTable", { args: { tablename } }));
 };
 
 // 创建表
@@ -135,7 +104,7 @@ export async function initDefaultData(i18n: I18nService) {
             // 创建用户表
             createTable("user", createUserSql, i18n),
             // 用户组表
-            createTable("user_group", createUserGroupSql, i18n),
+            // createTable("user_group", createUserGroupSql, i18n),
         ]);
         // 创建关联关系表
         await Promise.all([
@@ -156,9 +125,9 @@ export async function initDefaultData(i18n: I18nService) {
             // 用户表和角色表关联表
             createTable("user_role_relation", createUserRoleRelationSql, i18n),
             // 用户组表和用户表关联表
-            createTable("user_group_user_relation", createUserGroupUserRelationSql, i18n),
+            // createTable("user_group_user_relation", createUserGroupUserRelationSql, i18n),
             // 用户组表和角色表关联表
-            createTable("user_group_role_relation", createUserGroupRoleRelationSql, i18n),
+            // createTable("user_group_role_relation", createUserGroupRoleRelationSql, i18n),
         ]);
 
         // 添加默认数据
@@ -221,11 +190,11 @@ export async function initDefaultData(i18n: I18nService) {
                 i18n,
             ),
             // 添加页面api权限
-            addAdminApiData(defaultAdminApi, i18n),
+            initAdminApiData(defaultAdminApi, i18n),
             // 添加要隐藏的页面元素权限
-            addElementData(defaultElement, i18n),
+            // initElementData(defaultElement, i18n),
             // 添加菜单权限
-            addMenuData(defaultMenu, i18n),
+            initMenuData(defaultMenu, i18n),
         ]);
 
         // 数据库初始化结束

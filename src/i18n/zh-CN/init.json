@@ -6,7 +6,11 @@
     "initDbFailed": "数据库初始化失败",
     "finishedInitDb": "数据库初始化结束",
     "dbConnected": "数据库连接成功",
+    "dbConnectedFailed": "数据库连接失败",
     "createTable": "创建 {tablename} 表",
     "begainInitTable": "初始化 {tablename} 表",
-    "finishedInitTable": "{tablename} 表初始化完成"
+    "finishedInitTable": "{tablename} 表初始化完成",
+    "begainAddData": "往 {tablename} 表添加数据",
+    "addDataFailed": "往 {tablename} 表添加数据失败",
+    "finishedAddData": "{tablename} 表数据添加完成"
 }

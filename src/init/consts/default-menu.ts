@@ -1,16 +1,48 @@
 // 添加菜单权限 menu menu_permission_relation
+
+import { RoleGroupEnum } from "@/modules/role-group/enums";
+
+// 菜单接口
+export interface MenuInterface {
+    // 路径
+    path: string;
+    // 菜单名称，可以做为前端组件名要大写开头
+    name?: string;
+    // 本地化/国际化名称，对应 i18n 文件 menu.json 中的字段
+    locale: string;
+    // 排序值
+    order: number;
+    // 图标
+    icon?: string;
+    // 拥有权限的角色组id集合，*表示所有角色都有的操作
+    roleGroup?: "*" | RoleGroupEnum[];
+    // 嵌套的子菜单
+    children?: MenuInterface[];
+    // 父ID
+    parentId?: number;
+}
+
 // 监控中心
-const monitorCenter = [
+const monitorCenter: MenuInterface[] = [
     {
         // 运行状态
         path: "running-state",
         name: "RunningState",
         locale: "menu.runningState",
         order: 1,
+        roleGroup: [RoleGroupEnum.systemAdmin, RoleGroupEnum.securityAdmin],
+    },
+    {
+        // 数据库运维分析
+        path: "database-operation",
+        name: "DatabaseOperation",
+        locale: "menu.databaseOperation",
+        order: 1,
+        roleGroup: [RoleGroupEnum.securityAdmin],
     },
 ];
 // 系统管理员-系统管理
-const systemAdminCenter = [
+const systemAdminCenter: MenuInterface[] = [
     {
         // 用户管理
         path: "/user",
@@ -106,13 +138,14 @@ const systemAdminCenter = [
         order: 7,
     },
 ];
-export const defaultMenu = [
+export const defaultMenu: MenuInterface[] = [
     {
         // 监控中心
         path: "/monitor-center",
         locale: "menu.monitorCenter",
         icon: "icon-monitor",
         order: 2,
+        roleGroup: [RoleGroupEnum.systemAdmin, RoleGroupEnum.securityAdmin],
         children: [...monitorCenter],
     },
     {
@@ -121,6 +154,7 @@ export const defaultMenu = [
         locale: "menu.auditCenter",
         icon: "icon-settings",
         order: 3,
+        roleGroup: [RoleGroupEnum.securityAdmin],
         // children: [...auditCenter],
     },
     {
@@ -129,6 +163,7 @@ export const defaultMenu = [
         locale: "menu.analysisCenter",
         icon: "icon-settings",
         order: 4,
+        roleGroup: [RoleGroupEnum.securityAdmin],
         // children: [...analysisCenter],
     },
     {
@@ -137,6 +172,7 @@ export const defaultMenu = [
         locale: "menu.strategyCenter",
         icon: "icon-settings",
         order: 5,
+        roleGroup: [RoleGroupEnum.securityAdmin],
         // children: [...strategyCenter],
     },
     {
@@ -145,6 +181,7 @@ export const defaultMenu = [
         locale: "menu.systemAdminCenter",
         icon: "icon-settings",
         order: 6,
+        roleGroup: [RoleGroupEnum.systemAdmin],
         children: [...systemAdminCenter],
     },
     {
@@ -153,6 +190,16 @@ export const defaultMenu = [
         locale: "menu.deployAdmin",
         icon: "icon-settings",
         order: 7,
+        roleGroup: [RoleGroupEnum.securityAdmin],
+        // children: [...deployAdmin],
+    },
+    {
+        // 系统日志
+        path: "/system-log",
+        locale: "menu.systemLog",
+        icon: "icon-logs",
+        order: 8,
+        roleGroup: [RoleGroupEnum.systemAdmin, RoleGroupEnum.auditAdmin],
         // children: [...deployAdmin],
     },
 ];

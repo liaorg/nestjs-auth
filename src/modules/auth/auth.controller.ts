@@ -1,4 +1,4 @@
-import { Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { GuestDecorator } from "./decorators/guest.decorator";
 import { RequestUserDecorator } from "./decorators/request-user.decorator";
@@ -15,6 +15,7 @@ export class AuthController {
      * @returns
      */
     @Post("login")
+    // 设置不验证 jwt
     @GuestDecorator()
     @UseGuards(LocalAuthGuard)
     async login(@RequestUserDecorator() user: RequestUserDto) {
@@ -26,7 +27,7 @@ export class AuthController {
      * @param req
      * @returns
      */
-    @Post("logout")
+    @Get("logout")
     async logout(@Req() req: any) {
         return await this.authService.logout(req);
     }

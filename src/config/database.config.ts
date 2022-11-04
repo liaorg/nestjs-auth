@@ -16,6 +16,8 @@ export const databaseConfig: TypeOrmModuleOptions = {
     // logging: ["query", "warn", "schema", "info", "log", "error"], // 执行SQL会打印在控制台中 query error
     // logging: ["query", "warn", "error"], // 执行SQL会打印在控制台中 query error
     logging: ["error"], // 执行SQL会打印在控制台中 query error
+    maxQueryExecutionTime: 1000, // 记录所有运行超过1秒的查询
+    // logger: "file",
     database: process.env.AUTHDB || "/mnt/sqlite-data/auth.db",
     autoLoadEntities: true, // 自动载入实体
     // 这里对应的路径是 ./dist/**/*.entity{.ts,.js}
