@@ -24,4 +24,6 @@ export const defaultAdminApi: AdminApiInterface[] = [
     { path: "/user/default-adminer", method: "PATCH", roleGroup: [RoleGroupEnum.systemAdmin] },
     // 角色管理
     { path: "/role", method: "*", roleGroup: [RoleGroupEnum.systemAdmin] },
+    // 验证码
+    { path: "/captcha", method: "GET", roleGroup: "*" },
 ];

@@ -34,7 +34,7 @@ import {
     defaultUser,
     defaultUserRoleRelation,
 } from "./consts";
-import { dbConfig, sqlite3db } from "./db";
+import { dbConfig, DB, DBInsert } from "./db";
 import { initAdminApiData } from "./init-admin-api";
 import { initMenuData } from "./init-menu";
 
@@ -45,18 +45,18 @@ const setSequence = (tablename: string, isInsert?: boolean) => {
     if (!isInsert) {
         // 更新自增加ID
         const sqlSequence = `UPDATE SQLITE_SEQUENCE SET seq=99 WHERE name="${tablename}";`;
-        sqlite3db.query(sqlSequence);
+        DB.query(sqlSequence);
     } else {
         // 新增加自增加ID
         const sqlSequence = `INSERT INTO SQLITE_SEQUENCE (name, seq) VALUES ("${tablename}", 99);`;
-        sqlite3db.query(sqlSequence);
+        DB.query(sqlSequence);
     }
 };
 
 // 创建表
 export const createTable = async (tablename: string, createSql: string, i18n: I18nService) => {
     initLogger.log(i18n.t("init.createTable", { args: { tablename } }));
-    await sqlite3db.query(createSql);
+    await DB.query(createSql);
 };
 // 添加默认数据
 export const addDefaultData = async (
@@ -65,8 +65,9 @@ export const addDefaultData = async (
 ) => {
     const { tablename, entity, defaultData } = opt;
     initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
-    const respository = sqlite3db.getRepository(entity);
-    const data = await respository.insert(defaultData);
+    // const respository = DB.getRepository(entity);
+    // const data = await respository.insert(defaultData);
+    const data = await DBInsert(entity, defaultData);
     // 更新自增加ID
     setSequence(tablename);
     initLogger.log(i18n.t("init.finishedInitTable", { args: { tablename } }));
@@ -78,10 +79,11 @@ export async function initDefaultData(i18n: I18nService) {
     initLogger.log(i18n.t("init.begainInitDb"));
     // 数据库初始化
     try {
-        await sqlite3db.initialize();
+        // 建立连接池
+        await DB.initialize();
         initLogger.log(i18n.t("init.dbConnected") + ` ${basename(dbConfig.database as string)}`);
         // 删除数据库及其所有数据
-        await sqlite3db.dropDatabase();
+        await DB.dropDatabase();
         // 新建没有默认数据的表
         await Promise.all([
             // 令牌token
@@ -196,7 +198,6 @@ export async function initDefaultData(i18n: I18nService) {
             // 添加菜单权限
             initMenuData(defaultMenu, i18n),
         ]);
-
         // 数据库初始化结束
         initLogger.log(i18n.t("init.finishedInitDb"));
     } catch (error) {

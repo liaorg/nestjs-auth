@@ -3,7 +3,7 @@
  */
 import { INestApplication, HttpException } from "@nestjs/common";
 import compression from "compression";
-// import { json, urlencoded } from "express";
+import { json, urlencoded } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 
@@ -32,6 +32,7 @@ export function appMiddleware(app: INestApplication): INestApplication {
 
     // 允许跨域的 HTTP 请求
     // https://github.com/expressjs/cors#configuration-options
+    // 还要在请求时配置 axios => widthCredentials: true // 允许携带cookie
     app.enableCors({
         origin: "*",
         // 允许 Access-Control-Allow-Credentials 头
@@ -71,9 +72,9 @@ export function appMiddleware(app: INestApplication): INestApplication {
     app.use(compression());
 
     // For parsing application/json
-    // app.use(json());
+    app.use(json());
     // // For parsing application/x-www-form-urlencoded
-    // app.use(urlencoded({ extended: true }));
+    app.use(urlencoded({ extended: true }));
 
     return app;
 }

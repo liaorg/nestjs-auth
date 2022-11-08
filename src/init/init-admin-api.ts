@@ -12,7 +12,7 @@ import {
 } from "@/modules/permission/entities";
 import { I18nService } from "nestjs-i18n";
 import { AdminApiInterface, defaultRoleGroupId, operateMethod } from "./consts";
-import { sqlite3db } from "./db";
+import { DB } from "./db";
 import { initLogger } from "./init-db";
 import { Repository } from "typeorm";
 import { RoleGroupEnum } from "@/modules/role-group/enums";
@@ -72,12 +72,12 @@ export const initAdminApiData = async (adminApi: AdminApiInterface[], i18n: I18n
     initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
 
     const repository: RepositoryInterface = {
-        adminApiRepository: sqlite3db.getRepository(AdminApiEntity),
-        permissionRepository: sqlite3db.getRepository(PermissionEntity),
-        adminApiPermissionRelationRepository: sqlite3db.getRepository(AdminApiPermissionRelationEntity),
-        operatePermissionRelationRepository: sqlite3db.getRepository(OperatePermissionRelationEntity),
-        roleGroupPermissionRelationRepository: sqlite3db.getRepository(RoleGroupPermissionRelationEntity),
-        rolePermissionRelationRepository: sqlite3db.getRepository(RolePermissionRelationEntity),
+        adminApiRepository: DB.getRepository(AdminApiEntity),
+        permissionRepository: DB.getRepository(PermissionEntity),
+        adminApiPermissionRelationRepository: DB.getRepository(AdminApiPermissionRelationEntity),
+        operatePermissionRelationRepository: DB.getRepository(OperatePermissionRelationEntity),
+        roleGroupPermissionRelationRepository: DB.getRepository(RoleGroupPermissionRelationEntity),
+        rolePermissionRelationRepository: DB.getRepository(RolePermissionRelationEntity),
     };
     adminApi.forEach(async (item) => {
         const data: AdminApiEntity = await repository.adminApiRepository.save(item);

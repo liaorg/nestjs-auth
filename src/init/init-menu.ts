@@ -12,7 +12,7 @@ import {
 import { RoleGroupEnum } from "@/modules/role-group/enums";
 import { I18nService } from "nestjs-i18n";
 import { defaultRoleGroupId, MenuInterface } from "./consts";
-import { sqlite3db } from "./db";
+import { DB } from "./db";
 import { initLogger } from "./init-db";
 import { Repository } from "typeorm";
 
@@ -85,11 +85,11 @@ export const initMenuData = async (menu: MenuInterface[], i18n: I18nService) => 
     const tablename = "menu";
     initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
     const repository: RepositoryInterface = {
-        menuRepository: sqlite3db.getRepository(MenuEntity),
-        permissionRepository: sqlite3db.getRepository(PermissionEntity),
-        menuPermissionRelationRepository: sqlite3db.getRepository(MenuPermissionRelationEntity),
-        roleGroupPermissionRelationRepository: sqlite3db.getRepository(RoleGroupPermissionRelationEntity),
-        rolePermissionRelationRepository: sqlite3db.getRepository(RolePermissionRelationEntity),
+        menuRepository: DB.getRepository(MenuEntity),
+        permissionRepository: DB.getRepository(PermissionEntity),
+        menuPermissionRelationRepository: DB.getRepository(MenuPermissionRelationEntity),
+        roleGroupPermissionRelationRepository: DB.getRepository(RoleGroupPermissionRelationEntity),
+        rolePermissionRelationRepository: DB.getRepository(RolePermissionRelationEntity),
     };
     menu.forEach(async (item) => {
         const data: MenuEntity = await repository.menuRepository.save(item);

@@ -41,4 +41,18 @@ export const dbConfig: DataSourceOptions = {
     ],
 };
 
-export const sqlite3db = new DataSource(dbConfig);
+export const DB = new DataSource(dbConfig);
+
+export const DBQuery = DB.createQueryBuilder();
+
+export const DBInsert = async (entity, data) => {
+    return await DBQuery.insert().into(entity).values(data).execute();
+};
+
+export const DBUpdate = async (entity, data, where) => {
+    return await DBQuery.update(entity).set(data).where(where).execute();
+};
+
+export const DBDelete = async (entity, where) => {
+    return await DBQuery.delete().from(entity).where(where).execute();
+};

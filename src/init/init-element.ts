@@ -14,7 +14,7 @@ import { RoleGroupEnum } from "@/modules/role-group/enums";
 import { I18nService } from "nestjs-i18n";
 import { Repository } from "typeorm";
 import { defaultRoleGroupId, ElementInterface } from "./consts";
-import { sqlite3db } from "./db";
+import { DB } from "./db";
 import { initLogger } from "./init-db";
 
 interface RepositoryInterface {
@@ -57,11 +57,11 @@ export const initElementData = async (element: ElementInterface[], i18n: I18nSer
     const tablename = "element";
     initLogger.log(i18n.t("init.begainInitTable", { args: { tablename } }));
     const repository: RepositoryInterface = {
-        elementRepository: sqlite3db.getRepository(ElementEntity),
-        permissionRepository: sqlite3db.getRepository(PermissionEntity),
-        elementPermissionRelationRepository: sqlite3db.getRepository(ElementPermissionRelationEntity),
-        roleGroupPermissionRelationRepository: sqlite3db.getRepository(RoleGroupPermissionRelationEntity),
-        rolePermissionRelationRepository: sqlite3db.getRepository(RolePermissionRelationEntity),
+        elementRepository: DB.getRepository(ElementEntity),
+        permissionRepository: DB.getRepository(PermissionEntity),
+        elementPermissionRelationRepository: DB.getRepository(ElementPermissionRelationEntity),
+        roleGroupPermissionRelationRepository: DB.getRepository(RoleGroupPermissionRelationEntity),
+        rolePermissionRelationRepository: DB.getRepository(RolePermissionRelationEntity),
     };
     element.forEach(async (item) => {
         const data: ElementEntity = await repository.elementRepository.save(item);

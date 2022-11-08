@@ -211,3 +211,10 @@ imports: [
     // MenuModule
 ];
 ```
+
+### 常用模块
+
+```
+1. npm install mkdirp --save 创建文件夹
+2. npm install jimp --save 缩略图
+```

@@ -5,7 +5,7 @@ import { I18nService } from "nestjs-i18n";
 import { initDefaultData } from "./init-db";
 import minimist from "minimist";
 import { addAdminApiData } from "./add-admin-api";
-import { adminApiData } from "./upgrade";
+import { adminApiData } from "./upgrade-data";
 
 const initLogger = new Logger("InitBootstrap", { timestamp: true });
 

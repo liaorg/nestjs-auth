@@ -7,6 +7,6 @@ import { AdminApiInterface } from "../consts";
 
 // 添加页面api权限 admin_api admin_api_permission_relation
 export const adminApiData: AdminApiInterface[] = [
-    // 验证码
-    { path: "/captcha", method: "GET", roleGroup: "*" },
+    // 测试功能
+    { path: "/test", method: "GET", roleGroup: "*" },
 ];
