@@ -1,35 +1,41 @@
 {
     "eslint.alwaysShowStatus": true,
     "eslint.format.enable": true,
+    "eslint.validate": ["html", "javascript", "typescript"],
+    "window.zoomLevel": 0.3,
     "editor.detectIndentation": false,
     "editor.comments.insertSpace": true,
-    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-    "files.eol": "\n",
     "editor.tabSize": 4,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "eslint.validate": ["html", "javascript", "typescript"],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
-    "window.zoomLevel": 0.3,
     "editor.formatOnSave": true,
-    "html.format.enable": false,
     "editor.formatOnType": true,
     "editor.formatOnPaste": true,
     "editor.fontFamily": "Cascadia Code PL, Consolas, 'Courier New', monospace",
     "editor.fontLigatures": true,
     "editor.fontSize": 17,
+    "editor.rulers": [100, 200],
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+    "html.format.enable": false,
     "html.format.indentHandlebars": true,
     "html.format.preserveNewLines": true,
     "html.format.indentInnerHtml": true,
-    "workbench.sideBar.location": "left",
     "emmet.triggerExpansionOnTab": true,
+    "workbench.sideBar.location": "left",
     "workbench.colorTheme": "One Dark Pro",
+    "workbench.colorCustomizations": {
+        "editorRuler.foreground": "#6b3a85"
+    },
     "prettier.semi": true,
     "prettier.singleQuote": false,
     "prettier.bracketSameLine": true,
     "prettier.trailingComma": "none",
     "prettier.tabWidth": 4,
+    "prettier.bracketSpacing": true,
+    "prettier.printWidth": 200,
+    "prettier.htmlWhitespaceSensitivity": "ignore",
     "json.format.enable": true,
     "json.schemaDownload.enable": false,
     "js/ts.implicitProjectConfig.experimentalDecorators": true,
@@ -38,6 +44,7 @@
         "**/logs": true,
         "**/dist": true
     },
+    "files.eol": "\n",
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -45,7 +52,7 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/*.js": {
-            "when": "$(basename).ts" //ts编译后生成的js文件将不会显示在工作空中
+            "when": "$(basename).ts"
         },
         "**/node_modules": true
     }

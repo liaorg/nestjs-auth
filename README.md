@@ -57,6 +57,7 @@ One Dark Pro
 ESLint
 Remote - WSL
 Path Intellisense 路径补全
+Outline Map 代码大纲
 
 ```
 

@@ -12,6 +12,7 @@
         "ms-vscode-remote.remote-wsl",
         "ms-vscode.notepadplusplus-keybindings",
         "ashinzekene.nestjs",
-        "chris-noring.node-snippets"
+        "chris-noring.node-snippets",
+        "gerrnperl.outline-map"
     ]
 }

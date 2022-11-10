@@ -1,6 +1,6 @@
 // 添加菜单权限 menu menu_permission_relation
 
-import { RoleGroupEnum } from "@/modules/role-group/enums";
+import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
 
 // 菜单接口
 export interface MenuInterface {

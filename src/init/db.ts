@@ -1,20 +1,16 @@
-import { MenuEntity } from "@/modules/menu/entities";
-import {
-    AdminApiEntity,
-    AdminApiPermissionRelationEntity,
-    ElementEntity,
-    ElementPermissionRelationEntity,
-    MenuPermissionRelationEntity,
-    OperateEntity,
-    OperatePermissionRelationEntity,
-    PermissionEntity,
-    RoleGroupPermissionRelationEntity,
-    RolePermissionRelationEntity,
-} from "@/modules/permission/entities";
-import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/role-group/entities";
-import { RoleEntity } from "@/modules/role/entities";
-import { UserEntity, UserRoleRelationEntity } from "@/modules/user/entities";
+import { MenuEntity } from "@/modules/admin/menu/entities";
+import { OperateEntity, OperatePermissionRelationEntity, PermissionEntity } from "@/modules/shared/permission/entities";
+import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/admin/role-group/entities";
+import { RoleEntity } from "@/modules/admin/role/entities";
+import { UserEntity, UserRoleRelationEntity } from "@/modules/admin/user/entities";
 import { DataSource, DataSourceOptions } from "typeorm";
+import { MenuPermissionRelationEntity } from "@/modules/admin/menu/entities/menu-permission-relation.entity";
+import { AdminApiEntity } from "@/modules/admin/common/entities/admin-api.entity";
+import { AdminApiPermissionRelationEntity } from "@/modules/admin/common/entities/admin-api-permission-relation.entity";
+import { ElementEntity } from "@/modules/admin/common/entities/element.entyty";
+import { ElementPermissionRelationEntity } from "@/modules/admin/common/entities/element-permission-relation.entity";
+import { RoleGroupPermissionRelationEntity } from "@/modules/admin/role-group/entities/role-group-permission-relation";
+import { RolePermissionRelationEntity } from "@/modules/admin/role/entities/role-permission-relation";
 
 export const dbConfig: DataSourceOptions = {
     type: "sqlite",

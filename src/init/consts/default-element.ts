@@ -1,4 +1,4 @@
-import { RoleGroupEnum } from "@/modules/role-group/enums";
+import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
 
 // 要隐藏的页面元素
 export interface ElementInterface {

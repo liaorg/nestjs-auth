@@ -1,4 +1,4 @@
-import { RoleGroupEnum } from "@/modules/role-group/enums";
+import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
 
 // 页面api接口
 export interface AdminApiInterface {

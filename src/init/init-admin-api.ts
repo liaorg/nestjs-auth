@@ -2,20 +2,17 @@
  * 添加页面api及权限关系
  */
 
-import {
-    AdminApiEntity,
-    AdminApiPermissionRelationEntity,
-    OperatePermissionRelationEntity,
-    PermissionEntity,
-    RoleGroupPermissionRelationEntity,
-    RolePermissionRelationEntity,
-} from "@/modules/permission/entities";
+import { OperatePermissionRelationEntity, PermissionEntity } from "@/modules/shared/permission/entities";
 import { I18nService } from "nestjs-i18n";
 import { AdminApiInterface, defaultRoleGroupId, operateMethod } from "./consts";
 import { DB } from "./db";
 import { initLogger } from "./init-db";
 import { Repository } from "typeorm";
-import { RoleGroupEnum } from "@/modules/role-group/enums";
+import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
+import { AdminApiEntity } from "@/modules/admin/common/entities/admin-api.entity";
+import { AdminApiPermissionRelationEntity } from "@/modules/admin/common/entities/admin-api-permission-relation.entity";
+import { RoleGroupPermissionRelationEntity } from "@/modules/admin/role-group/entities/role-group-permission-relation";
+import { RolePermissionRelationEntity } from "@/modules/admin/role/entities/role-permission-relation";
 
 interface RepositoryInterface {
     adminApiRepository: Repository<AdminApiEntity>;

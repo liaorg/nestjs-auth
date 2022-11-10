@@ -2,7 +2,7 @@
 
 import * as Log4js from "log4js";
 import { inspect } from "util";
-import { green, cyan, yellow, red, hex, grey } from "chalk";
+import chalk from "chalk";
 import * as StackTrace from "stacktrace-js";
 import { basename } from "path";
 import { log4jsConfig } from "@/config";
@@ -65,7 +65,7 @@ Log4js.addLayout("DAS", (logConfig: any) => {
         const now = dayjs();
         const startTime = dayjs(logEvent.startTime);
         const diffTime = now.valueOf() - startTime.valueOf();
-        const diffTimeOutput = yellow(` +${diffTime}ms`);
+        const diffTimeOutput = chalk.yellow(` +${diffTime}ms`);
         const dateOutput = `${startTime.format("YYYY-MM-DD HH:mm:ss")}`;
         const moduleOutput: string = moduleName ? `[${moduleName}] ` : "";
         let levelOutput = `[${logEvent.level}] ${messageOutput}`;
@@ -73,26 +73,26 @@ Log4js.addLayout("DAS", (logConfig: any) => {
         // 根据日志级别，用不同颜色区分
         switch (logEvent.level.toString()) {
             case LoggerLevel.DEBUG:
-                levelOutput = green(levelOutput);
+                levelOutput = chalk.green(levelOutput);
                 break;
             case LoggerLevel.INFO:
-                levelOutput = cyan(levelOutput);
+                levelOutput = chalk.cyan(levelOutput);
                 break;
             case LoggerLevel.WARN:
-                levelOutput = yellow(levelOutput);
+                levelOutput = chalk.yellow(levelOutput);
                 break;
             case LoggerLevel.ERROR:
-                levelOutput = red(levelOutput);
+                levelOutput = chalk.red(levelOutput);
                 break;
             case LoggerLevel.FATAL:
-                levelOutput = hex("#DD4C35")(levelOutput);
+                levelOutput = chalk.hex("#DD4C35")(levelOutput);
                 break;
             default:
-                levelOutput = grey(levelOutput);
+                levelOutput = chalk.grey(levelOutput);
                 break;
         }
 
-        return `${green(typeOutput)}${dateOutput} ${yellow(
+        return `${chalk.green(typeOutput)}${dateOutput} ${chalk.yellow(
             moduleOutput,
         )}${levelOutput}${positionOutput}${diffTimeOutput}`;
     };

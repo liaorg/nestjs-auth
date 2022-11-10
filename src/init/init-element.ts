@@ -3,19 +3,17 @@
  * element
  */
 
-import {
-    ElementEntity,
-    ElementPermissionRelationEntity,
-    PermissionEntity,
-    RoleGroupPermissionRelationEntity,
-    RolePermissionRelationEntity,
-} from "@/modules/permission/entities";
-import { RoleGroupEnum } from "@/modules/role-group/enums";
+import { PermissionEntity } from "@/modules/shared/permission/entities";
+import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
 import { I18nService } from "nestjs-i18n";
 import { Repository } from "typeorm";
 import { defaultRoleGroupId, ElementInterface } from "./consts";
 import { DB } from "./db";
 import { initLogger } from "./init-db";
+import { ElementEntity } from "@/modules/admin/common/entities/element.entyty";
+import { ElementPermissionRelationEntity } from "@/modules/admin/common/entities/element-permission-relation.entity";
+import { RoleGroupPermissionRelationEntity } from "@/modules/admin/role-group/entities/role-group-permission-relation";
+import { RolePermissionRelationEntity } from "@/modules/admin/role/entities/role-permission-relation";
 
 interface RepositoryInterface {
     elementRepository: Repository<ElementEntity>;

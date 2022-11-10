@@ -4,7 +4,12 @@
     "sourceRoot": "src",
     "compilerOptions": {
         "tsConfigPath": "tsconfig.build.json",
-        "assets": [{ "include": "i18n/**/*", "watchAssets": true }],
+        "assets": [
+            { "include": "i18n/**/*", "watchAssets": true },
+            { "include": "modules/admin/i18n/**/*", "watchAssets": true },
+            { "include": "modules/shared/i18n/**/*", "watchAssets": true },
+            { "include": "config/certs/**/*", "watchAssets": true }
+        ],
         "plugins": [
             {
                 "name": "@nestjs/swagger",

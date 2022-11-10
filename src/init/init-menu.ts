@@ -2,19 +2,17 @@
  * 添加菜单及权限关系
  */
 
-import { MenuEntity } from "@/modules/menu/entities";
-import {
-    MenuPermissionRelationEntity,
-    PermissionEntity,
-    RoleGroupPermissionRelationEntity,
-    RolePermissionRelationEntity,
-} from "@/modules/permission/entities";
-import { RoleGroupEnum } from "@/modules/role-group/enums";
+import { MenuEntity } from "@/modules/admin/menu/entities";
+import { PermissionEntity } from "@/modules/shared/permission/entities";
+import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
 import { I18nService } from "nestjs-i18n";
 import { defaultRoleGroupId, MenuInterface } from "./consts";
 import { DB } from "./db";
 import { initLogger } from "./init-db";
 import { Repository } from "typeorm";
+import { MenuPermissionRelationEntity } from "@/modules/admin/menu/entities/menu-permission-relation.entity";
+import { RoleGroupPermissionRelationEntity } from "@/modules/admin/role-group/entities/role-group-permission-relation";
+import { RolePermissionRelationEntity } from "@/modules/admin/role/entities/role-permission-relation";
 
 interface RepositoryInterface {
     menuRepository: Repository<MenuEntity>;

@@ -27,12 +27,18 @@ async function bootstrap(): Promise<string> {
     // 引入全局中间件
     appMiddleware(app);
     // 全局路由前缀
-    app.setGlobalPrefix("admin");
+    // app.setGlobalPrefix("admin");
 
     // listen EACCES: permission denied 0.0.0.0:443 时执行以下脚本
     // sudo apt-get install libcap2-bin
     // sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
-    await app.listen(process.env.PORT || 443, "0.0.0.0");
+    try {
+        await app.listen(process.env.PORT || 443, "0.0.0.0");
+        return app.getUrl();
+    } catch (error) {
+        console.log("Bootstrap", error);
+        process.exit(1);
+    }
 
     // 热模块更换
     // "start:dev": "nest start --watch", 替换成如下：
@@ -41,8 +47,6 @@ async function bootstrap(): Promise<string> {
     //     module.hot.accept();
     //     module.hot.dispose(() => app.close());
     // }
-
-    return app.getUrl();
 }
 (async (): Promise<void> => {
     try {

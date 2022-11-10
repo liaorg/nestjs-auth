@@ -1,5 +1,5 @@
 import { getUTCTime } from "@/common/utils";
-import { RoleGroupEnum } from "@/modules/role-group/enums";
+import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
 import { randomBytes, scryptSync } from "crypto";
 
 // 生成盐值

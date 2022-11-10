@@ -1,4 +1,4 @@
-import { OperateEnum } from "@/modules/permission/enums/operate.enum";
+import { OperateEnum } from "@/modules/shared/permission/enums/operate.enum";
 
 // http 方法 OperateEnum
 export const operateMethod = ["*", "GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"];

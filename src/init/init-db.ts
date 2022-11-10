@@ -1,7 +1,7 @@
-import { OperateEntity } from "@/modules/permission/entities";
-import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/role-group/entities";
-import { RoleEntity } from "@/modules/role/entities";
-import { UserEntity, UserRoleRelationEntity } from "@/modules/user/entities";
+import { OperateEntity } from "@/modules/shared/permission/entities";
+import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/admin/role-group/entities";
+import { RoleEntity } from "@/modules/admin/role/entities";
+import { UserEntity, UserRoleRelationEntity } from "@/modules/admin/user/entities";
 import { Logger } from "@nestjs/common";
 import { I18nService } from "nestjs-i18n";
 import { basename } from "path";
