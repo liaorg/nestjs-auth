@@ -25,6 +25,30 @@ interface RepositoryInterface {
     rolePermissionRelationRepository: Repository<RolePermissionRelationEntity>;
 }
 
+// 添加角色权限
+const addRolePermission = async (
+    permissionId: number,
+    roleGroup: RoleGroupEnum[],
+    queryRunner: QueryRunner,
+    repository: RepositoryInterface,
+) => {
+    const { roleGroupPermissionRelationRepository, rolePermissionRelationRepository } = repository;
+    roleGroup.forEach(async (id) => {
+        // 添加角色组权限关联关系 role_group_permission_relation
+        const roleGropuPermissionRelation = roleGroupPermissionRelationRepository.create({
+            roleGroupId: id,
+            permissionId: permissionId,
+        });
+        await queryRunner.manager.save(roleGropuPermissionRelation);
+        // 添加角色权限关联关系 role_permission_relation
+        const rolePermissionRelation = rolePermissionRelationRepository.create({
+            roleId: id,
+            permissionId: permissionId,
+        });
+        await queryRunner.manager.save(rolePermissionRelation);
+    });
+};
+
 // 添加权限及关联关系
 const addPermissionRelationData = async (
     adminApiId: number,
@@ -32,12 +56,7 @@ const addPermissionRelationData = async (
     queryRunner: QueryRunner,
     repository: RepositoryInterface,
 ) => {
-    const {
-        permissionRepository,
-        adminApiPermissionRelationRepository,
-        roleGroupPermissionRelationRepository,
-        rolePermissionRelationRepository,
-    } = repository;
+    const { permissionRepository, adminApiPermissionRelationRepository } = repository;
     // 添加权限 permission
     const permission = permissionRepository.create({ type: "admin_api" });
     const permissionData = await queryRunner.manager.save(permission);
@@ -48,25 +67,13 @@ const addPermissionRelationData = async (
     });
     await queryRunner.manager.save(adminApiPermissionRelation);
     // 添加角色权限
-    roleGroup.forEach(async (id) => {
-        // 添加角色组权限关联关系 role_group_permission_relation
-        const roleGropuPermissionRelation = roleGroupPermissionRelationRepository.create({
-            roleGroupId: id,
-            permissionId: permissionData.id,
-        });
-        await queryRunner.manager.save(roleGropuPermissionRelation);
-        // 添加角色权限关联关系 role_permission_relation
-        const rolePermissionRelation = rolePermissionRelationRepository.create({
-            roleId: id,
-            permissionId: permissionData.id,
-        });
-        await queryRunner.manager.save(rolePermissionRelation);
-    });
+    await addRolePermission(permissionData.id, roleGroup, queryRunner, repository);
 };
 
 // 添加每个api对应的操作权限
 const addOperatePermissionRelationData = async (
     operateId: number,
+    roleGroup: RoleGroupEnum[],
     queryRunner: QueryRunner,
     repository: RepositoryInterface,
 ) => {
@@ -80,6 +87,8 @@ const addOperatePermissionRelationData = async (
         permissionId: permissionData.id,
     });
     await queryRunner.manager.save(operatePermissionRelation);
+    // 添加角色权限
+    await addRolePermission(permissionData.id, roleGroup, queryRunner, repository);
 };
 
 // 添加页面api数据
@@ -106,7 +115,10 @@ export const addAdminApiData = async (adminApi: AdminApiInterface[], i18n: I18nS
         try {
             for (let index = 0; index < adminApi.length; index++) {
                 const item = adminApi[index];
-                const entity = repository.adminApiRepository.create({ path: item.path, method: item.method });
+                const entity = repository.adminApiRepository.create({
+                    path: item.path,
+                    method: item.method,
+                });
                 const data: AdminApiEntity = await queryRunner.manager.save(entity);
                 // 添加api权限关联关系 admin_api_permission_relation
                 const roleGroup = item.roleGroup === "*" ? defaultRoleGroupId : item.roleGroup;
@@ -116,7 +128,12 @@ export const addAdminApiData = async (adminApi: AdminApiInterface[], i18n: I18nS
                 // operateMethod = ["*", "GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"];
                 const operateId = operateMethod.indexOf(item.method);
                 if (operateId > 0) {
-                    await addOperatePermissionRelationData(operateId, queryRunner, repository);
+                    await addOperatePermissionRelationData(
+                        operateId,
+                        roleGroup,
+                        queryRunner,
+                        repository,
+                    );
                 }
             }
             // 没有错误时提交事务

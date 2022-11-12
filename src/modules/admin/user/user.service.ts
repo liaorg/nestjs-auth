@@ -2,10 +2,16 @@ import { Injectable } from "@nestjs/common";
 import { CreateUserDto, UpdateUserDto } from "./dto";
 import { UserException } from "./user.exception";
 import { UsersError } from "@/common/constants";
-import { UserEntity } from "./entities";
+import { UserEntity, UserRoleRelationEntity } from "./entities";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserInfoDto } from "./dto/user-info.dto";
+import { RequestUserDto } from "@/modules/shared/auth/dto";
+import { RoleEntity } from "../role/entities";
+import { OperateEntity, PermissionEntity } from "@/modules/shared/permission/entities";
+import { RolePermissionRelationEntity } from "../role/entities/role-permission-relation";
+import { AdminApiEntity, AdminApiOperatePermissionRelationEntity } from "../common/entities";
+import { appConfig } from "@/config";
 
 // 抛出 500类(服务器错误)异常
 
@@ -83,7 +89,7 @@ export class UserService {
     }
 
     // 获取指定用户
-    async findOneByName(username: string): Promise<UserInfoDto> {
+    async findOneByName(username: string): Promise<UserEntity> {
         return await this.repository.findOneBy({ name: username });
     }
 
@@ -98,5 +104,88 @@ export class UserService {
             throw new UserException(error);
         }
         return existUser;
+    }
+    // 获取用户信息包括角色和权限
+    async findeUserRolePermission(name: string): Promise<RequestUserDto> {
+        // user_role_relation role_permission_relation
+        const query = this.repository
+            .createQueryBuilder("user")
+            .leftJoinAndSelect(
+                UserRoleRelationEntity,
+                "user_role_relation",
+                "user_role_relation.userId = user.id",
+            )
+            .leftJoinAndSelect(RoleEntity, "role", "role.id = user_role_relation.roleId")
+            .leftJoinAndSelect(
+                RolePermissionRelationEntity,
+                "role_permission_relation",
+                "role_permission_relation.roleId = role.id",
+            )
+            .leftJoinAndSelect(
+                PermissionEntity,
+                "permission",
+                "permission.id = role_permission_relation.permissionId",
+            )
+            .leftJoinAndSelect(
+                AdminApiOperatePermissionRelationEntity,
+                "admin_api_operate_permission_relation",
+                "admin_api_operate_permission_relation.permissionId = permission.id",
+            )
+            .leftJoinAndSelect(
+                AdminApiEntity,
+                "admin_api",
+                "admin_api.id = admin_api_operate_permission_relation.adminApiId",
+            )
+            .leftJoinAndSelect(
+                OperateEntity,
+                "operate",
+                "operate.id = admin_api_operate_permission_relation.operateId",
+            );
+        const user: {
+            user_id: number;
+            user_name: string;
+            role_id: number;
+            role_name: string;
+            role_locale: string;
+            admin_api_path: string;
+            operate_method: string;
+        }[] = await query
+            .select([
+                "user.id",
+                "user.name",
+                "role.id",
+                "role.name",
+                "role.locale",
+                "role.is_default",
+                "permission.id",
+                "permission.type",
+                "admin_api.id",
+                "admin_api.path",
+                "operate.id",
+                "operate.method",
+            ])
+            .where("user.name = :name", { name })
+            .andWhere("permission.type = :permissionType", { permissionType: "admin_api" })
+            .getRawMany();
+        const userInfo: RequestUserDto = { id: 1, name: "", roleId: 0, auth: [] };
+        if (user.length) {
+            userInfo.id = user[0].user_id;
+            userInfo.name = user[0].user_name;
+            userInfo.roleId = user[0].role_id;
+            user.forEach((u) => {
+                userInfo.auth.push({
+                    path: "/" + appConfig.adminPrefix + u.admin_api_path,
+                    method: u.operate_method,
+                });
+            });
+            console.log("userInfo", userInfo);
+        }
+
+        return {
+            id: 1,
+            name: "admin",
+            roleId: 1,
+            auth: [],
+        };
     }
 }

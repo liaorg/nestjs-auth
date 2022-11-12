@@ -1,16 +1,16 @@
 import { MenuEntity } from "@/modules/admin/menu/entities";
-import { OperateEntity, OperatePermissionRelationEntity, PermissionEntity } from "@/modules/shared/permission/entities";
+import { OperateEntity, PermissionEntity } from "@/modules/shared/permission/entities";
 import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/admin/role-group/entities";
 import { RoleEntity } from "@/modules/admin/role/entities";
 import { UserEntity, UserRoleRelationEntity } from "@/modules/admin/user/entities";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { MenuPermissionRelationEntity } from "@/modules/admin/menu/entities/menu-permission-relation.entity";
 import { AdminApiEntity } from "@/modules/admin/common/entities/admin-api.entity";
-import { AdminApiPermissionRelationEntity } from "@/modules/admin/common/entities/admin-api-permission-relation.entity";
 import { ElementEntity } from "@/modules/admin/common/entities/element.entyty";
 import { ElementPermissionRelationEntity } from "@/modules/admin/common/entities/element-permission-relation.entity";
 import { RoleGroupPermissionRelationEntity } from "@/modules/admin/role-group/entities/role-group-permission-relation";
 import { RolePermissionRelationEntity } from "@/modules/admin/role/entities/role-permission-relation";
+import { AdminApiOperatePermissionRelationEntity } from "@/modules/admin/common/entities";
 
 export const dbConfig: DataSourceOptions = {
     type: "sqlite",
@@ -28,12 +28,13 @@ export const dbConfig: DataSourceOptions = {
         MenuPermissionRelationEntity,
         OperateEntity,
         AdminApiEntity,
-        AdminApiPermissionRelationEntity,
-        OperatePermissionRelationEntity,
+        // AdminApiPermissionRelationEntity,
+        // OperatePermissionRelationEntity,
         ElementEntity,
         ElementPermissionRelationEntity,
         RoleGroupPermissionRelationEntity,
         RolePermissionRelationEntity,
+        AdminApiOperatePermissionRelationEntity,
     ],
 };
 

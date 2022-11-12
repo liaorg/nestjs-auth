@@ -34,6 +34,9 @@ export class ObjectSerializerInterceptor implements NestInterceptor {
 
     // 获取类或方法中的参数： OBJECT_SERIALIZER_DTO
     protected getContextDto(context: ExecutionContext) {
-        return this.reflector.getAllAndOverride(OBJECT_SERIALIZER_DTO, [context.getHandler(), context.getClass()]);
+        return this.reflector.getAllAndOverride(OBJECT_SERIALIZER_DTO, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
     }
 }

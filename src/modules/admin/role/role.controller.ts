@@ -4,9 +4,10 @@ import { UpdateRoleDto } from "./dto/update-role.dto";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { RoleService } from "./role.service";
 import { PublicDecorator } from "@/modules/shared/auth/decorators";
+import { appConfig } from "@/config";
 
 @ApiTags("角色管理")
-@Controller("role")
+@Controller(`${appConfig.adminPrefix}/role`)
 export class RoleController {
     constructor(private readonly service: RoleService) {}
 

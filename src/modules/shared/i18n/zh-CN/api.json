@@ -1,9 +1,0 @@
-{
-    "error": {
-        "requestTimeout": "请求超时",
-        "requestSuccess": "请求成功",
-        "unknowError": "未知错误",
-        "badParams": "错误的请求参数",
-        "objectid": "必须为 ObjectId 类型"
-    }
-}

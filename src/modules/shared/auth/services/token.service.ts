@@ -19,8 +19,10 @@ export class TokenService {
     constructor(
         private readonly jwtService: JwtService,
         // 使用 @InjectRepository() 装饰器注入 存储库
-        @InjectRepository(AccessTokenEntity) private accessTokenRepository: Repository<AccessTokenEntity>,
-        @InjectRepository(RefreshTokenEntity) private refreshTokenRepository: Repository<RefreshTokenEntity>,
+        @InjectRepository(AccessTokenEntity)
+        private accessTokenRepository: Repository<AccessTokenEntity>,
+        @InjectRepository(RefreshTokenEntity)
+        private refreshTokenRepository: Repository<RefreshTokenEntity>,
     ) {}
     /**
      * 根据accessToken刷新AccessToken与RefreshToken

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { scryptSync } from "crypto";
+// import { scryptSync } from "crypto";
 import { ExtractJwt } from "passport-jwt";
 import { getUTCTime } from "@/common/utils";
 import { AuthException } from "./auth.exception";
@@ -7,7 +7,6 @@ import { AuthError } from "@/common/constants";
 import { RequestUserDto } from "./dto";
 import { TokenService } from "./services";
 import { UserService } from "@/modules/admin/user/user.service";
-import { UserInfoDto } from "@/modules/admin/user/dto/user-info.dto";
 
 /**
  * 自定义中间件
@@ -15,24 +14,29 @@ import { UserInfoDto } from "@/modules/admin/user/dto/user-info.dto";
  */
 @Injectable()
 export class AuthService {
-    constructor(private readonly userService: UserService, private readonly tokenService: TokenService) {}
+    constructor(
+        private readonly userService: UserService,
+        private readonly tokenService: TokenService,
+    ) {}
     /**
      * 用户登录，查询用户是否存在
      * @param name
      * @param passwd
      * @returns
      */
-    async validateUser(name: string, passwd: string): Promise<UserInfoDto | null | undefined> {
-        const user = await this.userService.findOneByName(name);
+    async validateUser(name: string, _passwd: string): Promise<RequestUserDto | null | undefined> {
+        const user = await this.userService.findeUserRolePermission(name);
         if (!user) {
             // 用户不存在
             return null;
         }
         // 通过密码盐，加密传参，再与数据库里的比较，判断是否相等
-        const hashPasswd = scryptSync(passwd, user.passwordSalt, 64).toString("hex");
-        if (user.password === hashPasswd) {
-            return user;
-        }
+        // const hashPasswd = scryptSync(passwd, user.passwordSalt, 64).toString("hex");
+        // if (user.password === hashPasswd) {
+        //     // 获取角色信息
+        //     // 权限信息
+        //     return user;
+        // }
         // 密码错误
         return undefined;
     }

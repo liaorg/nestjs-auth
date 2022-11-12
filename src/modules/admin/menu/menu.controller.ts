@@ -1,4 +1,5 @@
+import { appConfig } from "@/config";
 import { Controller } from "@nestjs/common";
 
-@Controller("menu")
+@Controller(`${appConfig.adminPrefix}/menu`)
 export class MenuController {}

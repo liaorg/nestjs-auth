@@ -1,7 +1,22 @@
 import { ObjectSerializerDtoDecorator } from "@/common/decorators";
 import { ObjectSerializerInterceptor } from "@/common/interceptors/object-serializer.interceptor";
-import { GuestDecorator } from "@/modules/shared/auth/decorators";
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from "@nestjs/common";
+import { appConfig } from "@/config";
+import { AuthService } from "@/modules/shared/auth/auth.service";
+import { GuestDecorator, RequestUserDecorator } from "@/modules/shared/auth/decorators";
+import { RequestUserDto } from "@/modules/shared/auth/dto";
+import { LocalAuthGuard } from "@/modules/shared/auth/guards";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Req,
+    UseGuards,
+    UseInterceptors,
+} from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CreateUserDto, UpdateUserDto, UserDto } from "./dto";
 import { UserInfoDto } from "./dto/user-info.dto";
@@ -15,16 +30,37 @@ import { UserService } from "./user.service";
 // }
 
 @ApiTags("用户管理")
-@Controller("user")
+@Controller(`${appConfig.adminPrefix}user`)
 // 根据 UserDto 转换和净化数据，转换和净化输出的数据
 @ObjectSerializerDtoDecorator(UserDto)
 @UseInterceptors(ObjectSerializerInterceptor)
 export class UserController {
-    constructor(public service: UserService) {}
+    constructor(private readonly service: UserService, private readonly authService: AuthService) {}
+    /**
+     * 登录
+     * @param user
+     * @returns
+     */
+    @Post("login")
+    // 设置不验证 jwt
+    @GuestDecorator()
+    @UseGuards(LocalAuthGuard)
+    async login(@RequestUserDecorator() user: RequestUserDto) {
+        return await this.authService.createToken(user);
+    }
+
+    /**
+     * 注销登录
+     * @param req
+     * @returns
+     */
+    @Get("logout")
+    async logout(@Req() req: any) {
+        return await this.authService.logout(req);
+    }
 
     @ApiOperation({ summary: "创建用户" })
     @Post()
-    @GuestDecorator()
     async create(@Body() post: CreateUserDto) {
         return await this.service.create(post);
     }

@@ -12,10 +12,10 @@ export interface AdminApiInterface {
 
 // 添加页面api权限 admin_api admin_api_permission_relation operate_permission_relation
 export const defaultAdminApi: AdminApiInterface[] = [
-    { path: "/login", method: "POST", roleGroup: "*" },
-    { path: "/logout", method: "GET", roleGroup: "*" },
     // 用户管理
     { path: "/user", method: "*", roleGroup: [RoleGroupEnum.systemAdmin] },
+    { path: "/user/login", method: "POST", roleGroup: "*" },
+    { path: "/user/logout", method: "GET", roleGroup: "*" },
     // 修改密码
     { path: "/user/password", method: "PATCH", roleGroup: "*" },
     // 用户信息

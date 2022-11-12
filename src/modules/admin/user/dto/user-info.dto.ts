@@ -8,7 +8,7 @@ export class UserInfoDto {
     id: number;
     roleId?: number;
     @ApiProperty({ description: "用户名", example: "xciovpmn" })
-    username?: string;
+    name?: string;
     @Exclude()
     password: string;
     // 密码盐值

@@ -26,13 +26,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
             };
             throw new AuthException(error);
         }
+        console.log("localv", user);
         // 这边的返回将写入 request.user
         return {
             id: user.id,
-            username: user.username,
-            role: user.roleId,
-            roleGroup: user.roleId,
-            routePath: [],
+            name: user.name,
+            roleId: 1,
+            auth: [],
         };
     }
 }

@@ -8,13 +8,12 @@ import { basename } from "path";
 import { EntityTarget } from "typeorm";
 import {
     createAccessTokenSql,
-    createAdminApiPermissionRelationSql,
+    createAdminApiOperatePermissionRelationSql,
     createAdminApiSql,
     createElementPermissionRelationSql,
     createElementSql,
     createMenuPermissionRelationSql,
     createMenuSql,
-    createOperatePermissionRelationSql,
     createOperateSql,
     createPermissionSql,
     createRefresTokenSql,
@@ -111,13 +110,18 @@ export async function initDefaultData(i18n: I18nService) {
         // 创建关联关系表
         await Promise.all([
             // 页面api接口表与权限表关联表
-            createTable("admin_api_permission_relation", createAdminApiPermissionRelationSql, i18n),
+            // createTable("admin_api_permission_relation", createAdminApiPermissionRelationSql, i18n),
+            // 操作表与权限表关联表
+            // createTable("operate_permission_relation", createOperatePermissionRelationSql, i18n),
+            createTable(
+                "admin_api_operate_permission_relation",
+                createAdminApiOperatePermissionRelationSql,
+                i18n,
+            ),
             // 页面元素表与权限表关联表
             createTable("element_permission_relation", createElementPermissionRelationSql, i18n),
             // 菜单表与权限表关联表
             createTable("menu_permission_relation", createMenuPermissionRelationSql, i18n),
-            // 操作表与权限表关联表
-            createTable("operate_permission_relation", createOperatePermissionRelationSql, i18n),
             // 角色表与权限表关联表
             createTable("role_permission_relation", createRolePermissionRelationSql, i18n),
             // 角色组表和权限表关联表

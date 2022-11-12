@@ -92,7 +92,11 @@ export const initMenuData = async (menu: MenuInterface[], i18n: I18nService) => 
     menu.forEach(async (item) => {
         const data: MenuEntity = await repository.menuRepository.save(item);
         // 添加子菜单
-        const roleGroup = item.roleGroup ? (item.roleGroup === "*" ? defaultRoleGroupId : item.roleGroup) : [];
+        const roleGroup = item.roleGroup
+            ? item.roleGroup === "*"
+                ? defaultRoleGroupId
+                : item.roleGroup
+            : [];
         if (item.children?.length > 0) {
             await addChildMenuData(item.children, data.id, roleGroup, repository);
         }

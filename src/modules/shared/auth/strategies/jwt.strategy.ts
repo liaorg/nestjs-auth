@@ -33,13 +33,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
      */
     async validate(payload: JwtPayload): Promise<RequestUserDto> {
         const user = await this.userService.findOne(payload.sub);
+        console.log("jwtv", user);
+
         // 这边的返回将写入 request.user
         return {
             id: user.id,
-            username: user.username,
-            role: user.roleId,
-            roleGroup: user.roleId,
-            routePath: [],
+            name: user.name,
+            roleId: user.roleId,
+            auth: [],
         };
     }
 }

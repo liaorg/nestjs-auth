@@ -11,7 +11,11 @@ interface RoleGropInterface {
     locale: string;
 }
 // 默认角色组id
-export const defaultRoleGroupId = [RoleGroupEnum.systemAdmin, RoleGroupEnum.securityAdmin, RoleGroupEnum.auditAdmin];
+export const defaultRoleGroupId = [
+    RoleGroupEnum.systemAdmin,
+    RoleGroupEnum.securityAdmin,
+    RoleGroupEnum.auditAdmin,
+];
 // 默认角色组
 export const defaultRoleGroup: RoleGropInterface[] = [
     {

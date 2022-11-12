@@ -27,9 +27,15 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
         let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${url}`;
         requestContent += request.user ? `\nuser: ${JSON.stringify(request.user)}` : "";
         // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
-        requestContent += Object.keys(request.params ?? {}).length ? `\nParmas: ${JSON.stringify(request.params)}` : "";
-        requestContent += Object.keys(request.query ?? {}).length ? `\nQuery: ${JSON.stringify(request.query)}` : "";
-        requestContent += Object.keys(request.body ?? {}).length ? `\nBody: ${JSON.stringify(request.body)}` : "";
+        requestContent += Object.keys(request.params ?? {}).length
+            ? `\nParmas: ${JSON.stringify(request.params)}`
+            : "";
+        requestContent += Object.keys(request.query ?? {}).length
+            ? `\nQuery: ${JSON.stringify(request.query)}`
+            : "";
+        requestContent += Object.keys(request.body ?? {}).length
+            ? `\nBody: ${JSON.stringify(request.body)}`
+            : "";
 
         let logFormat = `${requestContent}\n <<< ${status} ${exception.toString()}`;
         let errorCode = ApiError.unknowError.errorCode;

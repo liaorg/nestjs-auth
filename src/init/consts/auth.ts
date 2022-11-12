@@ -62,6 +62,15 @@ export const createAdminApiPermissionRelationSql = `CREATE TABLE "main"."admin_a
   CONSTRAINT "fk_admin_api_permission_relation_admin_api_1" FOREIGN KEY ("admin_api_id") REFERENCES "admin_api" ("id"),
   CONSTRAINT "fk_admin_api_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
 );`;
+export const createAdminApiOperatePermissionRelationSql = `CREATE TABLE "main"."admin_api_operate_permission_relation" (
+  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "admin_api_id" INTEGER NOT NULL,
+  "operate_id" INTEGER NOT NULL,
+  "permission_id" INTEGER NOT NULL,
+  CONSTRAINT "fk_admin_api_operate_permission_relation_admin_api_1" FOREIGN KEY ("admin_api_id") REFERENCES "admin_api" ("id"),
+  CONSTRAINT "fk_admin_api_operate_permission_relation_operate_1" FOREIGN KEY ("operate_id") REFERENCES "operate" ("id"),
+  CONSTRAINT "fk_admin_api_operate_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+);`;
 
 // 业务系统表与权限表关联表
 export const createBusinessPermissionRelationSql = `CREATE TABLE "main"."business_permission_relation" (

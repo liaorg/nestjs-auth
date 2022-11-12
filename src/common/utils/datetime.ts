@@ -28,11 +28,10 @@ dayjs.extend(dayOfYear);
 export const getTime = (options?: TimeOptions) => {
     if (!options) return dayjs();
     const { date, format, locale, strict, zonetime } = options;
-    const config = appConfig();
     // 每次创建一个新的时间对象
     // 如果没有传入local或timezone则使用应用配置
-    const now = dayjs(date, format, locale ?? config.locale, strict).clone();
-    return now.tz(zonetime ?? config.timezone);
+    const now = dayjs(date, format, locale ?? appConfig.locale, strict).clone();
+    return now.tz(zonetime ?? appConfig.timezone);
 };
 
 /**
