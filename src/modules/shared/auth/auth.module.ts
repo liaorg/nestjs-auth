@@ -7,20 +7,15 @@ import { JwtStrategy, LocalStrategy } from "./strategies";
 import { TokenService } from "./services";
 import { jwtConstants } from "./constants";
 import { APP_GUARD } from "@nestjs/core";
-import { JwtAuthGuard } from "./guards";
+import { JwtAuthGuard, RoleGuard } from "./guards";
 import { AccessTokenEntity, RefreshTokenEntity } from "./entities";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserService } from "@/modules/admin/user/user.service";
-import { UserEntity, UserRoleRelationEntity } from "@/modules/admin/user/entities";
+import { UserEntity } from "@/modules/admin/user/entities";
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([
-            AccessTokenEntity,
-            RefreshTokenEntity,
-            UserEntity,
-            UserRoleRelationEntity,
-        ]),
+        TypeOrmModule.forFeature([AccessTokenEntity, RefreshTokenEntity, UserEntity]),
         PassportModule.register({ defaultStrategy: "jwt" }),
         JwtModule.register({
             secret: jwtConstants.secret,
@@ -40,6 +35,11 @@ import { UserEntity, UserRoleRelationEntity } from "@/modules/admin/user/entitie
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,
+        },
+        // 角色路由守卫
+        {
+            provide: APP_GUARD,
+            useClass: RoleGuard,
         },
     ],
     exports: [AuthService],

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-// import { scryptSync } from "crypto";
+import { scryptSync } from "crypto";
 import { ExtractJwt } from "passport-jwt";
 import { getUTCTime } from "@/common/utils";
 import { AuthException } from "./auth.exception";
@@ -24,19 +24,19 @@ export class AuthService {
      * @param passwd
      * @returns
      */
-    async validateUser(name: string, _passwd: string): Promise<RequestUserDto | null | undefined> {
-        const user = await this.userService.findeUserRolePermission(name);
+    async validateUser(name: string, passwd: string): Promise<RequestUserDto | null | undefined> {
+        const user = await this.userService.findOneByName(name);
         if (!user) {
             // 用户不存在
             return null;
         }
         // 通过密码盐，加密传参，再与数据库里的比较，判断是否相等
-        // const hashPasswd = scryptSync(passwd, user.passwordSalt, 64).toString("hex");
-        // if (user.password === hashPasswd) {
-        //     // 获取角色信息
-        //     // 权限信息
-        //     return user;
-        // }
+        const hashPasswd = scryptSync(passwd, user.passwordSalt, 64).toString("hex");
+        if (user.password === hashPasswd) {
+            // 获取角色信息
+            // 权限信息
+            return user;
+        }
         // 密码错误
         return undefined;
     }

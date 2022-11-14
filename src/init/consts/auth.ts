@@ -36,40 +36,34 @@ ON "refresh_token" (
 // 权限表 与权限类型表一对一关系
 export const createPermissionSql = `CREATE TABLE "main"."permission" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "type" VARCHAR(30) NOT NULL -- 权限类型 menu admin_api element operate
+  "type" VARCHAR(30) NOT NULL -- 权限类型 menu admin_route element operate
 );
 CREATE INDEX "permission_type"
 ON "permission" (
   "type" ASC
 );`;
 
-// 页面api接口表
-export const createAdminApiSql = `CREATE TABLE "main"."admin_api" (
+// 页面route接口表
+export const createAdminRouteSql = `CREATE TABLE "main"."admin_route" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "path" VARCHAR(100) NOT NULL, -- 接口URL路径
-  "method" VARCHAR(20) NOT NULL, -- 操作方法 *,GET,HEAD,PUT,PATCH,POST,DELETE
-  CONSTRAINT "path" UNIQUE ("path" ASC)
+  "method" VARCHAR(20) NOT NULL -- 操作方法 GET,HEAD,PUT,PATCH,POST,DELETE
 );
-CREATE UNIQUE INDEX "admin_api_path"
-ON "admin_api" (
+CREATE INDEX "admin_route_path"
+ON "admin_route" (
   "path" ASC
+);
+CREATE INDEX "admin_route_method"
+ON "admin_route" (
+  "method" ASC
 );`;
-// 页面api接口表与权限表关联表
-export const createAdminApiPermissionRelationSql = `CREATE TABLE "main"."admin_api_permission_relation" (
+// 页面路由接口表与权限表关联表
+export const createAdminRoutePermissionRelationSql = `CREATE TABLE "main"."admin_route_permission_relation" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "admin_api_id" INTEGER NOT NULL,
+  "admin_route_id" INTEGER NOT NULL,
   "permission_id" INTEGER NOT NULL,
-  CONSTRAINT "fk_admin_api_permission_relation_admin_api_1" FOREIGN KEY ("admin_api_id") REFERENCES "admin_api" ("id"),
-  CONSTRAINT "fk_admin_api_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
-);`;
-export const createAdminApiOperatePermissionRelationSql = `CREATE TABLE "main"."admin_api_operate_permission_relation" (
-  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "admin_api_id" INTEGER NOT NULL,
-  "operate_id" INTEGER NOT NULL,
-  "permission_id" INTEGER NOT NULL,
-  CONSTRAINT "fk_admin_api_operate_permission_relation_admin_api_1" FOREIGN KEY ("admin_api_id") REFERENCES "admin_api" ("id"),
-  CONSTRAINT "fk_admin_api_operate_permission_relation_operate_1" FOREIGN KEY ("operate_id") REFERENCES "operate" ("id"),
-  CONSTRAINT "fk_admin_api_operate_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
+  CONSTRAINT "fk_admin_route_permission_relation_admin_route_1" FOREIGN KEY ("admin_route_id") REFERENCES "admin_route" ("id"),
+  CONSTRAINT "fk_admin_route_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
 );`;
 
 // 业务系统表与权限表关联表
@@ -114,21 +108,6 @@ export const createMenuPermissionRelationSql = `CREATE TABLE "main"."menu_permis
   "permission_id" INTEGER NOT NULL,
   CONSTRAINT "fk_menu_permission__relation_menu_1" FOREIGN KEY ("menu_id") REFERENCES "menu" ("id"),
   CONSTRAINT "fk_menu_permission__relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
-);`;
-
-// 操作表
-export const createOperateSql = `CREATE TABLE "main"."operate" (
-  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "method" VARCHAR(20) NOT NULL -- 操作方法 *,GET,HEAD,PUT,PATCH,POST,DELETE
-);`;
-
-// 操作表与权限表关联表
-export const createOperatePermissionRelationSql = `CREATE TABLE "main"."operate_permission_relation" (
-  "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  "operate_id" INTEGER NOT NULL,
-  "permission_id" INTEGER NOT NULL,
-  CONSTRAINT "fk_operate_permission_relation_operate_1" FOREIGN KEY ("operate_id") REFERENCES "operate" ("id"),
-  CONSTRAINT "fk_operate_permission_relation_permission_1" FOREIGN KEY ("permission_id") REFERENCES "permission" ("id")
 );`;
 
 // 角色表

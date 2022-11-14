@@ -4,8 +4,8 @@ import { InitModule } from "./init.module";
 import { I18nService } from "nestjs-i18n";
 import { initDefaultData } from "./init-db";
 import minimist from "minimist";
-import { addAdminApiData } from "./add-admin-api";
-import { adminApiData } from "./upgrade-data";
+import { addAdminRouteData } from "./add-admin-route";
+import { adminRouteData } from "./upgrade-data";
 
 const initLogger = new Logger("InitBootstrap", { timestamp: true });
 
@@ -26,8 +26,8 @@ async function bootstrap() {
         initLogger.log(i18n.t("init.finishedInit"));
     } else if (argvs.add === "adminApi") {
         // 升级时用
-        // node dist/init/main.js --add adminApi
-        await addAdminApiData(adminApiData, i18n);
+        // node dist/init/main.js --add adminRoute
+        await addAdminRouteData(adminRouteData, i18n);
     } else {
         initLogger.log(i18n.t("init.requiredParam"));
     }

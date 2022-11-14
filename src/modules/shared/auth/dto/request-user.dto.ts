@@ -7,6 +7,8 @@
 export class RequestUserDto {
     id: number;
     name: string;
-    roleId: number;
-    auth: object[];
+    roleId?: number;
+    password?: string;
+    passwordSalt?: string;
+    auth?: object[];
 }

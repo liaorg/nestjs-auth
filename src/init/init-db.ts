@@ -1,4 +1,3 @@
-import { OperateEntity } from "@/modules/shared/permission/entities";
 import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/admin/role-group/entities";
 import { RoleEntity } from "@/modules/admin/role/entities";
 import { UserEntity, UserRoleRelationEntity } from "@/modules/admin/user/entities";
@@ -8,13 +7,12 @@ import { basename } from "path";
 import { EntityTarget } from "typeorm";
 import {
     createAccessTokenSql,
-    createAdminApiOperatePermissionRelationSql,
-    createAdminApiSql,
+    createAdminRoutePermissionRelationSql,
+    createAdminRouteSql,
     createElementPermissionRelationSql,
     createElementSql,
     createMenuPermissionRelationSql,
     createMenuSql,
-    createOperateSql,
     createPermissionSql,
     createRefresTokenSql,
     createRoleGroupPermissionRelationSql,
@@ -24,9 +22,8 @@ import {
     createRoleSql,
     createUserRoleRelationSql,
     createUserSql,
-    defaultAdminApi,
+    defaultAdminRoute,
     defaultMenu,
-    defaultOperate,
     defaultRole,
     defaultRoleGroup,
     defaultRoleGroupRoleRelation,
@@ -34,7 +31,7 @@ import {
     defaultUserRoleRelation,
 } from "./consts";
 import { dbConfig, DB, DBInsert } from "./db";
-import { initAdminApiData } from "./init-admin-api";
+import { initAdminRouteData } from "./init-admin-route";
 import { initMenuData } from "./init-menu";
 
 export const initLogger = new Logger("db", { timestamp: true });
@@ -91,13 +88,11 @@ export async function initDefaultData(i18n: I18nService) {
             // 创建权限表
             createTable("permission", createPermissionSql, i18n),
             // 页面api接口表
-            createTable("admin_api", createAdminApiSql, i18n),
+            createTable("admin_api", createAdminRouteSql, i18n),
             // 页面元素表
             createTable("element", createElementSql, i18n),
             // 菜单表
             createTable("menu", createMenuSql, i18n),
-            // 操作表
-            createTable("operate", createOperateSql, i18n),
             // 角色表
             createTable("role", createRoleSql, i18n),
             // 角色组表-角色类型
@@ -109,15 +104,8 @@ export async function initDefaultData(i18n: I18nService) {
         ]);
         // 创建关联关系表
         await Promise.all([
-            // 页面api接口表与权限表关联表
-            // createTable("admin_api_permission_relation", createAdminApiPermissionRelationSql, i18n),
-            // 操作表与权限表关联表
-            // createTable("operate_permission_relation", createOperatePermissionRelationSql, i18n),
-            createTable(
-                "admin_api_operate_permission_relation",
-                createAdminApiOperatePermissionRelationSql,
-                i18n,
-            ),
+            // 页面route接口表与权限表关联表
+            createTable("admin_route_permission_relation", createAdminRoutePermissionRelationSql, i18n),
             // 页面元素表与权限表关联表
             createTable("element_permission_relation", createElementPermissionRelationSql, i18n),
             // 菜单表与权限表关联表
@@ -165,15 +153,6 @@ export async function initDefaultData(i18n: I18nService) {
                 },
                 i18n,
             ),
-            // 操作表
-            addDefaultData(
-                {
-                    tablename: "operate",
-                    entity: OperateEntity,
-                    defaultData: defaultOperate,
-                },
-                i18n,
-            ),
         ]);
         await Promise.all([
             // 添加默认关联关系表数据
@@ -196,7 +175,7 @@ export async function initDefaultData(i18n: I18nService) {
                 i18n,
             ),
             // 添加页面api权限
-            initAdminApiData(defaultAdminApi, i18n),
+            initAdminRouteData(defaultAdminRoute, i18n),
             // 添加要隐藏的页面元素权限
             // initElementData(defaultElement, i18n),
             // 添加菜单权限

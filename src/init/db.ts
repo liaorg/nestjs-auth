@@ -1,16 +1,16 @@
 import { MenuEntity } from "@/modules/admin/menu/entities";
-import { OperateEntity, PermissionEntity } from "@/modules/shared/permission/entities";
+import { PermissionEntity } from "@/modules/shared/permission/entities";
 import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/admin/role-group/entities";
 import { RoleEntity } from "@/modules/admin/role/entities";
 import { UserEntity, UserRoleRelationEntity } from "@/modules/admin/user/entities";
 import { DataSource, DataSourceOptions } from "typeorm";
 import { MenuPermissionRelationEntity } from "@/modules/admin/menu/entities/menu-permission-relation.entity";
-import { AdminApiEntity } from "@/modules/admin/common/entities/admin-api.entity";
+import { AdminRouteEntity } from "@/modules/admin/common/entities/admin-route.entity";
 import { ElementEntity } from "@/modules/admin/common/entities/element.entyty";
 import { ElementPermissionRelationEntity } from "@/modules/admin/common/entities/element-permission-relation.entity";
 import { RoleGroupPermissionRelationEntity } from "@/modules/admin/role-group/entities/role-group-permission-relation";
 import { RolePermissionRelationEntity } from "@/modules/admin/role/entities/role-permission-relation";
-import { AdminApiOperatePermissionRelationEntity } from "@/modules/admin/common/entities";
+import { AdminRoutePermissionRelationEntity } from "@/modules/admin/common/entities";
 
 export const dbConfig: DataSourceOptions = {
     type: "sqlite",
@@ -26,15 +26,12 @@ export const dbConfig: DataSourceOptions = {
         MenuEntity,
         PermissionEntity,
         MenuPermissionRelationEntity,
-        OperateEntity,
-        AdminApiEntity,
-        // AdminApiPermissionRelationEntity,
-        // OperatePermissionRelationEntity,
+        AdminRouteEntity,
+        AdminRoutePermissionRelationEntity,
         ElementEntity,
         ElementPermissionRelationEntity,
         RoleGroupPermissionRelationEntity,
         RolePermissionRelationEntity,
-        AdminApiOperatePermissionRelationEntity,
     ],
 };
 

@@ -24,7 +24,7 @@
     "html.format.indentInnerHtml": true,
     "emmet.triggerExpansionOnTab": true,
     "workbench.sideBar.location": "left",
-    "workbench.colorTheme": "Atom One Dark",
+    "workbench.colorTheme": "One Dark Pro Darker",
     "workbench.colorCustomizations": {
         "editorRuler.foreground": "#6b3a85"
     },

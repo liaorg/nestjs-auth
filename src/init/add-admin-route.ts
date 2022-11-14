@@ -1,25 +1,25 @@
 /**
- * 添加页面api及权限关系
+ * 添加页面Route及权限关系
  * 添加失败要回滚
  */
 
 import { OperatePermissionRelationEntity, PermissionEntity } from "@/modules/shared/permission/entities";
 import { I18nService } from "nestjs-i18n";
-import { AdminApiInterface, defaultRoleGroupId, operateMethod } from "./consts";
+import { AdminRouteInterface, defaultRoleGroupId, operateMethod } from "./consts";
 import { dbConfig, DB } from "./db";
 import { initLogger } from "./init-db";
 import { QueryRunner, Repository } from "typeorm";
 import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
 import { basename } from "path";
-import { AdminApiEntity } from "@/modules/admin/common/entities/admin-api.entity";
-import { AdminApiPermissionRelationEntity } from "@/modules/admin/common/entities/admin-api-permission-relation.entity";
+import { AdminRouteEntity } from "@/modules/admin/common/entities/admin-route.entity";
+import { AdminRoutePermissionRelationEntity } from "@/modules/admin/common/entities/admin-route-permission-relation.entity";
 import { RoleGroupPermissionRelationEntity } from "@/modules/admin/role-group/entities/role-group-permission-relation";
 import { RolePermissionRelationEntity } from "@/modules/admin/role/entities/role-permission-relation";
 
 interface RepositoryInterface {
-    adminApiRepository: Repository<AdminApiEntity>;
+    adminRouteRepository: Repository<AdminRouteEntity>;
     permissionRepository: Repository<PermissionEntity>;
-    adminApiPermissionRelationRepository: Repository<AdminApiPermissionRelationEntity>;
+    adminRoutePermissionRelationRepository: Repository<AdminRoutePermissionRelationEntity>;
     operatePermissionRelationRepository: Repository<OperatePermissionRelationEntity>;
     roleGroupPermissionRelationRepository: Repository<RoleGroupPermissionRelationEntity>;
     rolePermissionRelationRepository: Repository<RolePermissionRelationEntity>;
@@ -51,21 +51,21 @@ const addRolePermission = async (
 
 // 添加权限及关联关系
 const addPermissionRelationData = async (
-    adminApiId: number,
+    adminRouteId: number,
     roleGroup: RoleGroupEnum[],
     queryRunner: QueryRunner,
     repository: RepositoryInterface,
 ) => {
-    const { permissionRepository, adminApiPermissionRelationRepository } = repository;
+    const { permissionRepository, adminRoutePermissionRelationRepository } = repository;
     // 添加权限 permission
     const permission = permissionRepository.create({ type: "admin_api" });
     const permissionData = await queryRunner.manager.save(permission);
     // 添加菜单权限关联关系 admin_api_permission_relation
-    const adminApiPermissionRelation = adminApiPermissionRelationRepository.create({
-        adminApiId,
+    const adminRoutePermissionRelation = adminRoutePermissionRelationRepository.create({
+        adminRouteId,
         permissionId: permissionData.id,
     });
-    await queryRunner.manager.save(adminApiPermissionRelation);
+    await queryRunner.manager.save(adminRoutePermissionRelation);
     // 添加角色权限
     await addRolePermission(permissionData.id, roleGroup, queryRunner, repository);
 };
@@ -92,7 +92,7 @@ const addOperatePermissionRelationData = async (
 };
 
 // 添加页面api数据
-export const addAdminApiData = async (adminApi: AdminApiInterface[], i18n: I18nService) => {
+export const addAdminRouteData = async (adminRoute: AdminRouteInterface[], i18n: I18nService) => {
     try {
         await DB.initialize();
         initLogger.log(i18n.t("init.dbConnected") + ` ${basename(dbConfig.database as string)}`);
@@ -100,9 +100,9 @@ export const addAdminApiData = async (adminApi: AdminApiInterface[], i18n: I18nS
         initLogger.log(i18n.t("init.begainAddData", { args: { tablename } }));
 
         const repository: RepositoryInterface = {
-            adminApiRepository: DB.getRepository(AdminApiEntity),
+            adminRouteRepository: DB.getRepository(AdminRouteEntity),
             permissionRepository: DB.getRepository(PermissionEntity),
-            adminApiPermissionRelationRepository: DB.getRepository(AdminApiPermissionRelationEntity),
+            adminRoutePermissionRelationRepository: DB.getRepository(AdminRoutePermissionRelationEntity),
             operatePermissionRelationRepository: DB.getRepository(OperatePermissionRelationEntity),
             roleGroupPermissionRelationRepository: DB.getRepository(RoleGroupPermissionRelationEntity),
             rolePermissionRelationRepository: DB.getRepository(RolePermissionRelationEntity),
@@ -113,13 +113,13 @@ export const addAdminApiData = async (adminApi: AdminApiInterface[], i18n: I18nS
         await queryRunner.startTransaction();
 
         try {
-            for (let index = 0; index < adminApi.length; index++) {
-                const item = adminApi[index];
-                const entity = repository.adminApiRepository.create({
+            for (let index = 0; index < adminRoute.length; index++) {
+                const item = adminRoute[index];
+                const entity = repository.adminRouteRepository.create({
                     path: item.path,
                     method: item.method,
                 });
-                const data: AdminApiEntity = await queryRunner.manager.save(entity);
+                const data: AdminRouteEntity = await queryRunner.manager.save(entity);
                 // 添加api权限关联关系 admin_api_permission_relation
                 const roleGroup = item.roleGroup === "*" ? defaultRoleGroupId : item.roleGroup;
                 await addPermissionRelationData(data.id, roleGroup, queryRunner, repository);

@@ -14,8 +14,8 @@ export const databaseConfig: TypeOrmModuleOptions = {
     type: "sqlite",
     synchronize: false, // 从entities属性产生SQL，并创建表格
     // logging: ["query", "warn", "schema", "info", "log", "error"], // 执行SQL会打印在控制台中 query error
-    // logging: ["query", "warn", "error"], // 执行SQL会打印在控制台中 query error
-    logging: ["error"], // 执行SQL会打印在控制台中 query error
+    logging: ["query", "warn", "error"], // 执行SQL会打印在控制台中 query error
+    // logging: ["error"], // 执行SQL会打印在控制台中 query error
     maxQueryExecutionTime: 1000, // 记录所有运行超过1秒的查询
     // logger: "file",
     database: process.env.AUTHDB || "/mnt/sqlite-data/auth.db",
