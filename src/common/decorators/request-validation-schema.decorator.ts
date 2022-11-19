@@ -8,4 +8,5 @@ import { REQUEST_SCHEMA_VALIDATION } from "../constants";
  * 在 dto 中使用装饰器
  * @RequestValidationSchema(schema)
  */
-export const RequestValidationSchema = (schema: SchemaObject) => SetMetadata(REQUEST_SCHEMA_VALIDATION, schema);
+export const RequestValidationSchema = (schema: SchemaObject) =>
+    SetMetadata(REQUEST_SCHEMA_VALIDATION, schema);

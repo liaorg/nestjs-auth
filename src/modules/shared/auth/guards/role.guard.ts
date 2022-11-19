@@ -34,8 +34,8 @@ export class RoleGuard implements CanActivate {
 
     // 验证用户角色权限
     async validateRole(request: Request): Promise<boolean> {
+        // console.log("validateRole");
         // 验证请求用户的角色
-        console.log("rolev", 333, request.user);
         const user = request.user as RequestUserDto;
         if (!user.id) {
             const error = {
@@ -49,9 +49,13 @@ export class RoleGuard implements CanActivate {
         const path = request.route.path.replace(appConfig.adminPrefix, "");
         const method = request.method.toUpperCase();
         const userRoute = await this.userService.matchRoutePermission(user.id, path, method);
-        if (userRoute) {
-            return true;
+        if (!userRoute) {
+            const error = {
+                statusCode: 403,
+                ...AuthError.forbidden,
+            };
+            throw new AuthException(error);
         }
-        return false;
+        return true;
     }
 }

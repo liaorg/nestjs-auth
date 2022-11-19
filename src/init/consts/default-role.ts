@@ -8,7 +8,7 @@ interface RoleGropInterface {
     // 角色组名
     name: string;
     // 本地化/国际化名称，对应 i18n 文件 roleGroup.json 中的字段
-    locale: string;
+    local: string;
 }
 // 默认角色组id
 export const defaultRoleGroupId = [
@@ -23,21 +23,21 @@ export const defaultRoleGroup: RoleGropInterface[] = [
         id: RoleGroupEnum.systemAdmin,
         type: RoleGroupEnum.systemAdmin,
         name: "systemAdmin",
-        locale: "roleGroup.systemAdmin",
+        local: "roleGroup.systemAdmin",
     },
     {
         // 业务安全员组
         id: RoleGroupEnum.securityAdmin,
         type: RoleGroupEnum.securityAdmin,
         name: "securityAdmin",
-        locale: "roleGroup.securityAdmin",
+        local: "roleGroup.securityAdmin",
     },
     {
         // 系统审计员组
         id: RoleGroupEnum.auditAdmin,
         type: RoleGroupEnum.auditAdmin,
         name: "auditAdmin",
-        locale: "roleGroup.auditAdmin",
+        local: "roleGroup.auditAdmin",
     },
 ];
 // 角色
@@ -47,10 +47,12 @@ interface RoleInterface {
     name: string;
     // 是否默认角色
     isDefault: boolean;
+    // 角色组即角色类型id
+    roleGroupId: number;
     // 状态：0-失效|1-有效|2-不可编辑
     status: number;
     // 本地化/国际化名称，对应 i18n 文件 role.json 中的字段
-    locale: string;
+    local: string;
 }
 // 默认角色
 export const defaultRole: RoleInterface[] = [
@@ -59,24 +61,27 @@ export const defaultRole: RoleInterface[] = [
         id: RoleGroupEnum.systemAdmin,
         name: "defaultSystemAdmin",
         isDefault: true,
+        roleGroupId: RoleGroupEnum.systemAdmin,
         status: 1,
-        locale: "role.defaultSystemAdmin",
+        local: "role.defaultSystemAdmin",
     },
     // 默认业务安全员
     {
         id: RoleGroupEnum.securityAdmin,
         name: "defaultSecurityAdmin",
         isDefault: true,
+        roleGroupId: RoleGroupEnum.securityAdmin,
         status: 1,
-        locale: "defaultSecurityAdmin",
+        local: "role.defaultSecurityAdmin",
     },
     // 默认系统审计员
     {
         id: RoleGroupEnum.auditAdmin,
-        name: "roles.defaultAuditAdmin",
+        name: "defaultAuditAdmin",
         isDefault: true,
+        roleGroupId: RoleGroupEnum.auditAdmin,
         status: 1,
-        locale: "role.defaultAuditAdmin",
+        local: "role.defaultAuditAdmin",
     },
 ];
 // 角色组表和角色表关联表

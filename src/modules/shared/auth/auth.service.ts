@@ -25,7 +25,8 @@ export class AuthService {
      * @returns
      */
     async validateUser(name: string, passwd: string): Promise<RequestUserDto | null | undefined> {
-        const user = await this.userService.findOneByName(name);
+        // 获取指定用户包含密码
+        const user = await this.userService.findOneContainPassword(name);
         if (!user) {
             // 用户不存在
             return null;

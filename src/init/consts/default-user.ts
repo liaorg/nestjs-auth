@@ -1,14 +1,6 @@
-import { getUTCTime } from "@/common/utils";
+import { createPassword, createSalt, getUTCTime } from "@/common/utils";
 import { RoleGroupEnum } from "@/modules/admin/role-group/enums";
-import { randomBytes, scryptSync } from "crypto";
 
-// 生成盐值
-const createSalt = (size: number) => randomBytes(size).toString("hex");
-// 生成密码
-const createPassword = (password: string, salt: string) => {
-    // 加密密码
-    return scryptSync(password, salt, 64).toString("hex");
-};
 // 当前时间戳
 const now = getUTCTime();
 
@@ -53,15 +45,18 @@ export interface UserInterface {
     password: string;
     passwordSalt: string;
     isDefault: boolean;
+    roleId: number;
     status: number;
 }
 
+// 一个用户只能属于一个角色
 export const defaultUser: UserInterface[] = [
     // 默认系统管理员
     {
         id: RoleGroupEnum.systemAdmin,
         ...defaultAdmin.systemAdmin,
         isDefault: true,
+        roleId: RoleGroupEnum.systemAdmin,
         status: 1,
     },
     // 默认业务安全员
@@ -69,6 +64,7 @@ export const defaultUser: UserInterface[] = [
         id: RoleGroupEnum.securityAdmin,
         ...defaultAdmin.securityAdmin,
         isDefault: true,
+        roleId: RoleGroupEnum.securityAdmin,
         status: 1,
     },
     // 默认系统审计员
@@ -76,6 +72,7 @@ export const defaultUser: UserInterface[] = [
         id: RoleGroupEnum.auditAdmin,
         ...defaultAdmin.auditAdmin,
         isDefault: true,
+        roleId: RoleGroupEnum.auditAdmin,
         status: 1,
     },
 ];

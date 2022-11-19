@@ -1,4 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from "@nestjs/common";
+import { ApiError } from "../constants";
 import { Logger } from "../utils";
 
 /**
@@ -12,16 +13,25 @@ export class AnyExceptionFilter implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
         const request = ctx.getRequest();
-        const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+        const status =
+            exception instanceof HttpException
+                ? exception.getStatus()
+                : HttpStatus.INTERNAL_SERVER_ERROR;
 
         // 组装日志信息
         const url = request.originalUrl ?? request.url;
         let requestContent = `>>> ${response.statusCode} ${request.method} ${request.ip} ${url}`;
         requestContent += request["user"] ? `\nuser: ${JSON.stringify(request["user"])}` : "";
         // // requestContent += `\nHeaders: ${JSON.stringify(req.headers)}`;
-        requestContent += Object.keys(request.params ?? {}).length ? `\nParmas: ${JSON.stringify(request.params)}` : "";
-        requestContent += Object.keys(request.query ?? {}).length ? `\nQuery: ${JSON.stringify(request.query)}` : "";
-        requestContent += Object.keys(request.body ?? {}).length ? `\nBody: ${JSON.stringify(request.body)}` : "";
+        requestContent += Object.keys(request.params ?? {}).length
+            ? `\nParmas: ${JSON.stringify(request.params)}`
+            : "";
+        requestContent += Object.keys(request.query ?? {}).length
+            ? `\nQuery: ${JSON.stringify(request.query)}`
+            : "";
+        requestContent += Object.keys(request.body ?? {}).length
+            ? `\nBody: ${JSON.stringify(request.body)}`
+            : "";
 
         // console.log("exception", exception);
         let logFormat = `${requestContent}\n <<< ${status}`;
@@ -30,11 +40,14 @@ export class AnyExceptionFilter implements ExceptionFilter {
         } else {
             logFormat += ` ${exception.stack}`;
         }
+        let errorCode = ApiError.unknowError.errorCode;
         // 打印并记录日志
         // 根据状态码，进行日志类型区分
         if (status >= 500) {
+            errorCode = ApiError.serverError.errorCode;
             Logger.error(logFormat);
         } else if (status >= 400) {
+            errorCode = ApiError.badParams.errorCode;
             Logger.warn(logFormat);
         } else {
             Logger.access(logFormat);
@@ -43,6 +56,7 @@ export class AnyExceptionFilter implements ExceptionFilter {
 
         response.status(status).send({
             statusCode: status,
+            errorCode: errorCode,
             method: request.method,
             path: request.url,
             date: new Date().toLocaleString(),

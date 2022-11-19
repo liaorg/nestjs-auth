@@ -29,6 +29,10 @@ export class RoleEntity extends CommonEntity {
     @Column({ type: "boolean", name: "is_default", default: false })
     isDefault: boolean;
 
+    // 角色组id，一个角色只能属于一个角色组，即角色类型
+    @Column({ type: "integer", name: "role_group_id" })
+    roleGroupId: number;
+
     // 状态：0-失效|1-有效|2-不可编辑
     @Column({ type: "tinyint", default: 0 })
     status: number;
@@ -37,5 +41,5 @@ export class RoleEntity extends CommonEntity {
      * 本地化/国际化名称，对应 i18n 文件 role.json 中的字段
      */
     @Column()
-    locale: string;
+    local: string;
 }

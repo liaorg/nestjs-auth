@@ -7,9 +7,10 @@ export const ApiError = {
     requestSuccess: { errorCode: 0, langKeyword: "api.error.requestSuccess" },
     unknowError: { errorCode: 400000, langKeyword: "api.error.unknowError" },
     badParams: { errorCode: 400001, langKeyword: "api.error.badParams" },
+    serverError: { errorCode: 500001, langKeyword: "api.error.serverError" },
 };
 
-// 登录验证 权限验证 400101+
+// 登录验证 权限验证 400001+
 export const AuthError = {
     wrongUserOrPassword: { errorCode: 400101, langKeyword: "auth.error.wrongUserOrPassword" },
     unauthorized: { errorCode: 400102, langKeyword: "auth.error.unauthorized" },
@@ -18,15 +19,22 @@ export const AuthError = {
 };
 
 // 用户管理 401001+
-export const UsersError = {
-    existedName: { errorCode: 401001, langKeyword: "users.error.existedName" },
-    errorid: { errorCode: 401002, langKeyword: "users.error.errorid" },
-    notExisted: { errorCode: 401003, langKeyword: "users.error.notExisted" },
+export const UserError = {
+    existedName: { errorCode: 401001, langKeyword: "user.error.existedName" },
+    errorid: { errorCode: 401002, langKeyword: "user.error.errorid" },
+    notExisted: { errorCode: 401003, langKeyword: "user.error.notExisted" },
+    addFailed: { errorCode: 401004, langKeyword: "user.error.addFailed" },
+    updateFailed: { errorCode: 401005, langKeyword: "user.error.updateFailed" },
+    deleteFailed: { errorCode: 401006, langKeyword: "user.error.deleteFailed" },
+    unDeleteDefault: { errorCode: 401007, langKeyword: "user.error.unDeleteDefault" },
+    resetPasswordFailed: { errorCode: 401008, langKeyword: "user.error.resetPasswordFailed" },
+    updatePasswordFailed: { errorCode: 401009, langKeyword: "user.error.updatePasswordFailed" },
+    unContainLoginUser: { errorCode: 401010, langKeyword: "user.error.unContainLoginUser" },
 };
 
-// 角色管理 401301+
-export const RolesErros = {
-    existedName: { errorCode: 401301, langKeyword: "roles.error.existedName" },
-    errorid: { errorCode: 401302, langKeyword: "roles.error.errorid" },
-    notExisted: { errorCode: 401303, langKeyword: "roles.error.notExisted" },
+// 角色管理 401101+
+export const RoleError = {
+    existedName: { errorCode: 401101, langKeyword: "role.error.existedName" },
+    errorid: { errorCode: 401102, langKeyword: "role.error.errorid" },
+    notExisted: { errorCode: 401103, langKeyword: "role.error.notExisted" },
 };

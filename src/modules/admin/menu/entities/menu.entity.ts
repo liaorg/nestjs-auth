@@ -18,7 +18,7 @@ export class MenuEntity {
     name: string;
     // 本地化/国际化名称，对应 i18n 文件 menu.json 中的字段
     @Column({ type: "varchar" })
-    locale: string;
+    local: string;
     // 是否需要登录鉴权requiresAuth 0-否|1-是
     @Column({ type: "tinyint", name: "requires_auth", default: true })
     requiresAuth: boolean;

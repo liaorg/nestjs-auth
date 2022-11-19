@@ -94,7 +94,7 @@ export const createMenuSql = `CREATE TABLE "main"."menu" (
   "parent_id" INTEGER, -- 父菜单id
   "path" VARCHAR(150) NOT NULL, -- 菜单路由路径
   "name" VARCHAR(30) NULL, -- 菜单名称，可以做为前端组件名要大写开头
-  "locale" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 menu.json 中的字段
+  "local" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 menu.json 中的字段
   "requires_auth" TINYINT(2) NOT NULL DEFAULT 1, -- 是否需要登录鉴权requiresAuth 0-否|1-是
   "hide_in_menu" TINYINT(2) NOT NULL DEFAULT 0, -- 是否在菜单中隐藏该项hideInMenu 0-否|1-是
   "icon" VARCHAR(30), -- 图标
@@ -116,11 +116,13 @@ export const createRoleSql = `CREATE TABLE "main"."role" (
   "name" VARCHAR(30) NOT NULL,
   "is_default" TINYINT(2) NOT NULL DEFAULT 0, -- 是否默认角色：0-否|1-是
   "status" TINYINT(2) NOT NULL DEFAULT 0, -- 状态：0-失效|1-有效|2-不可编辑
-  "locale" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 role.json 中的字段
+  "role_group_id" INTEGER NOT NULL,
+  "local" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 role.json 中的字段
   "description" TEXT,
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "name" UNIQUE ("name" ASC)
+  CONSTRAINT "name" UNIQUE ("name" ASC),
+  CONSTRAINT "fk_role_role_group_1" FOREIGN KEY ("role_group_id") REFERENCES "role_group" ("id")
 );
 CREATE UNIQUE INDEX "role_name"
 ON "role" (
@@ -136,7 +138,7 @@ export const createRolePermissionRelationSql = `CREATE TABLE "main"."role_permis
 );`;
 // 默认角色
 export const insertRoleSql = `INSERT INTO "main"."role"
-(id, name, is_default, status, locale, create_date, update_date)
+(id, name, is_default, status, local, create_date, update_date)
 values(?, ?, ?, ?, ?, ?, ?);`;
 
 // 角色组表-角色类型
@@ -144,7 +146,7 @@ export const createRoleGroupSql = `CREATE TABLE "main"."role_group" (
   "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   "type" TINYINT(2) NOT NULL, -- 角色组：1 systemAdmin 系统管理员 2 securityAdmin 业务安全员 3 auditAdmin 系统审计员
   "name" VARCHAR(30) NOT NULL,
-  "locale" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 role-group.json 中的字段
+  "local" VARCHAR(150), -- 本地化/国际化名称，对应 i18n 文件 role-group.json 中的字段
   CONSTRAINT "type" UNIQUE ("type" ASC), -- 唯一值
   CONSTRAINT "name" UNIQUE ("name" ASC)
 );
@@ -158,7 +160,7 @@ ON "role_group" (
 );`;
 // 默认角色组
 export const insertRoleGroupSql = `INSERT INTO "main"."role_group"
-(id, type, name, locale)
+(id, type, name, local)
 values(?, ?, ?, ?);`;
 
 // 角色组表和权限表关联表
@@ -187,6 +189,7 @@ export const createUserSql = `CREATE TABLE "main"."user" (
   "password" VARCHAR(255) NOT NULL,
   "password_salt" VARCHAR(255) NOT NULL,
   "is_default" TINYINT(2) NOT NULL DEFAULT 0, -- 是否默认管理员：0-否|1-是
+  "role_id" INTEGER NOT NULL,
   "status" TINYINT(2) NOT NULL DEFAULT 0, -- 状态：0-失效|1-有效|2-不可编辑
   "description" TEXT,
   "email" VARCHAR(255),
@@ -199,7 +202,8 @@ export const createUserSql = `CREATE TABLE "main"."user" (
   "qq" INTEGER,
   "create_date" INTEGER NOT NULL,
   "update_date" INTEGER NOT NULL,
-  CONSTRAINT "name" UNIQUE ("name" ASC)
+  CONSTRAINT "name" UNIQUE ("name" ASC),
+  CONSTRAINT "fk_user_role_1" FOREIGN KEY ("role_id") REFERENCES "role" ("id")
 );
 CREATE UNIQUE INDEX "user_name"
 ON "user" (

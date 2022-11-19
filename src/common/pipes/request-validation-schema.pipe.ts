@@ -40,13 +40,37 @@ export class RequestValidationSchemaPipe implements PipeTransform {
         const dto = metatype as any;
         // 获取 dto 类的装饰器元数据中的自定义验证选项
         const schema: SchemaObject = Reflect.getMetadata(REQUEST_SCHEMA_VALIDATION, dto) || {};
-        // console.log("schema", dto, schema);
         // 验证请求参数
         const errors = validate(schema, value);
         if (errors.length) {
             // 抛出错误
             throw new I18nValidationException(errors);
         }
+        // 从 request 中提取只在 dto 中定义的参数
+        // value 为 object 类型且 dto 有定义时才转换
+        if (this.mustClean(value)) {
+            return this.cleanRequest(value, new dto());
+        }
         return value;
+    }
+    // 从 request 中提取只在 dto 中定义的参数
+    cleanRequest(value: any, dto: any) {
+        const newValue = {};
+        for (const key in dto) {
+            if (value.hasOwnProperty(key)) {
+                newValue[key] = value[key];
+            }
+        }
+        return newValue;
+    }
+    mustClean(value: any) {
+        // 是否为 object
+        const isObject = Object.prototype.toString.call(value) === "[object Object]";
+        // 是否为 class
+        const isClass = value.constructor.toString().slice(0, 5) === "class";
+        // 是否为 i18n
+        // const isI18nContext = value instanceof I18nContext;
+        // 只是纯对象 object 才转，其他的不转
+        return isObject && !isClass;
     }
 }

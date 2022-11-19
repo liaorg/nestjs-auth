@@ -1,4 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
+import {
+    ArgumentsHost,
+    BadRequestException,
+    Catch,
+    ExceptionFilter,
+    HttpException,
+} from "@nestjs/common";
 import { Request, Response } from "express";
 import {
     getI18nContextFromArgumentsHost,
@@ -63,6 +69,13 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
             const args = errors?.args ?? {};
             message = i18n.t(langKeyword, { args });
             logFormat += ` ${errorCode}`;
+        }
+        if (exception instanceof BadRequestException) {
+            const i18n = getI18nContextFromArgumentsHost(host);
+            // 翻译提示信息
+            errorCode = ApiError.badParams.errorCode;
+            const langKeyword = ApiError.badParams.langKeyword;
+            message = i18n.t(langKeyword);
         }
         logFormat += ` ${message}`;
         // console.log("exception", exception);

@@ -42,7 +42,8 @@
     "search.exclude": {
         "**/node_modules": true,
         "**/logs": true,
-        "**/dist": true
+        "**/dist": true,
+        "**/doc": true
     },
     "files.eol": "\n",
     "files.exclude": {
@@ -54,6 +55,8 @@
         "**/*.js": {
             "when": "$(basename).ts"
         },
-        "**/node_modules": true
+        "**/node_modules": true,
+        "**/doc": true,
+        "**/public": true
     }
 }

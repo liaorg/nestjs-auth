@@ -5,10 +5,20 @@
  * @class RequestUserDto
  */
 export class RequestUserDto {
+    /**
+     * 登录用户id
+     */
     id: number;
+    /**
+     * 登录名
+     */
     name: string;
+    /**
+     * 角色id
+     */
     roleId?: number;
-    password?: string;
-    passwordSalt?: string;
+    /**
+     * 权限值
+     */
     auth?: object[];
 }

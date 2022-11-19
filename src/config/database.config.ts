@@ -5,16 +5,15 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { join, resolve } from "path";
 
 export const resolveDir = (dir: string) => join(resolve(__dirname, "../../"), dir);
-// 这里大家可以打印一下路径
-// __dirname： ./dist/config
-// 惊讶的发现，目录是dist目录中的config路径
+// __dirname： ./dist/config 目录是dist目录中的config路径
 
 export const databaseConfig: TypeOrmModuleOptions = {
     // https://typeorm.io/data-source-options
     type: "sqlite",
     synchronize: false, // 从entities属性产生SQL，并创建表格
     // logging: ["query", "warn", "schema", "info", "log", "error"], // 执行SQL会打印在控制台中 query error
-    logging: ["query", "warn", "error"], // 执行SQL会打印在控制台中 query error
+    // 执行SQL会打印在控制台中 query error
+    logging: process.env.NODE_ENV === "production" ? ["error"] : ["query", "warn", "error"],
     // logging: ["error"], // 执行SQL会打印在控制台中 query error
     maxQueryExecutionTime: 1000, // 记录所有运行超过1秒的查询
     // logger: "file",

@@ -27,7 +27,7 @@ export class RoleGroupEntity {
      * 本地化/国际化名称，对应 i18n 文件 roleGroup.json 中的字段
      */
     @Column()
-    locale: string;
+    local: string;
     // /**
     //  * 角色组下的角色
     //  *

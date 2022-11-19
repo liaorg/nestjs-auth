@@ -1,40 +1,25 @@
-// 请求输入输出规范
-
 import { RequestValidationSchema } from "@/common/decorators";
-import { createUserSchema } from "../schemas";
+import { updateProfileSchema } from "../schemas";
 
-// 注入验证 schema 对象
-@RequestValidationSchema(createUserSchema)
-export class CreateUserDto {
+@RequestValidationSchema(updateProfileSchema)
+export class UpdateProfileDto {
     /**
      * 用户名
      * @example xciovpmn
      */
-    name: string;
+    name?: string;
 
     /**
      * 密码
      * @example md5(md5(xciovpmn))
      */
-    password: string;
+    password?: string;
 
     /**
      * 确认密码
      * @example md5(md5(xciovpmn))
      */
-    repassword: string;
-
-    /**
-     * 用户角色
-     * @example 1
-     */
-    roleId: number;
-
-    /**
-     * 用户状态
-     * @example 1
-     */
-    status: number;
+    repassword?: string;
 
     /**
      * 描述
@@ -53,6 +38,7 @@ export class CreateUserDto {
      */
     fullName?: string;
     /**
+     * 性别
      * 性别：0-未知|1-男|2-女
      * @example 男
      */

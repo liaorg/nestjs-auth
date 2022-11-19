@@ -1,6 +1,6 @@
-import { RoleGroupEntity, RoleGroupRoleRelationEntity } from "@/modules/admin/role-group/entities";
+import { RoleGroupEntity } from "@/modules/admin/role-group/entities";
 import { RoleEntity } from "@/modules/admin/role/entities";
-import { UserEntity, UserRoleRelationEntity } from "@/modules/admin/user/entities";
+import { UserEntity } from "@/modules/admin/user/entities";
 import { Logger } from "@nestjs/common";
 import { I18nService } from "nestjs-i18n";
 import { basename } from "path";
@@ -16,19 +16,15 @@ import {
     createPermissionSql,
     createRefresTokenSql,
     createRoleGroupPermissionRelationSql,
-    createRoleGroupRoleRelationSql,
     createRoleGroupSql,
     createRolePermissionRelationSql,
     createRoleSql,
-    createUserRoleRelationSql,
     createUserSql,
     defaultAdminRoute,
     defaultMenu,
     defaultRole,
     defaultRoleGroup,
-    defaultRoleGroupRoleRelation,
     defaultUser,
-    defaultUserRoleRelation,
 } from "./consts";
 import { dbConfig, DB, DBInsert } from "./db";
 import { initAdminRouteData } from "./init-admin-route";
@@ -114,10 +110,14 @@ export async function initDefaultData(i18n: I18nService) {
             createTable("role_permission_relation", createRolePermissionRelationSql, i18n),
             // 角色组表和权限表关联表
             createTable("role_group_permission_relation", createRoleGroupPermissionRelationSql, i18n),
+
+            // 一个用户只能对应一个角色
+            // 一个角色只能对应一个角色组
+            // 所有以下关联关系表可以不要
             // 角色组表和角色表关联表
-            createTable("role_group_role_relation", createRoleGroupRoleRelationSql, i18n),
+            // createTable("role_group_role_relation", createRoleGroupRoleRelationSql, i18n),
             // 用户表和角色表关联表
-            createTable("user_role_relation", createUserRoleRelationSql, i18n),
+            // createTable("user_role_relation", createUserRoleRelationSql, i18n),
             // 用户组表和用户表关联表
             // createTable("user_group_user_relation", createUserGroupUserRelationSql, i18n),
             // 用户组表和角色表关联表
@@ -155,25 +155,28 @@ export async function initDefaultData(i18n: I18nService) {
             ),
         ]);
         await Promise.all([
+            // 一个用户只能对应一个角色
+            // 一个角色只能对应一个角色组
+            // 所有以下关联关系表可以不要
             // 添加默认关联关系表数据
             // 角色组表和角色表关联关系
-            addDefaultData(
-                {
-                    tablename: "role_group_role_relation",
-                    entity: RoleGroupRoleRelationEntity,
-                    defaultData: defaultRoleGroupRoleRelation,
-                },
-                i18n,
-            ),
+            // addDefaultData(
+            //     {
+            //         tablename: "role_group_role_relation",
+            //         entity: RoleGroupRoleRelationEntity,
+            //         defaultData: defaultRoleGroupRoleRelation,
+            //     },
+            //     i18n,
+            // ),
             // 用户表和角色表关联表
-            addDefaultData(
-                {
-                    tablename: "user_role_relation",
-                    entity: UserRoleRelationEntity,
-                    defaultData: defaultUserRoleRelation,
-                },
-                i18n,
-            ),
+            // addDefaultData(
+            //     {
+            //         tablename: "user_role_relation",
+            //         entity: UserRoleRelationEntity,
+            //         defaultData: defaultUserRoleRelation,
+            //     },
+            //     i18n,
+            // ),
             // 添加页面api权限
             initAdminRouteData(defaultAdminRoute, i18n),
             // 添加要隐藏的页面元素权限

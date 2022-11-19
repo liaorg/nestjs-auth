@@ -12,6 +12,7 @@ import { AccessTokenEntity, RefreshTokenEntity } from "./entities";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserService } from "@/modules/admin/user/user.service";
 import { UserEntity } from "@/modules/admin/user/entities";
+import { RoleService } from "@/modules/admin/role/role.service";
 
 @Module({
     imports: [
@@ -31,6 +32,7 @@ import { UserEntity } from "@/modules/admin/user/entities";
         JwtStrategy,
         TokenService,
         UserService,
+        RoleService,
         // 全局路由守卫
         {
             provide: APP_GUARD,

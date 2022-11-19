@@ -1,7 +1,8 @@
 /**
  * 中间件
  */
-import { INestApplication, HttpException } from "@nestjs/common";
+import { HttpException } from "@nestjs/common";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import compression from "compression";
 import { json, urlencoded } from "express";
 import rateLimit from "express-rate-limit";
@@ -9,7 +10,7 @@ import helmet from "helmet";
 
 // 函数式中间件
 // 没有成员，没有额外的方法，没有依赖关系
-export function appMiddleware(app: INestApplication): INestApplication {
+export function appMiddleware(app: NestExpressApplication): NestExpressApplication {
     const isProduction = process.env.NODE_ENV === "production";
 
     // Helmet 安全 HTTP 头设置

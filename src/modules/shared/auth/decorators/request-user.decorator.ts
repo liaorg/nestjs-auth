@@ -8,7 +8,7 @@ import { RequestUserDto } from "../dto";
  * 通过request查询通过jwt解析出来的当前登录的用户模型实例
  * 并用于控制器直接注入
  */
-export const RequestUserDecorator = createParamDecorator(async (data: string, ctx: ExecutionContext) => {
+export const RequestUserDecorator = createParamDecorator(async (key: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const user = request.user as RequestUserDto;
     if (!user) {
@@ -18,5 +18,5 @@ export const RequestUserDecorator = createParamDecorator(async (data: string, ct
         };
         throw new AuthException(error);
     }
-    return data ? user && user[data] : user;
+    return key ? user && user[key] : user;
 });

@@ -1,43 +1,32 @@
-import { RolesErros } from "@/common/constants";
+import { RoleError } from "@/common/constants";
+import { DbBaseService } from "@/common/services";
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { DataSource, ObjectLiteral } from "typeorm";
 import { CreateRoleDto } from "./dto/create-role.dto";
 import { UpdateRoleDto } from "./dto/update-role.dto";
 import { RoleEntity } from "./entities";
 import { RoleException } from "./role.exception";
 
 @Injectable()
-export class RoleService {
-    // 引入对应的服务
-    constructor(
-        // 使用 @InjectRepository() 装饰器注入 存储库
-        @InjectRepository(RoleEntity) private repository: Repository<RoleEntity>, // 其他对应的服务 // private readonly menusService: MenusService,
-    ) {}
-
-    // /**
-    //  * Get Menu Id array
-    //  * @param ids
-    //  */
-    // async getMenuByIds(ids) {
-    //     if (ids && ids.length > 0) {
-    //         return await this.menusService.whereAllIds(ids);
-    //         // async whereInIds(ids: string[]): Promise<MenoInfoDto[]> {
-    //         //     return this.module
-    //         //     .find({ _id: { $all: ids } })
-    //         // }
-    //     }
-    //     return [];
-    // }
+export class RoleService extends DbBaseService<RoleEntity> {
+    constructor(protected dataSource: DataSource) {
+        super(dataSource, RoleEntity, "role");
+    }
+    // 获取角色下拉列表
+    async findList() {
+        const query = this.createQueryBuilder();
+        const status = 1;
+        return await query.select(["id", "name", "local"]).where({ status }).getRawMany();
+    }
 
     // 创建角色
     async create(createRole: CreateRoleDto): Promise<boolean> {
         // 查询角色名是否已经存在
         const { name } = createRole;
-        const data = await this.repository.findOneBy({ name });
+        const data = await this.findOneBy({ name });
         if (data) {
             const error = {
-                ...RolesErros.existedName,
+                ...RoleError.existedName,
                 args: { name },
             };
             throw new RoleException(error);
@@ -52,49 +41,48 @@ export class RoleService {
         newData.description = createRole.description;
         newData.status = 1;
         // 写入数据库
-        return (await this.repository.save(newData)) ? true : false;
-    }
-
-    // 查找全部角色
-    async findAll() {
-        return await this.repository.find();
+        return (await this.insert(newData)) ? true : false;
     }
 
     // 查询单个角色
     async findOne(id: number) {
-        return await this.findById(id);
+        return await this.findById(id, 1);
     }
     /**
      * 根据角色名查找
      * @param rolename
      */
     async findByName(rolename: string) {
-        return await this.repository.findOneBy({ name: rolename });
+        return await this.findOneBy({ name: rolename });
     }
 
     // 更新角色
-    async update(id: number, updateRole: UpdateRoleDto): Promise<boolean> {
+    async updateById(id: number, updateRole: UpdateRoleDto): Promise<boolean> {
         await this.findById(id);
 
         // 查询菜单权限是否存在
         // const menus = await this.getMenuByIds(menu);
         // createRole.menu = menus;
 
-        return (await this.repository.update(id, updateRole)) ? true : false;
+        return (await this.update({ id }, updateRole)) ? true : false;
     }
 
     // 删除角色
     async remove(id: number): Promise<boolean> {
         await this.findById(id);
-        return (await this.repository.delete(id)) ? true : false;
+        return (await this.delete({ id })) ? true : false;
     }
 
     // 根据 id 查找
-    private async findById(id: number) {
-        const existed = await this.repository.findOneBy({ id });
+    private async findById(id: number, status?: number) {
+        const where: ObjectLiteral = { id };
+        if (status) {
+            where.status = status;
+        }
+        const existed = await this.findOneBy(where);
         if (!existed) {
             const error = {
-                ...RolesErros.notExisted,
+                ...RoleError.notExisted,
                 args: { id },
             };
             throw new RoleException(error);
